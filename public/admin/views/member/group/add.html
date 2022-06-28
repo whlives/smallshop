@@ -1,0 +1,23 @@
+<form class="layui-form" lay-filter="form" id="form">
+    <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">名称</label>
+        <div class="layui-input-inline">
+            <input type="text" name="title" lay-verify="required" lay-reqText="名称不能为空" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">折扣比例</label>
+        <div class="layui-input-inline">
+            <input type="text" name="pct" lay-verify="number" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-form-mid layui-word-aux">0-100的整数单位n%，不打折请填写100</div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="hidden" name="id" value="">
+            <input type="button" lay-submit lay-filter="form-submit" value="确认" class="layui-btn">
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>

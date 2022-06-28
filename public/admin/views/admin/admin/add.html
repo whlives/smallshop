@@ -1,0 +1,54 @@
+<form class="layui-form" lay-filter="form" id="form">
+    <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">用户名</label>
+        <div class="layui-input-inline">
+            <input type="text" name="username" lay-verify="required" lay-reqText="用户名不能为空" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">密码</label>
+        <div class="layui-input-inline">
+            <input type="password" name="password" id="password" lay-verify="password" autocomplete="off" class="layui-input" placeholder="不修改请留空">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">重复密码</label>
+        <div class="layui-input-inline">
+            <input type="password" name="repeat_password" lay-verify="resspaword" autocomplete="off" class="layui-input" placeholder="不修改请留空">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">选择角色</label>
+        <div class="layui-input-block">
+            <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/admin/role/select" lay-done="layui.form.render();">
+                {{# layui.each(d.data, function(index, item){ }}
+                <input type="checkbox" name="role_id[]" title="{{ item.title }}" value="{{ item.id }}" {{# if(layui.jquery.inArray(item.id, d.params.role_id)>=0){ }}checked{{# } }}>
+                {{# }); }}
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">电话</label>
+        <div class="layui-input-inline">
+            <input type="text" name="tel" lay-verify="required" lay-reqText="电话不能为空" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">邮箱</label>
+        <div class="layui-input-inline">
+            <input type="text" name="email" lay-verify="email" lay-reqText="邮箱格式错误" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="hidden" name="id" value="">
+            <input type="button" lay-submit lay-filter="form-submit" value="确认" class="layui-btn">
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+<script>
+    layui.use(['verify'], function () {
+    });
+</script>

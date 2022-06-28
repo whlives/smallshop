@@ -1,0 +1,246 @@
+<div class="layui-tab layui-tab-brief table_tab" lay-filter="order_detail_tab">
+    <ul class="layui-tab-title">
+        <li class="layui-this" lay-id="detail">基本信息</li>
+        <li lay-id="delivery">发货记录</li>
+        <li lay-id="log">操作日志</li>
+        <li lay-id="refund">售后记录</li>
+    </ul>
+    <div class="layui-tab-content">
+        <div class="layui-tab-item layui-show" id="detail"></div>
+        <script id="detail_tpl" type="text/html">
+            <form class="layui-form" method="post">
+                <table class="layui-table">
+                    <tr>
+                        <td>
+                            <span class="margin_right_30">订单号：{{ d.order.order_no }} <span class="layui-badge">{{ d.order.status_text }}</span></span>
+                            <span class="margin_right_30">所属店铺：{{ d.seller.title }}</span>
+                            下单用户：{{ d.order.username }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="margin_right_30">
+                            收货地址：{{ d.order.full_name }}{{ d.order.tel }}{{ d.order.prov }}{{
+                            d.order.city }}{{ d.order.area }}{{ d.order.address }} {{
+                            d.order.delivery_time }}
+                            </span>
+                            {{# if(d.order.delivery_time){ }}
+                            <span class="margin_right_30">
+                            送货时间：{{ d.order.delivery_time }}
+                            </span>
+                            {{# } }}
+                            {{# if(d.order.delivery_time){ }}
+                            <span class="margin_right_30">
+                            配送方式：{{ d.order.delivery_type }}
+                            </span>
+                            {{# } }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="margin_right_30">支付方式：{{ d.order.payment_name }}</span>
+                            {{# if(d.order.payment_no){ }}
+                            <span class="margin_right_30">第三方单号：{{ d.order.payment_no }}</span>
+                            {{# } }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            商品总金额：￥{{ d.order.sell_price_total }} + 邮费金额：￥{{
+                            d.order.delivery_price_real }} - 优惠金额：￥{{ d.order.promotion_price }}
+                            + 改价金额：￥{{ d.order.discount_price }} = 支付金额：￥{{ d.order.subtotal }}
+                        </td>
+                    </tr>
+                    {{# if (d.order.level_one_m_name || d.order.level_two_m_name){ }}
+                    <tr>
+                        <td>
+                            <span class="margin_right_30">一级:{{ d.order.level_one_m_name }}</span>
+                            <span class="margin_right_30">二级:{{ d.order.level_two_m_name }}</span>
+                        </td>
+                    </tr>
+                    {{# } }}
+                    {{# if(d.invoice){ }}
+                    <tr>
+                        <td>
+                            <span class="margin_right_30">发票抬头：{{ d.invoice.type_text }}/{{ d.invoice.title }}</span>
+                            <span class="margin_right_30">发票信息：{{ d.invoice.tax_no }}</span>
+                        </td>
+                    </tr>
+                    {{# } }}
+                    {{# if(d.order.note){ }}
+                    <tr>
+                        <td>备注：{{ d.order.note }}</td>
+                    </tr>
+                    {{# } }}
+                </table>
+                <table class="layui-table">
+                    <thead>
+                    <tr>
+                        <th>商品名称</th>
+                        <th>规格</th>
+                        <th class="td_col_width_100">商品价格</th>
+                        <th class="td_col_width_100">商品数量</th>
+                        <th class="td_col_width_80 td_center">售后状态</th>
+                        <th class="td_col_width_80 td_center">发货状态</th>
+                        <th class="td_col_width_50 td_center">发货</th>
+                    </tr>
+                    </thead>
+                    {{# layui.each(d.goods, function(index, item){ }}
+                    <tr>
+                        <td>{{ item.goods_title }}</td>
+                        <td>{{ item.spec_value }}</td>
+                        <td>{{ item.sell_price }}</td>
+                        <td>{{ item.buy_qty }}</td>
+                        <td class="td_center">{{ item.refund }}</td>
+                        <td class="td_center">{{ item.delivery_text }}</td>
+                        <td class="td_center">
+                            {{# if(item.delivery == 0){ }}
+                            <input type="checkbox" name="order_goods_id[]" value="{{ item.id }}" lay-skin="primary" title="" checked>
+                            {{# } }}
+                        </td>
+                    </tr>
+                    {{# }); }}
+                </table>
+                {{# if(d.order.is_delivery){ }}
+                <div class="layui-form-item">
+                    <label class="layui-form-label">物流公司</label>
+                    <div class="layui-input-inline">
+                        <select name="company_id" lay-search="">
+                            <option value=""></option>
+                            {{# layui.each(d.express_company, function(index, item){ }}
+                            <option value="{{ item.id }}">{{ item.title }}</option>
+                            {{# }); }}
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">快递单号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="code" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">备注</label>
+                    <div class="layui-input-block" style="width: 400px;">
+                        <textarea name="note" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+                {{# } }}
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        {{# if(d.order.is_pay){ }}
+                        <button class="layui-btn layui-btn-warm layui-hide" lay-event="pay" lay-submit="" lay-filter="pay">支付</button>
+                        {{# } }}
+                        {{# if(d.order.is_delivery){ }}
+                        <button class="layui-btn layui-hide" lay-event="delivery" lay-submit="" lay-filter="delivery">发货</button>
+                        {{# } }}
+                        {{# if(d.order.is_cancel){ }}
+                        <button class="layui-btn layui-btn-danger layui-hide" lay-event="cancel" lay-submit="" lay-filter="cancel">取消订单</button>
+                        {{# } }}
+                        {{# if(d.order.is_confirm){ }}
+                        <button class="layui-btn layui-hide" lay-event="confirm" lay-submit="" lay-filter="confirm">确认订单</button>
+                        <button class="layui-btn layui-btn-danger layui-hide" lay-event="un_delivery" lay-submit="" lay-filter="un_delivery">撤销发货</button>
+                        {{# } }}
+                        {{# if(d.order.status == 3){ }}
+                        <button class="layui-btn layui-hide" lay-event="complete" lay-submit="" lay-filter="complete">完成订单</button>
+                        {{# } }}
+                    </div>
+                </div>
+                <input type="hidden" name="id" value="{{ d.order.id }}"/>
+            </form>
+        </script>
+        <div class="layui-tab-item" id="delivery"></div>
+        <script id="delivery_tpl" type="text/html">
+            <table lay-filter="detail_delivery">
+                <thead>
+                <tr>
+                    <th lay-data="{field:'created_at', width:170, align: 'center'}">时间</th>
+                    <th lay-data="{field:'company_name', width:100}">物流公司</th>
+                    <th lay-data="{field:'code', width:150}">物流单号</th>
+                    <th lay-data="{field:'guiji', width:80, align: 'center'}">轨迹</th>
+                    <th lay-data="{field:'goods_title', minWidth:200}">商品</th>
+                    <th lay-data="{field:'note', width:100}">备注</th>
+                </tr>
+                </thead>
+                {{# layui.each(d, function(index, item){ }}
+                <tr>
+                    <td>{{ item.created_at }}</td>
+                    <td>{{ item.company_name }}</td>
+                    <td>{{ item.code }}</td>
+                    <td>
+                        <a href="https://www.kuaidi100.com/chaxun?com={{ item.company_code }}&nu={{ item.code }}" target="_blank">
+                            <span class="layui-badge layui-bg-green">轨迹</span>
+                        </a>
+                    </td>
+                    <td>
+                        {{# layui.each(item.goods, function(index_goods, item_goods){ }}
+                        {{ item_goods.goods_title }}{{# if(item_goods.spec_value){ }}<span class="layui-font-gray">（{{ item_goods.spec_value }}）</span><br>{{# } }}
+                        {{# }); }}
+                    </td>
+                    <td>{{ item.note }}</td>
+                </tr>
+                {{# }); }}
+            </table>
+        </script>
+        <div class="layui-tab-item" id="log"></div>
+        <script id="log_tpl" type="text/html">
+            <table lay-filter="detail_log">
+                <thead>
+                <tr>
+                    <th lay-data="{field:'created_at', width:170, align: 'center'}">时间</th>
+                    <th lay-data="{field:'username', width:150}">操作用户</th>
+                    <th lay-data="{field:'action', width:100, align: 'center'}">操作动作</th>
+                    <th lay-data="{field:'note', minWidth:200}">备注</th>
+                </tr>
+                </thead>
+                {{# layui.each(d, function(index, item){ }}
+                <tr>
+                    <td>{{ item.created_at }}</td>
+                    <td>{{ item.username }}</td>
+                    <td>{{ item.action }}</td>
+                    <td>{{ item.note }}</td>
+                </tr>
+                {{# }); }}
+            </table>
+        </script>
+        <div class="layui-tab-item" id="refund"></div>
+        <script id="refund_tpl" type="text/html">
+            <table lay-filter="detail_refund">
+                <thead>
+                <tr>
+                    <th lay-data="{field:'image', width:40, align: 'center'}">图片</th>
+                    <th lay-data="{field:'goods_title', minWidth:200}">商品</th>
+                    <th lay-data="{field:'refund_no', width:200}">退款单号</th>
+                    <th lay-data="{field:'amount', width:80}">退款金额</th>
+                    <th lay-data="{field:'refund_type', width:80, align: 'center'}">售后类型</th>
+                    <th lay-data="{field:'status', width:80, align: 'center'}">状态</th>
+                    <th lay-data="{field:'created_at', width:170, align: 'center'}">时间</th>
+                </tr>
+                </thead>
+                {{# layui.each(d, function(index, item){ }}
+                <tr>
+                    <td>
+                        <img src="{{ layui.common.image_resize(item.goods.image, 30, 30) }}">
+                    </td>
+                    <td>{{ item.goods.goods_title }}{{# if(item.goods.spec_value){ }}<span class="layui-font-gray">({{ item.goods.spec_value }})</span>{{# } }}</td>
+                    <td>{{ item.refund_no }}</td>
+                    <td>{{ item.amount }}</td>
+                    <td>{{ item.refund_type_text }}</td>
+                    <td>{{ item.status_text }}</td>
+                    <td>{{ item.created_at }}</td>
+                </tr>
+                {{# }); }}
+            </table>
+        </script>
+    </div>
+</div>
+
+<script type="text/html" template lay-done="layui.data.sendParams(d.params)"></script>
+<script>
+    layui.data.sendParams = function (params) {
+        layui.use(['order_detail'], function () {
+            let order_detail = layui.order_detail;
+            order_detail.set_params(params);
+        });
+    }
+</script>

@@ -1,0 +1,29 @@
+<form class="layui-form" lay-filter="form" id="form">
+    <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">金额</label>
+        <div class="layui-input-block">
+            <input type="text" name="amount" lay-verify="price" lay-reqText="金额格式错误" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">备注</label>
+        <div class="layui-input-block">
+            <input type="text" name="note" lay-verify="required" lay-reqText="备注不能为空" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="hidden" name="id" value="">
+            <input type="hidden" name="type" value="">
+            <input type="hidden" name="m_id" value="">
+            <input type="button" lay-submit lay-filter="form-submit" value="确认" class="layui-btn">
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+<script>
+    layui.use(['verify'], function () {
+        //内容
+    });
+</script>

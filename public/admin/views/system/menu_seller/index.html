@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../../../layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../../../layuiadmin/style/admin.css" media="all">
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <button type="button" class="layui-btn layui-btn-sm layui-hide" lay-event="add">添加</button>
+                    <button type="button" class="layui-btn layui-btn-sm" lay-event="all_open">全部展开</button>
+                    <button type="button" class="layui-btn layui-btn-sm" lay-event="all_close">全部收缩</button>
+                </div>
+                <div class="layui-card-body">
+                    <div class="layui-form">
+                        <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/system/menu_seller" lay-done="layui.data.done(d);">
+                            <table class="layui-table menu" lay-filter="system-menu-index">
+                                <colgroup>
+                                    <col class="td_col_width_50">
+                                    <col class="td_col_width_200">
+                                    <col>
+                                    <col class="td_col_width_80">
+                                    <col class="td_col_width_100">
+                                    <col class="td_col_width_210">
+                                </colgroup>
+                                <tr>
+                                    <th class="td_center">ID</th>
+                                    <th>菜单名称</th>
+                                    <th>链接</th>
+                                    <th class="td_center">排序</th>
+                                    <th class="td_center">状态</th>
+                                    <th>操作</th>
+                                </tr>
+                                {{# layui.each(d.data, function(index, item){ }}
+                                <tr class="menu_id" data-id="{{ item.id }}" id="row_menu_id_{{ item.id }}">
+                                    <td>{{ item.id }}</td>
+                                    <td>
+                                        <i class="sm_iconfont {{# if(item.children){ }}children icon-jianhaoshouqi{{# }else{ }}icon-jurassic_form-blank{{# } }}" data-id="{{ item.id }}"></i>
+                                        {{ item.title }}
+                                    </td>
+                                    <td>{{ item.url }}{{# if(item.parameter){ }}?{{ item.parameter }}{{# } }}</td>
+                                    <td class="td_center">{{ item.position }}</td>
+                                    <td class="td_center">
+                                        <input type="checkbox" name="status" value="{{ item.id }}" lay-skin="switch" lay-text="锁定|正常" lay-filter="status_btn" {{# if(item.status== 1){ }}checked{{# } }}>
+                                    </td>
+                                    <td>
+                                        <a class="layui-btn layui-btn-xs layui-hide" lay-event="edit" data-id="{{ item.id }}">编辑</a>
+                                        <a class="layui-btn layui-btn-danger layui-btn-xs layui-hide" lay-event="delete" data-id="{{ item.id }}">删除</a>
+                                        <a class="layui-btn layui-btn-xs layui-btn-normal layui-hide" lay-event="add_menu" data-id="{{ item.id }}">添加子菜单</a>
+                                    </td>
+                                </tr>
+                                {{# layui.each(item.children, function(index1, item1){ }}
+                                <tr class="menu_id_{{ item.id }}" data-id="{{ item1.id }}" id="row_menu_id_{{ item1.id }}">
+                                    <td>{{ item1.id }}</td>
+                                    <td>
+                                        <i class="sm_iconfont xuxian icon-xuxian11"></i>
+                                        <i class="sm_iconfont {{# if(item1.children){ }}children icon-jianhaoshouqi{{# }else{ }}icon-jurassic_form-blank{{# } }}" data-id="{{ item1.id }}"></i>
+                                        {{ item1.title }}
+                                    </td>
+                                    <td>{{ item.url }}/{{ item1.url }}{{# if(item1.parameter){ }}?{{ item1.parameter }}{{# } }}</td>
+                                    <td class="td_center">{{ item1.position }}</td>
+                                    <td class="td_center">
+                                        <input type="checkbox" name="status" value="{{ item1.id }}" lay-skin="switch" lay-text="锁定|正常" lay-filter="status_btn" {{# if(item1.status== 1){ }}checked{{# } }}>
+                                    </td>
+                                    <td>
+                                        <a class="layui-btn layui-btn-xs layui-hide" lay-event="edit" data-id="{{ item1.id }}">编辑</a>
+                                        <a class="layui-btn layui-btn-danger layui-btn-xs layui-hide" lay-event="delete" data-id="{{ item1.id }}">删除</a>
+                                    </td>
+                                </tr>
+                                {{# }); }}
+                                {{# }); }}
+                            </table>
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../../../../layuiadmin/layui/layui.js"></script>
+<script>
+    layui.config({
+        base: '../../../../layuiadmin/',//静态资源所在路径
+        version: true
+    }).extend({
+        index: 'modules/admin/index',//主入口模块
+    }).use(['index', 'menu'], function () {
+        let menu = layui.menu,
+            model_url = '/system/menu_seller';
+
+        menu.set_model_url(model_url);//设置默认模块地址
+    });
+</script>
+</body>
+</html>

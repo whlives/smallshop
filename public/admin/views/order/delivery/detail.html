@@ -1,0 +1,22 @@
+<script type="text/html" template lay-done="layui.table.init('detail', {escape: false});">
+    <table lay-filter="detail">
+        <thead>
+        <tr>
+            <th lay-data="{field:'goods_image', width: 90, align: 'center'}">图片</th>
+            <th lay-data="{field:'goods_title'}">商品名称</th>
+            <th lay-data="{field:'sell_price', width:100}">商品价格</th>
+            <th lay-data="{field:'buy_qty', width:100, align: 'center'}">商品数量</th>
+        </tr>
+        </thead>
+        {{# layui.each(d.params.goods, function(index, item){ }}
+        <tr>
+            <td>
+                <a target="_blank" href="{{ item.image }}"><img src="{{ layui.common.image_resize(item.image, 80, 80) }}"></a>
+            </td>
+            <td>{{ item.goods_title }}</td>
+            <td>{{ item.sell_price }}</td>
+            <td>{{ item.buy_qty }}</td>
+        </tr>
+        {{# }); }}
+    </table>
+</script>

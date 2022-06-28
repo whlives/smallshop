@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../../../layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../../../layuiadmin/style/admin.css" media="all">
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-tab layui-tab-brief table_tab" lay-filter="refund_table_tab">
+            <ul class="layui-tab-title background_white">
+                <li class="layui-this" lay-id="">全部售后单</li>
+                <li lay-id="1">仅退款</li>
+                <li lay-id="2">退货退款</li>
+                <li lay-id="3">换货</li>
+            </ul>
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <div class="layui-form search_from" lay-filter="search_from">
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">售后单号</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="refund_no" placeholder="请输入" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">订单号</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="order_no" placeholder="请输入" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">用户名</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="username" placeholder="请输入" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">状态</label>
+                                    <div class="layui-input-inline">
+                                        <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/order/refund/get_status" lay-done="layui.form.render();">
+                                            <select name="brand_id" lay-search="">
+                                                <option value=""></option>
+                                                {{# layui.each(d.data, function(index, item){ }}
+                                                <option value="{{ index }}">{{ item }}</option>
+                                                {{# }); }}
+                                            </select>
+                                        </script>
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">时间类型</label>
+                                    <div class="layui-input-inline">
+                                        <select name="time_type">
+                                            <option value="created_at" selectd>创建时间</option>
+                                            <option value="approve_at">审核通过时间</option>
+                                            <option value="delivery_at">发货时间</option>
+                                            <option value="done_at">完成时间</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-inline" id="select_at">
+                                    <label class="layui-form-label">起止时间：</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="time_range" id="time_range" placeholder="请选择" autocomplete="off" class="layui-input" readonly>
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <button class="layui-btn layui-btn-sm" lay-filter="search_button" lay-submit>搜索</button>
+                                    <button class="layui-btn layui-btn-sm layui-hide" lay-event="export_button" lay-filter="export_button" lay-submit><i class="layui-icon layui-icon-export"></i>导出</button>
+                                </div>
+                            </div>
+                        </div>
+                        <table class="layui-hide" id="table_list" lay-filter="table_list"></table>
+
+                        <script type="text/html" id="img_tmp">
+                            {{# if(d.image != ''){ }}
+                            <a href="{{ d.image }}" target="_blank">
+                                <img src="{{ layui.common.image_resize(d.image, 30, 30) }}"></a>
+                            {{# } }}
+                        </script>
+                        <script type="text/html" id="goods_title_tmp">
+                            {{ d.goods_title }}
+                            {{# if(d.spec_value){ }}
+                            <br><span class="layui-font-gray">{{ d.spec_value }}</span>
+                            {{# } }}
+                        </script>
+                        <script type="text/html" id="action_button">
+                            <a class="layui-btn layui-btn-xs layui-hide" lay-event="detail">详情</a>
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="../../../../layuiadmin/layui/layui.js"></script>
+<script>
+    layui.config({
+        base: '../../../../layuiadmin/',//静态资源所在路径
+        version: true
+    }).extend({
+        index: 'modules/admin/index',//主入口模块
+    }).use(['index', 'table_common'], function () {
+        let $ = layui.$,
+            table_common = layui.table_common,
+            table = layui.table,
+            element = layui.element,
+            form = layui.form,
+            common = layui.common,
+            laydate = layui.laydate,
+            model_url = '/order/refund';
+
+        table_common.set_model_url(model_url);//设置默认模块地址
+
+        table.render({
+            elem: '#table_list',
+            url: layui.setter.apiHost + model_url,
+            toolbar: '#toolbar',
+            cols: [[
+                {type: 'checkbox'},
+                {field: 'id', title: 'ID', width: 70, align: 'center'},
+                {field: 'image', title: '图片', width: 40, toolbar: '#img_tmp'},
+                {field: 'goods_title', title: '商品名称', minWidth: 250, toolbar: '#goods_title_tmp'},
+                {field: 'refund_no', title: '退款单号', width: 170},
+                {field: 'amount', title: '申请金额', width: 100},
+                {field: 'refund_type_text', title: '类型', width: 80, align: 'center'},
+                {field: 'status_text', title: '状态', width: 80, align: 'center', templet: '#status_tmp'},
+                {title: '操作', width: 80, align: 'center', toolbar: '#action_button'},
+                {field: 'created_at', title: '创建时间', width: 170, align: 'center'},
+            ]],
+            page: true,
+            done: function () {
+                table_common.set_button(model_url);
+            }
+        });
+
+        //表格回调
+        let table_callback = {
+            //售后详情
+            detail: function (data) {
+                common.detail('售后详情', 'detail', {id: data.id});
+            },
+        }
+        table_common.set_callback_obj(table_callback);
+
+        //日期
+        laydate.render({
+            elem: '#time_range',
+            range: '~',
+            type: 'date'
+        });
+
+        //定模快捷切换选项
+        element.on('tab(refund_table_tab)', function (data) {
+            //重置搜索条件
+            $('.search_from input,select').each(function () {
+                $(this).val('');
+            })
+            form.render();
+            //重载表格
+            table.reload('table_list', {
+                where: {refund_type: this.getAttribute('lay-id')},
+                page: {
+                    curr: 1//重新从第 1 页开始
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

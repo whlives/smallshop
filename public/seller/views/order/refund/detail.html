@@ -1,0 +1,223 @@
+<form class="layui-form" lay-filter="form" id="form">
+    <div class="layui-tab-item layui-show" id="detail"></div>
+    <script id="detail_tpl" type="text/html">
+        <fieldset class="layui-elem-field layui-field-title">
+            <legend>售后信息</legend>
+        </fieldset>
+        <table class="layui-table">
+            <tbody>
+            <tr>
+                <td class="td_col_width_80">订单号：</td>
+                <td>{{ d.order.order_no }}</td>
+                <td class="td_col_width_80">订单金额：</td>
+                <td>￥{{ d.order.subtotal }}</td>
+                <td class="td_col_width_80">订单状态：</td>
+                <td><span class="layui-badge">{{ d.order.status_text }}</span></td>
+            </tr>
+            <tr>
+                <td>商品名称：</td>
+                <td>{{ d.order_goods.goods_title }}</td>
+                <td>商品规格：</td>
+                <td>{{ d.order_goods.spec_value }}</td>
+                <td>申请金额：</td>
+                <td>￥{{ d.refund.amount }}（含运费￥{{ d.refund.delivery_price }}）</td>
+            </tr>
+            <tr>
+                <td class="td_col_width_80">售后单号：</td>
+                <td>{{ d.refund.refund_no }}</td>
+                <td class="td_col_width_80">售后类型：</td>
+                <td>{{ d.refund.refund_type_text }}</td>
+                <td>售后状态：</td>
+                <td><span class="layui-badge">{{ d.refund.status_text }}</span></td>
+            </tr>
+            </tbody>
+        </table>
+        <fieldset class="layui-elem-field layui-field-title">
+            <legend>售后日志</legend>
+        </fieldset>
+        <table lay-filter="log">
+            <thead>
+            <tr>
+                <th lay-data="{field:'created_at', width:170, align: 'center'}">时间</th>
+                <th lay-data="{field:'user_type', width:80, align: 'center'}">角色</th>
+                <th lay-data="{field:'username', width:150}">操作用户</th>
+                <th lay-data="{field:'action', width:100, align: 'center'}">操作类型</th>
+                <th lay-data="{field:'note', minWidth:150}">备注</th>
+            </tr>
+            </thead>
+            {{# layui.each(d.log, function(index, item){ }}
+            <tr>
+                <td>{{ item.created_at }}</td>
+                <td>{{ item.user_type }}</td>
+                <td>{{ item.username }}</td>
+                <td>{{ item.action }}</td>
+                <td>
+                    {{# if(item.note){ }}
+                    {{# layui.each(item.note, function(i, v){ }}
+                    【{{ v.title }}：{{ v.info }}】
+                    {{# }); }}
+                    {{# } }}
+                    {{# if(item.image){ }}
+                    {{# layui.each(item.image, function(k, url){ }}
+                    <a target="_blank" href="{{ url.image }}"><img src="{{ layui.common.image_resize(url.image, 30, 30) }}"></a>
+                    {{# }); }}
+                    {{# } }}
+                </td>
+            </tr>
+            {{# }); }}
+        </table>
+        {{# if(d.refund.is_audit && d.refund.refund_type != 1){ }}
+        <div class="layui-form-item">
+            <label class="layui-form-label">退货地址</label>
+            <div class="layui-input-block" style="width: 400px;">
+                <select name="address_id">
+                    <option value=""></option>
+                    {{# layui.each(d.address, function(index, item){ }}
+                    <option value="{{ item.id }}">{{ item.full_name }},{{ item.tel }},{{ item.prov_name }}{{ item.city_name }}{{ item.area_name }}{{ item.address }}</option>
+                    {{# }); }}
+                </select>
+            </div>
+        </div>
+        {{# } }}
+        {{# if(d.refund.is_send){ }}
+        <div class="layui-form-item">
+            <label class="layui-form-label">物流公司</label>
+            <div class="layui-input-inline">
+                <select name="company_id" lay-search="">
+                    <option value=""></option>
+                    {{# layui.each(d.express_company, function(index, item){ }}
+                    <option value="{{ item.id }}">{{ item.title }}</option>
+                    {{# }); }}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">快递单号</label>
+            <div class="layui-input-inline">
+                <input type="text" name="code" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        {{# } }}
+        <div class="layui-form-item">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block" style="width: 400px;">
+                <textarea name="note" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                {{# if(d.refund.is_audit){ }}
+                <button class="layui-btn layui-hide" lay-event="audit" lay-submit="" lay-filter="audit">同意</button>
+                {{# } }}
+                {{# if(d.refund.is_refused){ }}
+                <button class="layui-btn layui-btn-danger layui-hide" lay-event="refused" lay-submit="" lay-filter="refused">拒绝</button>
+                {{# } }}
+                {{# if(d.refund.is_confirm_goods){ }}
+                <button class="layui-btn layui-hide" lay-event="confirm_goods" lay-submit="" lay-filter="confirm_goods">确认收货</button>
+                {{# } }}
+                {{# if(d.refund.is_refused_goods){ }}
+                <button class="layui-btn layui-btn-danger layui-hide" lay-event="refused_goods" lay-submit="" lay-filter="refused_goods">拒绝收货</button>
+                {{# } }}
+                {{# if(d.refund.is_send){ }}
+                <button class="layui-btn layui-hide" lay-event="send" lay-submit="" lay-filter="send">发货</button>
+                {{# } }}
+                {{# if(d.refund.is_pay){ }}
+                <button class="layui-btn layui-hide" lay-event="original_road_pay" lay-submit="" lay-filter="original_road_pay">原路退回款项</button>
+                <button class="layui-btn layui-btn-warm layui-hide" lay-event="offline_pay" lay-submit="" lay-filter="offline_pay">线下打款</button>
+                {{# } }}
+            </div>
+        </div>
+        <input type="hidden" name="id" value="{{ d.refund.id }}"/>
+    </script>
+</form>
+<script type="text/html" template lay-done="layui.data.sendParams(d.params)"></script>
+<script>
+    layui.data.sendParams = function (params) {
+        layui.use(function () {
+            let $ = layui.$,
+                table = layui.table,
+                form = layui.form,
+                laytpl = layui.laytpl,
+                common = layui.common,
+                model_url = '/order/refund';
+
+            //详情
+            function get_detail() {
+                let result = common.ajax(model_url + '/detail', {id: params.id});
+                if (result) {
+                    laytpl($('#detail_tpl').html()).render(result.data, function (html) {
+                        $('#detail').html(html);
+                        //转化静态表格
+                        table.init('log', {
+                            escape: false,
+                        });
+                        form.render();
+                        common.set_button(model_url);//设置按钮权限
+                    })
+                }
+            }
+
+            get_detail();
+
+            //监听审核
+            form.on('submit(audit)', function (data) {
+                let form_data = data.field;
+                form_submit('audit', form_data);
+                return false;
+            });
+            //监听拒绝
+            form.on('submit(refused)', function (data) {
+                let form_data = data.field;
+                form_submit('refused', form_data);
+                return false;
+            });
+            //监听确认收货
+            form.on('submit(confirm_goods)', function (data) {
+                let form_data = data.field;
+                form_submit('confirm_goods', form_data);
+                return false;
+            });
+            //监听拒绝收货
+            form.on('submit(refused_goods)', function (data) {
+                let form_data = data.field;
+                form_submit('refused_goods', form_data);
+                return false;
+            });
+            //监听发货
+            form.on('submit(send)', function (data) {
+                let form_data = data.field;
+                form_submit('send', form_data);
+                return false;
+            });
+            //监听原路退回
+            form.on('submit(original_road_pay)', function (data) {
+                let form_data = data.field;
+                form_data['type'] = 'original_road_pay';
+                form_submit('pay', form_data);
+                return false;
+            });
+            //监听线下打款
+            form.on('submit(offline_pay)', function (data) {
+                let form_data = data.field;
+                form_data['type'] = 'offline_pay';
+                form_submit('pay', form_data);
+                return false;
+            });
+
+
+            /**
+             * 售后操作
+             * @param type
+             * @param form_data
+             */
+            function form_submit(type, form_data) {
+                let result = common.ajax(model_url + '/' + type, form_data);
+                if (result) {
+                    layer.msg('操作成功', {time: 1000}, function () {
+                        get_detail();
+                    })
+                }
+            }
+        });
+    }
+</script>

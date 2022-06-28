@@ -1,0 +1,89 @@
+<form class="layui-form" lay-filter="form" id="form">
+    <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">广告名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="title" lay-verify="required" lay-reqText="广告名称不能为空" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">图片</label>
+        <div class="layui-input-inline">
+            <input type="text" name="image" autocomplete="off" class="layui-input plupload_btn_input">
+        </div>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <a href="{{ d.params.image || '' }}" target="_blank">
+                    <img src="{{ d.params.image || '' }}" width="35" class="{{ d.params.image || 'layui-hide' }}">
+                </a>
+            </script>
+            <button type="button" class="layui-btn layui-btn-sm plupload_btn" id="image"><i class="layui-icon sm_iconfont icon-yunshangchuan"></i>选择图片</button>
+        </div>
+        <div class="layui-input-inline">
+            <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/tool/adv_group/detail?id={{ d.params.group_id }}" lay-done="layui.form.render();">
+                <div class="layui-form-mid layui-word-aux">
+                    建议尺寸{{ d.data.width }}px × {{ d.data.height }}px
+                </div>
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">跳转类型</label>
+        <div class="layui-input-block">
+            <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/tool/adv/target_type" lay-done="layui.form.render();">
+                {{# layui.each(d.data, function(index, item){ }}
+                <input type="radio" name="target_type" value="{{ index }}" title="{{ item }}" {{# if(index== d.params.target_type){ }}checked{{# } }} lay-verify="required">
+                {{# }); }}
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">url或id</label>
+        <div class="layui-input-block">
+            <input type="text" name="target_value" lay-verify="required" lay-reqText="url或id不能为空" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">排序</label>
+        <div class="layui-input-block">
+            <input type="text" name="position" lay-verify="number" lay-reqText="排序只能是数字" autocomplete="off" class="layui-input" value="999">
+        </div>
+    </div>
+    <div class="layui-form-item" id="select_at">
+        <label class="layui-form-label label-required-next">起止时间</label>
+        <div class="layui-input-inline">
+            <input type="text" name="start_at" id="start_at" lay-verify="required" lay-reqText="开始时间不能为空" autocomplete="off" class="layui-input" readonly>
+        </div>
+        <div class="layui-form-mid layui-word-aux">-</div>
+        <div class="layui-input-inline">
+            <input type="text" name="end_at" id="end_at" lay-verify="required" lay-reqText="结束时间不能为空" autocomplete="off" class="layui-input" readonly>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="hidden" name="id" value="">
+            <input type="hidden" name="group_id" value="">
+            <input type="button" lay-submit lay-filter="form-submit" value="确认" class="layui-btn">
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+<script src="../../../../layuiadmin/lib/plupload/plupload.full.min.js"></script>
+<script src="../../../../layuiadmin/lib/plupload/i18n/zh_CN.js"></script>
+<script>
+    layui.use(['plupload'], function () {
+        let $ = layui.$,
+            plupload = layui.plupload,
+            laydate = layui.laydate;
+
+        plupload.init();//初始化上传
+
+        //日期
+        laydate.render({
+            elem: '#select_at',
+            type: 'datetime',
+            range: ['#start_at', '#end_at']
+        });
+    });
+</script>

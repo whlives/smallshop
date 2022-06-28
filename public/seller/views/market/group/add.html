@@ -1,0 +1,85 @@
+<form class="layui-form" lay-filter="form" id="form">
+    <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">活动名称</label>
+        <div class="layui-input-inline">
+            <input type="text" name="title" lay-verify="required" lay-reqText="活动名称不能为空" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">成团人数</label>
+        <div class="layui-input-inline">
+            <input type="text" name="group_num" lay-verify="number" lay-reqText="成团人数不能为空" autocomplete="off" class="layui-input">
+        </div>
+        <label class="layui-form-label label-required-next">成功时间(小时)</label>
+        <div class="layui-input-inline">
+            <input type="text" name="hour" lay-verify="number" lay-reqText="成功时间(小时)不能为空" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item" id="select_at">
+        <label class="layui-form-label label-required-next">起止时间</label>
+        <div class="layui-input-inline">
+            <input type="text" name="start_at" id="start_at" autocomplete="off" class="layui-input" readonly>
+        </div>
+        <div class="layui-form-mid layui-word-aux">-</div>
+        <div class="layui-input-inline">
+            <input type="text" name="end_at" id="end_at" autocomplete="off" class="layui-input" readonly>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">商品</label>
+        <div class="layui-input-block">
+            <select name="goods_id" lay-filter="goods_id" lay-search="" lay-verify="required" lay-reqText="请选择商品">
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-block">
+            <input type="hidden" name="id" value="">
+            <input type="button" lay-submit lay-filter="form-submit" value="确认" class="layui-btn">
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+<script type="text/html" template lay-done="layui.data.sendParams(d.params);"></script>
+<script>
+    layui.data.sendParams = function (params) {
+        layui.use(function () {
+            let $ = layui.$,
+                form = layui.form,
+                common = layui.common,
+                laydate = layui.laydate,
+                model_url = '/market/group';
+
+            //日期
+            laydate.render({
+                elem: '#select_at',
+                type: 'datetime',
+                range: ['#start_at', '#end_at']
+            });
+
+            //选择商品
+            function get_goods(goods_id) {
+                let result = common.ajax(model_url + '/search');
+                if (result) {
+                    let html = '<option value="">请选择</option>';
+                    $.each(result.data, function (index, item) {
+                        let selected = '';
+                        if (item.id == goods_id) {
+                            selected = 'selected';
+                        }
+                        html += '<option value="' + item.id + '" ' + selected + '>' + item.id + '、' + item.title + '</option>';
+                    })
+                    $('[name="goods_id"]').html(html);
+                }
+                form.render('select');
+            }
+
+            if (params.seller_id) {
+                get_goods(params.goods_id);
+            } else {
+                get_goods();
+            }
+        });
+    }
+</script>

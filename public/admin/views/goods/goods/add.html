@@ -1,0 +1,232 @@
+<form class="layui-form" lay-filter="form" id="form">
+    <div class="layui-tab layui-tab-brief table_tab" lay-filter="goods_detail_tab">
+        <ul class="layui-tab-title">
+            <li class="layui-this">基础信息</li>
+            <li>属性</li>
+            <li>描述</li>
+        </ul>
+        <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+                <div class="layui-form-item">
+                    <script type="text/html" template>
+                        <label class="layui-form-label">类型</label>
+                        <div class="layui-form-mid layui-word-aux">{{ d.params.type_title }}</div>
+                        <label class="layui-form-label">分类</label>
+                        <div class="layui-form-mid layui-word-aux">{{ d.params.category_title }}</div>
+                    </script>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label label-required-next">商品名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="title" lay-verify="required" lay-reqText="商品名称不能为空" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">副标题</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="subtitle" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label label-required-next">商家</label>
+                    <div class="layui-input-inline">
+                        <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/seller/seller/select" lay-done="layui.form.render();">
+                            <select name="seller_id" lay-filter="seller_id" lay-search="">
+                                <option value=""></option>
+                                {{# layui.each(d.data, function(index, item){ }}
+                                <option value="{{ item.id }}" {{# if(item.id==d.params.seller_id){ }}selected{{# } }}>{{ item.title }}</option>
+                                {{# }); }}
+                            </select>
+                        </script>
+                    </div>
+                    <label class="layui-form-label label-required-next">运费模板</label>
+                    <div class="layui-input-inline">
+                        <select name="delivery_id" lay-search="" lay-verify="required" lay-reqText="请选择运费模板">
+                            <option value=""></option>
+                        </select>
+                    </div>
+                    <label class="layui-form-label label-required-next">品牌</label>
+                    <div class="layui-input-inline">
+                        <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/system/brand/select" lay-done="layui.form.render();">
+                            <select name="brand_id" lay-search="" lay-verify="required" lay-reqText="请选择品牌">
+                                <option value=""></option>
+                                {{# layui.each(d.data, function(index, item){ }}
+                                <option value="{{ item.id }}" {{# if(item.id==d.params.brand_id){ }}selected{{# } }}>{{ item.title }}</option>
+                                {{# }); }}
+                            </select>
+                        </script>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label label-required-next">优惠券</label>
+                    <div class="layui-input-inline">
+                        <select name="coupons_id" lay-search="">
+                            <option value=""></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label label-required-next">商品图片</label>
+                    <div class="layui-input-inline">
+                        <button type="button" class="layui-btn layui-btn-sm plupload_btn is_callback" id="goods_image"><i class="layui-icon sm_iconfont icon-yunshangchuan"></i>选择图片</button>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">
+                        默认第一张图为商品主图，可以移动顺序更换图片。
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <div class="layui-input-block" id="goods_image_list"></div>
+                    <script id="goods_image_tpl" type="text/html">
+                        <div class="goods_image">
+                            <li><a href="{{ d.url }}" target="_blank"><img src="{{ d.url }}"></a></li>
+                            <li>
+                                <i class="sm_iconfont icon-jiantouarrow506 image_move_left"></i>&nbsp;&nbsp;
+                                <i class="sm_iconfont icon-dustbin_icon image_delete"></i>&nbsp;&nbsp;
+                                <i class="sm_iconfont icon-jiantouarrow484 image_move_right"></i>
+                            </li>
+                            <input type="hidden" name="image[]" value="{{ d.url }}">
+                        </div>
+                    </script>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">视频</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="video" autocomplete="off" class="layui-input plupload_btn_input">
+                    </div>
+                    <div class="layui-input-inline">
+                        <button type="button" class="layui-btn layui-btn-sm plupload_btn" id="video" file_type="video" max_file_size="20"><i class="layui-icon sm_iconfont icon-yunshangchuan"></i>选择视频</button>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label label-required-next">货号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="sku_code" lay-verify="required" lay-reqText="货号不能为空" autocomplete="off" class="layui-input" value="">
+                    </div>
+                    <label class="layui-form-label label-required-next">排序</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="position" lay-verify="number" lay-reqText="排序只能是数字" autocomplete="off" class="layui-input" value="999">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label label-required-next">一级分成比例</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="level_one_pct" lay-verify="number" lay-reqText="一级分成比例必须是0-100的数字" autocomplete="off" class="layui-input" value="0">
+                    </div>
+                    <label class="layui-form-label label-required-next">二级级分成比例</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="level_two_pct" lay-verify="number" lay-reqText="二级级分成比例必须是0-100的数字" autocomplete="off" class="layui-input" value="0">
+                    </div>
+                </div>
+                <fieldset class="layui-elem-field goods_spec layui-hide"></fieldset>
+                <script id="spec_tpl" type="text/html">
+                    <legend>规格</legend>
+                    <div class="layui-field-box">
+                        {{# layui.each(d, function(index, item){ }}
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">{{ item.title }}：</label>
+                            <div class="input_list" id="spec_{{ item.id }}">
+                                {{# layui.each(item.value, function(i, v){ }}
+                                <div class="layui-input-inline">
+                                    <input type="checkbox" lay-filter="goods_spec" lay-skin="primary" value="" title="{{ v.value }}" data-id="{{ v.id }}" data-name="{{ item.title }}" {{# if(v.is_checked== 1){ }} checked {{# } }}>
+                                    <input type="text" class="layui-input spec_alias" autocomplete="off" value="{{ v.alias }}">
+                                    {{# if(item.type == 1){ }}
+                                    <br>
+                                    <button type="button" class="layui-btn layui-btn-xs plupload_btn is_callback" id="spec_{{ index }}_{{ v.id }}" callback_fun="spec_image">选择图片</button>
+                                    {{# } }}
+                                    <a href="{{ v.image }}" target="_blank"><img src="{{ v.image }}" class="{{# v.image || 'layui-hide'}}"></a>
+                                    <input type="hidden" value="{{ v.image }}">
+                                </div>
+
+                                {{# }); }}
+                            </div>
+                        </div>
+                        {{# }); }}
+                        <div id="goods_spec_table"></div>
+                    </div>
+                </script>
+            </div>
+            <div class="layui-tab-item" id="attribute"></div>
+            <script id="attribute_tpl" type="text/html">
+                {{# layui.each(d, function(index, item){ }}
+                {{# if(item.input_type == 'checkbox'){ }}
+                <div class="layui-form-item">
+                    <label class="layui-form-label">{{ item.title }}</label>
+                    <div class="layui-input-block">
+                        {{# layui.each(item.value, function(i, v){ }}
+                        <input type="checkbox" name="attribute[{{ item.id }}][]" lay-skin="primary" value="{{ v.id }}" title="{{ v.value }}" {{# if(v.is_checked== 1){ }} checked {{# } }}>
+                        {{# }); }}
+                    </div>
+                </div>
+                {{# } else if(item.input_type == 'radio'){ }}
+                <div class="layui-form-item">
+                    <label class="layui-form-label">{{ item.title }}</label>
+                    <div class="layui-input-block">
+                        {{# layui.each(item.value, function(i, v){ }}
+                        <input type="radio" name="attribute[{{ item.id }}]" value="{{ v.id }}" title="{{ v.value }}" {{# if(v.is_checked== 1){ }} checked {{# } }}>
+                        {{# }); }}
+                    </div>
+                </div>
+                {{# } else if(item.input_type == 'select'){ }}
+                <div class="layui-form-item">
+                    <label class="layui-form-label">{{ item.title }}</label>
+                    <div class="layui-input-inline">
+                        <select name="attribute[{{ item.id }}]">
+                            <option value=""></option>
+                            {{# layui.each(item.value, function(i, v){ }}
+                            <option value="{{ v.id }}" {{# if(v.is_checked== 1){ }} selected {{# } }}>{{ v.value }}</option>
+                            {{# }); }}
+                        </select>
+                    </div>
+                </div>
+                {{# } else if(item.input_type == 'text'){ }}
+                <div class="layui-form-item">
+                    <label class="layui-form-label">{{ item.title }}</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="attribute[{{ item.id }}]" value="{{ item.value || '' }}" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                {{# } }}
+                {{# }); }}
+            </script>
+            <div class="layui-tab-item">
+                <div class="layui-field-box">
+                    <div class="layui-form-item">
+                        <div class="editor">
+                            <div id="toolbar_editor_content" class="toolbar"></div>
+                            <div id="editor_content" class="content"></div>
+                        </div>
+                        <textarea name="content" id="content" class="layui-hide"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="hidden" name="id" value="">
+            <input type="hidden" name="category_id" value=""/>
+            <input type="hidden" name="type" value=""/>
+            <input type="button" lay-submit lay-filter="form-submit" value="确认" class="layui-btn">
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+<script type="text/html" template lay-done="layui.data.sendParams(d.params)"></script>
+<script src="../../../../layuiadmin/lib/plupload/plupload.full.min.js"></script>
+<script src="../../../../layuiadmin/lib/plupload/i18n/zh_CN.js"></script>
+<script src="../../../../layuiadmin/lib/wangeditor/index.js"></script>
+<link href="../../../../layuiadmin/lib/wangeditor/style.css" rel="stylesheet">
+<script src="../../../../layuiadmin/lib/aliyun-oss-sdk.min.js"></script>
+<script src="../../../../layuiadmin/lib/xm-select.js"></script>
+<script>
+    layui.data.sendParams = function (params) {
+        layui.use(['goods_detail', 'editor'], function () {
+            let goods_detail = layui.goods_detail,
+                editor = layui.editor;
+            goods_detail.set_params(params);
+
+            editor.init(params.content);//初始化编辑器
+        });
+    }
+</script>

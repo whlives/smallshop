@@ -1,0 +1,57 @@
+<form class="layui-form" lay-filter="form" id="form">
+    <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">类型</label>
+        <div class="layui-input-block">
+            <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/financial/balance/type" lay-done="layui.form.render();">
+                {{# layui.each(d.data, function(index, item){ }}
+                <input type="radio" name="type" lay-filter="type" value="{{ index }}" title="{{ item }}">
+                {{# }); }}
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">提现金额</label>
+        <div class="layui-input-inline">
+            <input type="text" name="amount" lay-verify="price" lay-reqText="提现金额格式错误" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">姓名</label>
+        <div class="layui-input-inline">
+            <input type="text" name="name" lay-verify="required" lay-reqText="姓名不能为空" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item bank_name layui-hide">
+        <label class="layui-form-label label-required-next">开户行</label>
+        <div class="layui-input-inline">
+            <input type="text" name="bank_name" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">卡号/账号</label>
+        <div class="layui-input-inline">
+            <input type="text" name="pay_number" lay-verify="required" lay-reqText="卡号/账号不能为空" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="button" lay-submit lay-filter="form-submit" value="确认" class="layui-btn">
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+<script>
+    layui.use(['verify'], function () {
+        let $ = layui.$,
+            form = layui.form;
+        //监听类型选择
+        form.on('radio(type)', function (data) {
+            if (data.value == 1) {
+                $('.bank_name').removeClass('layui-hide');
+            } else {
+                $('.bank_name').addClass('layui-hide');
+            }
+        });
+    });
+</script>

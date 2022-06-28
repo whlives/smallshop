@@ -1,0 +1,252 @@
+<?php
+/**
+ * Created by PhpStorm
+ * User: whlives
+ * Date: 2022/1/11
+ * Time: 3:55 PM
+ */
+
+namespace App\Http\Controllers\Admin\Market;
+
+use App\Http\Controllers\Admin\BaseController;
+use App\Models\Goods\Goods;
+use App\Models\Market\PromoSeckill;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Validator;
+
+class SeckillController extends BaseController
+{
+    /**
+     * 列表获取
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\ApiError
+     */
+    public function index(Request $request)
+    {
+        [$limit, $offset] = get_page_params();
+        //搜索
+        $where = [];
+        $title = $request->input('title');
+        $goods_title = $request->input('goods_title');
+        $goods_id = (int)$request->input('goods_id');
+        if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
+        if ($goods_title) {
+            $goods_id = Goods::where('title', $goods_title)->value('id');
+            if ($goods_id) {
+                $where[] = ['goods_id', $goods_id];
+            } else {
+                api_error(__('admin.content_is_empty'));
+            }
+        }
+        if ($goods_id) $where[] = ['goods_id', $goods_id];
+        $query = PromoSeckill::select('id', 'title', 'goods_id', 'status', 'start_at', 'end_at', 'created_at')
+            ->where($where);
+        $total = $query->count();//总条数
+        $res_list = $query->orderBy('id', 'desc')
+            ->offset($offset)
+            ->limit($limit)
+            ->get();
+        if ($res_list->isEmpty()) {
+            api_error(__('admin.content_is_empty'));
+        }
+        $goods_ids = array_column($res_list->toArray(), 'goods_id');
+        if ($goods_ids) {
+            $goods_data = Goods::whereIn('id', array_unique($goods_ids))->pluck('title', 'id');
+        }
+        $data_list = [];
+        foreach ($res_list as $value) {
+            $_item = $value;
+            $_item['goods_title'] = $goods_data[$value['goods_id']] ?? '';
+            $data_list[] = $_item;
+        }
+        $return = [
+            'lists' => $data_list,
+            'total' => $total,
+        ];
+        return $this->success($return);
+    }
+
+    /**
+     * 根据id获取信息
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\ApiError
+     */
+    public function detail(Request $request)
+    {
+        $id = (int)$request->input('id');
+        if (!$id) {
+            api_error(__('admin.missing_params'));
+        }
+        $data = PromoSeckill::find($id);
+        if (!$data) {
+            api_error(__('admin.content_is_empty'));
+        }
+        return $this->success($data);
+    }
+
+    /**
+     * 添加编辑
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|void
+     * @throws \App\Exceptions\ApiError
+     */
+    public function save(Request $request)
+    {
+        $id = (int)$request->input('id');
+        //验证规则
+        $validator = Validator::make($request->all(), [
+            'title' => 'required',
+            'seller_id' => 'required|numeric',
+            'goods_id' => 'required|numeric',
+            'start_at' => 'nullable|date_format:"Y-m-d H:i:s"',
+            'end_at' => 'nullable|date_format:"Y-m-d H:i:s"',
+        ], [
+            'title.required' => '标题不能为空',
+            'seller_id.required' => '商家不能为空',
+            'seller_id.numeric' => '商家只能是数字',
+            'goods_id.required' => '商品不能为空',
+            'goods_id.numeric' => '商品只能是数字',
+            'start_at.date_format' => '开始时间格式错误',
+            'end_at.date_format' => '结束时间格式错误',
+        ]);
+        $error = $validator->errors()->all();
+        if ($error) {
+            api_error(current($error));
+        }
+        $seller_id = (int)$request->input('seller_id');
+        $goods_id = (int)$request->input('goods_id');
+        $detail = '';
+        if ($id) {
+            //只有不是原来的商品的时候才需要验证商品
+            $detail = PromoSeckill::find($id);
+            if ($detail['goods_id'] != $goods_id) {
+                $goods = Goods::where(['seller_id' => $seller_id, 'id' => $goods_id])->first();
+                if (!$goods) {
+                    api_error(__('admin.goods_not_exists'));
+                } elseif ($goods['promo_type'] != Goods::PROMO_TYPE_DEFAULT) {
+                    api_error(__('admin.goods_is_bind_promotion'));
+                }
+            }
+        }
+
+        $save_data = [];
+        foreach ($request->only(['title', 'seller_id', 'goods_id', 'start_at', 'end_at']) as $key => $value) {
+            $save_data[$key] = $value;
+        }
+        try {
+            $res = DB::transaction(function () use ($save_data, $id, $detail) {
+                if ($id) {
+                    PromoSeckill::where('id', $id)->update($save_data);
+                    if ($detail['goods_id'] != $save_data['goods_id']) {
+                        Goods::where('id', $detail['goods_id'])->update(['promo_type' => Goods::PROMO_TYPE_DEFAULT, 'shelves_status' => Goods::SHELVES_STATUS_OFF]);//修改活动的时候商品变化需取消商品优惠类型并下架商品
+                    }
+                } else {
+                    PromoSeckill::create($save_data);
+                }
+                Goods::where('id', $save_data['goods_id'])->update(['promo_type' => Goods::PROMO_TYPE_SECKILL]);
+                return true;
+            });
+        } catch (\Exception $e) {
+            $res = false;
+        }
+        if ($res) {
+            return $this->success();
+        } else {
+            api_error(__('admin.save_error'));
+        }
+    }
+
+    /**
+     * 修改状态
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|void
+     * @throws \App\Exceptions\ApiError
+     */
+    public function status(Request $request)
+    {
+        $ids = $this->checkBatchId();
+        $status = (int)$request->input('status');
+        if (!isset(PromoSeckill::STATUS_DESC[$status])) {
+            api_error(__('admin.missing_params'));
+        }
+        $res = PromoSeckill::whereIn('id', $ids)->update(['status' => $status]);
+        if ($res) {
+            return $this->success();
+        } else {
+            api_error(__('admin.fail'));
+        }
+    }
+
+    /**
+     * 删除数据
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|void
+     * @throws \App\Exceptions\ApiError
+     */
+    public function delete(Request $request)
+    {
+        $ids = $this->checkBatchId();
+        $goods_ids = PromoSeckill::whereIn('id', $ids)->pluck('goods_id')->toArray();
+        try {
+            $res = DB::transaction(function () use ($ids, $goods_ids) {
+                Goods::whereIn('id', $goods_ids)->update(['promo_type' => Goods::PROMO_TYPE_DEFAULT, 'shelves_status' => Goods::SHELVES_STATUS_OFF]);//删除活动的时候需取消商品优惠类型并下架商品
+                PromoSeckill::whereIn('id', $ids)->delete();
+                return true;
+            });
+        } catch (\Exception $e) {
+            $res = false;
+        }
+        if ($res) {
+            return $this->success();
+        } else {
+            api_error(__('admin.del_error'));
+        }
+    }
+
+    /**
+     * 同步库存
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|void
+     * @throws \App\Exceptions\ApiError
+     */
+    public function syncStock(Request $request)
+    {
+        $ids = $this->checkBatchId();
+        $res_seckill = PromoSeckill::select('goods_id', 'end_at')->whereIn('id', $ids)->get();
+        if ($res_seckill->isEmpty()) {
+            api_error(__('admin.content_is_empty'));
+        }
+        foreach ($res_seckill->toArray() as $value) {
+            PromoSeckill::syncStock($value['goods_id'], $value['end_at']);
+        }
+        return $this->success();
+    }
+
+    /**
+     * 商品搜素
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\ApiError
+     */
+    public function search(Request $request)
+    {
+        $seller_id = (int)$request->input('seller_id');
+        if (!$seller_id) {
+            api_error(__('admin.missing_params'));
+        }
+        $where = [
+            ['seller_id', $seller_id],
+        ];
+        $res_list = Goods::select('id', 'title')
+            ->where($where)
+            ->whereIn('promo_type', [Goods::PROMO_TYPE_DEFAULT, Goods::PROMO_TYPE_SECKILL])
+            ->orderBy('id', 'desc')
+            ->orderBy('shelves_status', 'desc')
+            ->get();
+        return $this->success($res_list);
+    }
+
+}

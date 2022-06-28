@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../../../layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../../../layuiadmin/style/admin.css" media="all">
+    <style>
+        .layui-form-label {
+            width: 170px;
+        }
+
+        .layui-form-item .layui-input-inline {
+            width: 400px;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form" lay-filter="config_form" id="config_form">
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">
+                        <button type="button" class="layui-btn layui-btn-sm" lay-submit lay-filter="add">添加</button>
+                    </div>
+                    <div class="layui-card-body">
+                        <div class="layui-tab">
+                            <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/system/config" lay-done="layui.form.render();">
+                                <ul class="layui-tab-title">
+                                    {{# let i = 0;layui.each(d.data, function(index, item){ }}
+                                    <li {{# if(i== 0){ }}class="layui-this" {{# } }}>{{ index}}</li>
+                                    {{# i++;}); }}
+                                </ul>
+                                <div class="layui-tab-content">
+                                    {{# let j = 0;layui.each(d.data, function(index, item){ }}
+                                    <div class="layui-tab-item {{# if(j == 0){ }}layui-show{{# } }}">
+                                        {{# layui.each(item, function(key, item1){ }}
+                                        <div class="layui-form-item">
+                                            <label class="layui-form-label">{{ item1.title }}</label>
+                                            <div class="layui-input-inline">
+                                                {{# if(item1.input_type == 'text'){ }}
+                                                <input type="text" name="config[{{ item1.id }}]" value="{{ item1.value }}" autocomplete="off" class="layui-input">
+                                                {{# }else if(item1.input_type == 'textarea'){ }}
+                                                <textarea name="config[{{ item1.id }}]" class="layui-textarea">{{ item1.value }}</textarea>
+                                                {{# }else if(item1.input_type == 'radio'){ }}
+                                                {{# layui.each(item1.select_value, function(k, select_value){ }}
+                                                <input type="radio" name="config[{{ item1.id }}]" value="{{ k }}" title="{{ select_value }}" {{# if(k== item1.value){ }}checked{{# } }}>
+                                                {{# }); }}
+                                                {{# }else if(item1.input_type == 'select'){ }}
+                                                <select name="config[{{ item1.id }}]">
+                                                    {{# layui.each(item1.select_value, function(k, select_value){ }}
+                                                    <option value="{{ k }}" {{# if(k== item1.value){ }}selected{{# } }}>{{ select_value }}</option>
+                                                    {{# }); }}
+                                                </select>
+                                                {{# } }}
+                                            </div>
+                                            <div class="layui-form-mid layui-word-aux">
+                                                {{ item1.key_name }}
+                                            </div>
+                                        </div>
+                                        {{# }); }}
+                                    </div>
+                                    {{# j++;}); }}
+                                </div>
+                            </script>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label"></label>
+                            <div class="layui-input-block">
+                                <input type="hidden" name="id" value="">
+                                <input type="button" lay-submit lay-filter="form-submit" value="确认" class="layui-btn layui-hide" lay-event="update">
+                                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                                <span class="layui-font-red">注意：如果是分布式部署，需要在env里面设置 IS_SLB=true</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script src="../../../../layuiadmin/layui/layui.js"></script>
+<script>
+    layui.config({
+        base: '../../../../layuiadmin/',//静态资源所在路径
+        version: true
+    }).extend({
+        index: 'modules/admin/index',//主入口模块
+    }).use(['index', 'common'], function () {
+        let common = layui.common,
+            form = layui.form,
+            model_url = '/system/config';
+
+        common.set_model_url(model_url);//设置默认模块地址
+        common.set_button(model_url);
+
+        //监听提交
+        form.on('submit(form-submit)', function (data) {
+            let result = common.ajax(model_url + '/update', data.field)
+            if (result) {
+                layer.msg('保存成功');
+            }
+        });
+        //添加按钮
+        form.on('submit(add)', function (data) {
+            common.open_edit('添加', 'add');
+        });
+    });
+</script>
+</body>
+</html>

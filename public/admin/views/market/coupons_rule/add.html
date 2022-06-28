@@ -1,0 +1,83 @@
+<form class="layui-form" lay-filter="form" id="form">
+    <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">类型</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/market/coupons_rule/type" lay-done="layui.form.render();">
+                <select name="type" lay-filter="type" lay-verify="required" lay-reqText="请选择类型">
+                    <option value=""></option>
+                    {{# layui.each(d.data, function(index, item){ }}
+                    <option value="{{ index }}" {{# if(index== d.params.type){ }}selected{{# } }}>{{ item }}</option>
+                    {{# }); }}
+                </select>
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">条件</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/market/coupons_rule/in_type" lay-done="layui.form.render();">
+                {{# layui.each(d.data, function(index, item){ }}
+                <input type="radio" name="in_type" lay-filter="in_type" value="{{ index }}" title="{{ item }}" lay-verify="required" {{# if(index== d.params.in_type || index== 1){ }}checked{{# } }}>
+                {{# }); }}
+                </select>
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">对象</label>
+        <div class="layui-input-block" id="obj_id">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="hidden" name="id" value="">
+            <input type="hidden" name="coupons_id" value="">
+            <input type="hidden" name="seller_id" value="">
+            <input type="button" lay-submit lay-filter="form-submit" value="确认" class="layui-btn">
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+<script type="text/html" template lay-done="layui.data.sendParams(d.params);"></script>
+<script src="../../../../layuiadmin/lib/xm-select.js"></script>
+<script>
+    layui.data.sendParams = function (params) {
+        layui.use(function () {
+            let form = layui.form,
+                common = layui.common,
+                type = '',
+                model_url = '/market/coupons_rule';
+
+            form.on('select(type)', function (data) {
+                type = data.value;
+            });
+
+            //对象选择
+            let obj_id = xmSelect.render({
+                el: '#obj_id',
+                name: 'obj_id',
+                autoRow: true,
+                toolbar: { show: true },
+                filterable: true,
+                remoteSearch: true,
+                remoteMethod: function(val, cb){
+                    //这里如果val为空, 则不触发搜索
+                    if(!val){
+                        return cb([]);
+                    }
+                    if (!type) {
+                        layer.msg('请先选择类型');
+                        return cb([]);
+                    }
+                    let result = common.ajax(model_url + '/search', {type: type, seller_id: params.seller_id, keyword: val});
+                    if (result) {
+                        return cb(result.data)
+                    } else {
+                        return cb([]);
+                    }
+                }
+            })
+        });
+    }
+</script>

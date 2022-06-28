@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../../../layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../../../layuiadmin/style/admin.css" media="all">
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-form search_from" lay-filter="search_from">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">用户名：</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="username" placeholder="请输入" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">状态：</label>
+                                <div class="layui-input-inline">
+                                    <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/financial/withdraw/get_status" lay-done="layui.form.render();">
+                                        <select name="status">
+                                            <option value=""></option>
+                                            {{# layui.each(d.data, function(index, item){ }}
+                                            <option value="{{ index }}">{{ item }}</option>
+                                            {{# }); }}
+                                        </select>
+                                    </script>
+                                </div>
+                            </div>
+                            <div class="layui-inline" id="select_at">
+                                <label class="layui-form-label">起止时间：</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="time_range" id="time_range" placeholder="请选择" autocomplete="off" class="layui-input" readonly>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <button class="layui-btn layui-btn-sm" lay-filter="search_button" lay-submit>搜索</button>
+                                <button class="layui-btn layui-btn-sm layui-hide" lay-event="export_button" lay-filter="export_button" lay-submit><i class="layui-icon layui-icon-export"></i>导出</button>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="layui-hide" id="table_list" lay-filter="table_list"></table>
+
+                    <script type="text/html" id="action_button">
+                        {{# if(d.status == 0){ }}
+                        <a class="layui-btn layui-btn-xs layui-hide" lay-event="agreed">同意</a>
+                        <a class="layui-btn layui-btn-normal layui-btn-xs layui-hide" lay-event="refused_money">退还资金</a>
+                        <a class="layui-btn layui-btn-danger layui-btn-xs layui-hide" lay-event="refused_no_money">不退还资金</a>
+                        {{# } }}
+                    </script>
+                    <script type="text/html" id="status_tmp">
+                        {{# if(d.status == 0){ }}
+                        <span class="layui-badge layui-bg-blue">{{ d.status_text }}</span>
+                        {{# }else if(d.status == 1){ }}
+                        <span class="layui-badge layui-bg-green">{{ d.status_text }}</span>
+                        {{# }else{ }}
+                        <span class="layui-badge">{{ d.status_text }}</span>
+                        {{# } }}
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../../../../layuiadmin/layui/layui.js"></script>
+<script>
+    layui.config({
+        base: '../../../../layuiadmin/',//静态资源所在路径
+        version: true
+    }).extend({
+        index: 'modules/admin/index',//主入口模块
+    }).use(['index', 'table_common'], function () {
+        let table_common = layui.table_common,
+            table = layui.table,
+            laydate = layui.laydate,
+            common = layui.common,
+            form = layui.form,
+            model_url = '/financial/withdraw';
+
+        table_common.set_model_url(model_url);//设置默认模块地址
+
+        table.render({
+            elem: '#table_list',
+            url: layui.setter.apiHost + model_url,
+            toolbar: '#toolbar',
+            cols: [[
+                {type: 'checkbox'},
+                {field: 'id', title: 'ID', width: 70, align: 'center'},
+                {field: 'username', title: '用户名', minWidth: 120},
+                {field: 'type', title: '提现方式', width: 100},
+                {field: 'name', title: '姓名', width: 100},
+                {field: 'bank_name', title: '开户行', minWidth: 150},
+                {field: 'pay_number', title: '账号', minWidth: 180},
+                {field: 'amount', title: '金额', width: 100},
+                {field: 'status_text', title: '状态', width: 150, align: 'center', templet: '#status_tmp'},
+                {title: '操作', width: 250, align: 'center', toolbar: '#action_button'},
+                {field: 'created_at', title: '创建时间', width: 170, align: 'center'},
+                {field: 'done_at', title: '完成时间', width: 170, align: 'center'},
+                {field: 'refuse_note', title: '拒绝备注', minWidth: 150},
+            ]],
+            page: true,
+            done: function () {
+                table_common.set_button(model_url);
+            }
+        });
+
+        //表格回调
+        let table_callback = {
+            agreed: function (data) {
+                layer.confirm('确定同意吗', function (index) {
+                    common.action_ajax('audit', {id: data.id, status: 1});
+                });
+            },
+            refused_money: function (data) {
+                layer.prompt({title: '拒绝并退还资金：请输入备注', formType: 2}, function (note, index) {
+                    common.action_ajax('audit', {id: data.id, status: 2, note: note});
+                    layer.close(index);
+                });
+            },
+            refused_no_money: function (data) {
+                layer.prompt({title: '拒绝且不退还资金：请输入备注', formType: 2}, function (note, index) {
+                    common.action_ajax('audit', {id: data.id, status: 3, note: note});
+                    layer.close(index);
+                });
+            }
+        }
+        table_common.set_callback_obj(table_callback);
+
+        //日期
+        laydate.render({
+            elem: '#time_range',
+            range: '~',
+            type: 'date'
+        });
+    });
+</script>
+</body>
+</html>

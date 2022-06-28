@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../../../layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../../../layuiadmin/style/admin.css" media="all">
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-form search_from" lay-filter="search_from">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">名称：</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="title" placeholder="请输入" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <button class="layui-btn layui-btn-sm" lay-filter="search_button" lay-submit>搜索</button>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="layui-hide" id="table_list" lay-filter="table_list"></table>
+
+                    <script type="text/html" id="toolbar">
+                        <div class="layui-btn-container">
+                            <button class="layui-btn layui-btn-sm layui-hide" lay-event="add">添加</button>
+                            <button class="layui-btn layui-btn-sm layui-hide" lay-event="status_on">审核</button>
+                            <button class="layui-btn layui-btn-sm layui-hide" lay-event="status_off">锁定</button>
+                            <button class="layui-btn layui-btn-sm layui-btn-danger layui-hide" lay-event="delete">删除</button>
+                        </div>
+                    </script>
+                    <script type="text/html" id="action_button">
+                        <a class="layui-btn layui-btn-xs layui-hide" lay-event="edit">编辑</a>
+                        <a class="layui-btn layui-btn-danger layui-btn-xs layui-hide" lay-event="delete">删除</a>
+                    </script>
+                    <script type="text/html" id="status_tmp">
+                        <input type="checkbox" value="{{d.id}}" lay-skin="switch" lay-text="正常|锁定" lay-filter="status_btn" {{# if(d.status== 1){ }}checked{{# } }}>
+                    </script>
+                    <script type="text/html" id="img_tmp">
+                        {{ d.title }}
+                        {{# if(d.image != ''){ }}
+                        <a href="{{ d.image }}" target="_blank"><img src="{{ layui.common.image_resize(d.image, 30, 30) }}"></a>
+                        {{# } }}
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../../../../layuiadmin/layui/layui.js"></script>
+<script>
+    layui.config({
+        base: '../../../../layuiadmin/',//静态资源所在路径
+        version: true
+    }).extend({
+        index: 'modules/admin/index',//主入口模块
+    }).use(['index', 'table_common'], function () {
+        let table_common = layui.table_common,
+            common = layui.common,
+            table = layui.table,
+            model_url = '/tool/adv';
+        let group_id = common.get_query_variable('id');
+        table_common.set_model_url(model_url);//设置默认模块地址
+
+        table.render({
+            elem: '#table_list',
+            url: layui.setter.apiHost + model_url,
+            where: {group_id: group_id},
+            toolbar: '#toolbar',
+            cols: [[
+                {type: 'checkbox'},
+                {field: 'id', title: 'ID', width: 70, align: 'center'},
+                {field: 'title', title: '名称', minWidth: 200, toolbar: '#img_tmp'},
+                {field: 'target_type', title: '跳转类型', minWidth: 120},
+                {field: 'target_value', title: '跳转url或id', minWidth: 120},
+                {field: 'position', title: '排序', width: 80, align: 'center', sort: true, edit: 'text'},
+                {field: 'status', title: '状态', width: 100, align: 'center', templet: '#status_tmp'},
+                {field: 'start_at', title: '开始时间', width: 170, align: 'center'},
+                {field: 'end_at', title: '结束时间', width: 170, align: 'center'},
+                {title: '操作', width: 150, align: 'center', toolbar: '#action_button'}
+            ]],
+            page: true,
+            done: function () {
+                table_common.set_button(model_url);
+            }
+        });
+
+        //表格回调
+        let table_callback = {
+            add: function () {
+                common.open_edit('添加', 'add', {group_id: group_id});
+            }
+        }
+        table_common.set_callback_obj(table_callback);
+
+    });
+</script>
+</body>
+</html>

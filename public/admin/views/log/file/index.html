@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../../../layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../../../layuiadmin/style/admin.css" media="all">
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-form search_from" lay-filter="search_from">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">名称：</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="title" placeholder="请输入" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <button class="layui-btn layui-btn-sm" lay-filter="search_button" lay-submit>搜索</button>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="layui-hide" id="table_list" lay-filter="table_list"></table>
+
+                    <script type="text/html" id="toolbar">
+                        <div class="layui-btn-container">
+                            <button class="layui-btn layui-btn-sm layui-hide" lay-event="add">上传文件</button>
+                        </div>
+                    </script>
+                    <script type="text/html" id="url_tmp">
+                        <a href="{{ d.url }}" target="_blank"><img src="{{ layui.common.image_resize(d.url, 30, 30) }}"></a>
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../../../../layuiadmin/layui/layui.js"></script>
+<script>
+    layui.config({
+        base: '../../../../layuiadmin/',//静态资源所在路径
+        version: true
+    }).extend({
+        index: 'modules/admin/index',//主入口模块
+    }).use(['index', 'table_common'], function () {
+        let table_common = layui.table_common,
+            table = layui.table,
+            model_url = '/log/file';
+
+        table_common.set_model_url(model_url);//设置默认模块地址
+
+        table.render({
+            elem: '#table_list',
+            url: layui.setter.apiHost + model_url,
+            toolbar: '#toolbar',
+            cols: [[
+                {type: 'checkbox'},
+                {field: 'id', title: 'ID', width: 70, align: 'center'},
+                {field: 'title', title: '名称', width: 150},
+                {field: 'url', title: '预览', width: 40, toolbar: '#url_tmp'},
+                {field: 'url', title: '地址', minWidth: 250},
+                {field: 'type', title: '类型', width: 100},
+                {field: 'created_at', title: '创建时间', width: 170, align: 'center'}
+            ]],
+            page: true,
+            done: function () {
+                table_common.set_button(model_url);
+            }
+        });
+    });
+</script>
+</body>
+</html>

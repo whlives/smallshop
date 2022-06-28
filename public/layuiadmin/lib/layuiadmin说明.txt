@@ -1,0 +1,11 @@
+view.js修改
+ajax
+的请求方式需要改为post
+增加  loading_layer_index  加载层，关闭success 异常提示的代码
+
+laytpl 的请求方式需要改为post
+u.exit 里面的e&&e() 替换成 location.href = s.loginUrl//跳转登录
+
+
+commom.js修改
+需要加载icon css  layui.link(layui.setter.iconfontCss);
