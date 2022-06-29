@@ -18,7 +18,7 @@
     "aliyuncs/oss-sdk-php": "^2.4",
     "alibabacloud/sdk": "^1.8",
     "alipaysdk/easysdk": "^2.2",
-    "w7corp/easywechat": "^6.4",
+    "w7corp/easywechat": "^6.7",
     "mews/captcha": "^3.2"
   },
   "require-dev": {
