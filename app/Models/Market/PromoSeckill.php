@@ -29,8 +29,6 @@ class PromoSeckill extends BaseModel
         self::STATUS_ON => '正常',
     ];
 
-    const STOCK_REDIS_KEY = 'promo_seckill_stock:';
-
     protected $table = 'promo_seckill';
     protected $guarded = ['id'];
 
@@ -38,14 +36,19 @@ class PromoSeckill extends BaseModel
 
     /**
      * 验证秒杀信息
-     * @param array $goods 商品信息
-     * @param bool $stock_decr 是否扣减库存
+     * @param int $goods_id
      * @return void
      * @throws \App\Exceptions\ApiError
      */
-    public static function checkSeckill(array $goods, bool $stock_decr = false)
+    public static function checkSeckill(int $goods_id)
     {
-        $seckill = self::where('goods_id', $goods['goods_id'])->first();
+        $cache_key = 'seckill:' . $goods_id;
+        $seckill = Cache::get($cache_key);
+        if (!$seckill) {
+            $seckill = self::where('goods_id', $goods_id)->first();
+            if ($seckill) $seckill = $seckill->toArray();
+            Cache::put($cache_key, $seckill, get_custom_config('cache_time'));
+        }
         if (!$seckill) {
             api_error(__('api.seckill_error'));
         } elseif ($seckill['start_at'] > get_date()) {
@@ -55,65 +58,6 @@ class PromoSeckill extends BaseModel
         } elseif ($seckill['status'] != self::STATUS_ON) {
             api_error(__('api.seckill_status_error'));
         }
-        //在这里可以处理redis库存什么的
-        $stock_redis_key = self::STOCK_REDIS_KEY . $goods['goods_id'];
-        $stock = Redis::hget($stock_redis_key, $goods['sku_id']);
-        if ($stock < $goods['buy_qty']) {
-            api_error(__('api.goods_stock_no_enough'));//秒杀库存不足
-        }
-        //开始减去库存
-        if ($stock_decr) {
-            Redis::hincrby($stock_redis_key, $goods['sku_id'], -$goods['buy_qty']);
-        }
-        return $seckill->toArray();
-    }
-
-    /**
-     * 还原秒杀库存
-     * @param array $goods
-     * @return void
-     */
-    public static function stockIncr(array $goods)
-    {
-        $stock_redis_key = self::STOCK_REDIS_KEY . $goods['goods_id'];
-        Redis::hincrby($stock_redis_key, $goods['sku_id'], $goods['buy_qty']);
-    }
-
-    /**
-     * 同步秒杀库存
-     * @param int $goods_id
-     * @param string $end_time
-     * @return void
-     * @throws \App\Exceptions\ApiError
-     */
-    public static function syncStock(int $goods_id, string $end_time)
-    {
-        $sku_data = GoodsSku::where(['goods_id' => $goods_id])->pluck('stock', 'id')->toArray();
-        $save_data = $sku_data;
-        $save_data['all'] = array_sum($sku_data);
-        if ($save_data['all'] <= 0) {
-            api_error(__('admin.seckill_goods_stock_error'));
-        }
-        $stock_redis_key = self::STOCK_REDIS_KEY . $goods_id;
-        Redis::del($stock_redis_key);
-        Redis::hmset($stock_redis_key, $save_data);
-        Redis::expire($stock_redis_key, strtotime($end_time) - time());
-    }
-
-    /**
-     * 获取秒杀redis库存
-     * @param int $goods_id
-     * @return array|false
-     */
-    public static function getStock(int $goods_id)
-    {
-        $stock_redis_key = self::STOCK_REDIS_KEY . $goods_id;
-        $stock = Redis::hgetall($stock_redis_key);
-        if (!$stock) return false;
-        $remaining_stock = array_sum($stock) - $stock['all'];//剩余库存
-        $all_stock = $stock['all'];//总库存
-        $pct = format_price(1 - ($remaining_stock / $all_stock), 2, false) * 100;//剩余库存比例
-        //$sale = $stock['all'] - $remaining_stock;//已经销售的存库
-        return [$pct, $stock, $remaining_stock];//已经销售比例，库存信息，剩余库存
+        return $seckill;
     }
 }

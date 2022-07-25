@@ -156,6 +156,10 @@ class GroupController extends BaseController
                 Goods::where('id', $save_data['goods_id'])->update(['promo_type' => Goods::PROMO_TYPE_GROUP]);
                 return true;
             });
+            Goods::syncRedisStock($save_data['goods_id']);//同步redis库存
+            if ($detail['goods_id'] != $save_data['goods_id']) {
+                Goods::delGoodsCache($detail['goods_id']);//删除商品缓存
+            }
         } catch (\Exception $e) {
             $res = false;
         }
@@ -203,6 +207,7 @@ class GroupController extends BaseController
                 PromoGroup::whereIn('id', $ids)->delete();
                 return true;
             });
+            Goods::delGoodsCache($goods_ids);//删除商品缓存
         } catch (\Exception $e) {
             $res = false;
         }

@@ -9,12 +9,12 @@
 namespace App\Services;
 
 use App\Models\Goods\Goods;
+use App\Models\Goods\GoodsCoupons;
 use App\Models\Goods\GoodsSku;
 use App\Models\Market\PromoGroup;
 use App\Models\Market\PromoSeckill;
 use App\Models\Market\Promotion;
 use App\Models\Member\Address;
-use App\Models\Member\Member;
 use App\Models\Order\Cart;
 use App\Models\Order\OrderInvoice;
 use App\Models\Seller\Seller;
@@ -140,12 +140,16 @@ class GoodsService
 
     /**
      * 验证收货地址
+     * @param bool $is_must 是否必须地址id
      * @return array
      * @throws \App\Exceptions\ApiError
      */
-    public function checkAddress()
+    public function checkAddress(bool $is_must = false)
     {
         $address_id = (int)request()->post('address_id');
+        if ($is_must && !$address_id) {
+            api_error(__('api.address_not_exists'));
+        }
         if ($address_id) {
             $address = Address::where(['m_id' => $this->m_id, 'id' => $address_id])->first();
             if (!$address) {
@@ -166,6 +170,10 @@ class GoodsService
                 'area_name' => $address['area_name'],
                 'address' => $address['address']
             ];
+        }
+        if ($is_must && !$address) {
+            //下单的时候地址必须
+            api_error(__('api.address_not_exists'));
         }
         return $return;
     }
@@ -621,17 +629,27 @@ class GoodsService
      * @return int[]
      * @throws \App\Exceptions\ApiError
      */
-    public function checkPromoActivity(array $cart, bool $is_submit = false)
+    public function checkRule(array $cart, bool $is_submit = false)
     {
         $return = [
             'goods_id' => $cart['goods_id'],
             'sku_id' => $cart['sku_id']
         ];
-        $goods = Goods::getCacheGoods($cart['goods_id']);
-        if (!$goods) api_error(__('api.goods_error'));
-        if ($goods['promo_type'] == Goods::PROMO_TYPE_SECKILL) {
-            //验证码秒杀信息并处理redis库存
-            PromoSeckill::checkSeckill($cart, $is_submit);
+        $goods = Goods::getGoods($cart['goods_id']);
+        $goods_sku = GoodsSku::getGoodsSku($cart['sku_id']);
+        if (!$goods || !$goods_sku) api_error(__('api.goods_error'));
+        if ($goods['promo_type'] == Goods::PROMO_TYPE_SECKILL || $goods['type'] == Goods::TYPE_COUPONS) {
+            if ($cart['buy_qty'] > $goods_sku['max_buy']) {
+                api_error(__('api.goods_max_buy_qty_error') . $goods_sku['min_buy']);
+            }
+            if ($goods['promo_type'] == Goods::PROMO_TYPE_SECKILL) {
+                PromoSeckill::checkSeckill($cart);//验证秒杀信息
+            }
+            Goods::getRedisSkuStock($cart, $is_submit);//验证和扣减秒杀库存
+            if ($goods['type'] == Goods::TYPE_COUPONS) {
+                //查询已经领取的优惠券数量
+                GoodsCoupons::getCoupons($cart, $this->m_id);
+            }
         } elseif ($goods['promo_type'] == Goods::PROMO_TYPE_GROUP) {
             $group_order_id = (int)request()->input('group_order_id');
             //验证团购信息
@@ -646,12 +664,12 @@ class GoodsService
      * @param array $seller_goods
      * @return void
      */
-    public function promoActivityStockIncr(array $seller_goods)
+    public function activityStockIncr(array $seller_goods)
     {
         foreach ($seller_goods as $goods) {
-            if ($goods['promo_type'] == Goods::PROMO_TYPE_SECKILL) {
+            if ($goods['promo_type'] == Goods::PROMO_TYPE_SECKILL || $goods['type'] == Goods::TYPE_COUPONS) {
                 //这里开始还原redis库存
-                PromoSeckill::stockIncr($goods);
+                Goods::stockRedisIncr($goods);
             } elseif ($goods['promo_type'] == Goods::PROMO_TYPE_GROUP) {
                 //团购信息
             }

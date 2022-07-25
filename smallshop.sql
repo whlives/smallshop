@@ -7,7 +7,7 @@
 #
 # 主机: localhost (MySQL 5.7.34)
 # 数据库: smallshop3
-# 生成时间: 2022-06-26 08:50:07 +0000
+# 生成时间: 2022-07-23 03:35:38 +0000
 # ************************************************************
 
 
@@ -41,7 +41,7 @@ CREATE TABLE `sm_address` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_m_id` (`m_id`)
+  KEY `idx_mid` (`m_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户收货地址';
 
 
@@ -92,20 +92,10 @@ CREATE TABLE `sm_admin_log` (
   `content` text NOT NULL COMMENT '保存内容',
   `created_at` timestamp NULL DEFAULT NULL COMMENT '操作时间',
   `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_adminid` (`admin_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='后台操作日志表';
 
-LOCK TABLES `sm_admin_log` WRITE;
-/*!40000 ALTER TABLE `sm_admin_log` DISABLE KEYS */;
-
-INSERT INTO `sm_admin_log` (`id`, `admin_id`, `username`, `ip`, `url`, `content`, `created_at`, `updated_at`)
-VALUES
-	(1,1,'admin','127.0.0.1','http://shop.me/admin/system/config/update','{\"config\":{\"1\":\"smallshop\",\"2\":\"shop68.com.cn\",\"3\":\"smallshop\",\"4\":\"smallshop\",\"42\":\"0\",\"43\":\"\",\"45\":\"600\",\"46\":\"\",\"5\":\"1800\",\"6\":\"604800\",\"7\":\"604800\",\"8\":\"604800\",\"9\":\"604800\",\"10\":\"0\",\"11\":\"wxe4375a8d45f08e82\",\"12\":\"6af403d6d86df07cc352a9335e2ff7d6\",\"13\":\"\",\"14\":\"\",\"15\":\"\",\"16\":\"\",\"17\":\"wx85b2f304e8d57061\",\"18\":\"2192878bc7f4b2204dec569e3a61fde8\",\"19\":\"\",\"20\":\"\",\"21\":\"\",\"22\":\"\",\"23\":\"wx44030c4d23bb1d78\",\"24\":\"9d98846c7d5b02c54e97e3c35deb4593\",\"25\":\"1425553502\",\"26\":\"e3931cba9111c1b1f8a730ad77270344\",\"27\":\"\\/Users\\/wanghui\\/web\\/smallshop3.0\\/cert\\/apiclient_cert.pem\",\"28\":\"\\/Users\\/wanghui\\/web\\/smallshop3.0\\/cert\\/apiclient_key.pem\",\"54\":\"0\",\"29\":\"60\",\"30\":\"300\",\"31\":\"\",\"32\":\"\",\"52\":\"0\",\"53\":\"0\",\"55\":\"1\",\"33\":\"LTAI5tK7P8EWjvJy8scPpQfR\",\"34\":\"rWW14Iof3wSqK0ibD535AYrxjlCC5O\",\"35\":\"smallshop\",\"36\":\"oss-cn-hangzhou.aliyuncs.com\",\"37\":\"oss-cn-hangzhou\",\"38\":\"acs:ram::1476384925331911:role\\/smallshop-oss\",\"39\":\"2017121900970712\",\"40\":\"MIIEpAIBAAKCAQEAvjRb1qtr+7GU63ueAcAIYWd2LVy7pJmAeoU8dSbVYxj\\/G992G\\/1qQRrWj9207b0ReMv7uL\\/Jear6eultTVrvNEqA6EKVHiIstHW6pQC9FDLST\\/VpUGl7BOdAiklwIJZp6eh9p0\\/HsOwJrbdDTuM0ZxuJAr2P5Ybr7yIZLwXP6JsXmhVdj+lL\\/ACr5augpxVOXkM\\/RwucwaqB2dWdfjxMKuvOQAdSrK943WXDH8S9QCcXHgm9+xG4wax64sEMh9buHKAu\\/czCKKfsVqSdXDyGWhQMT7R\\/OPO20cgQ0TWFglZGZEYuvdRjKrMkhW947cpCXyVHz8TYvNgok9z9Y2O5qQIDAQABAoIBAGr3Fw7KqJeLbqxfgKSLUis0\\/AjWtdADY3WDqFRZ2nc4f381VD65bR\\/f7\\/pIPI\\/WXBUK4i0r7io2NVcaHxX5pbxKieQUTbf8kBeMfcJ9f9f0HMJKyUcnir9fLbSXSC+LZ1TcIo4NF8gvdeHzxi5\\/J+E0YwDfiiUSk2yQSIlhQ2MTnGlPCG9BH\\/268MOt54Q\\/0\\/Nc+Vf4YIn2J4N\\/zfhfhqMQNlGllQtlObEZsJvofYPUpmgLOUB6pDJOjBb+jcRnm\\/kqWYosMq\\/RoZD+4O+FGD2BtDGBpWp3+OE9r5ieHTLAEF2psg\\/l4RYfvCKg6fEwvijROzxOo+ps2aZSzy4EGAECgYEA7nwkr6GC+fb7QohBbVuI4kIuiafL\\/Eyx7ImCPHcxpkcZ6UOx9w799zfApB\\/vblf672y9DRpSg4F1WJuAzXx5yWuXK9tcsZeWeeIt5nxE9X+JIL9mZWarhwu9GCDvfh3CnElzrGWF86Y\\/8ufq82FLQ0nGtLDwfZI8L\\/WZ8xckp6ECgYEAzCx5lf5WNgWAOfmuIyphFANKk814Bj2URgHedF0iGrsKkFfhuxMJUtCvuP5vuILNV1ZEvFrNSipbtWIEJQSoi8ObP1ahpyCDhI0+aTPVD1zyQ522PfekPSgvawDAWS6x+5Uq+YbC5gPql8moqhkCB4TXoNzblA9ubtgTqIx1tQkCgYEAvTTa+kienGiZ4agumG+Fw1SUjXwF9451nt9d51D9oBlK8mlV2VgYn7mo6c24bQf6O1g\\/CRU4H8Nm8Ty2TNET4nysvAvWl8NXjC2pEvLG1ysvBT81Iv\\/42DS0+l6vA5Ti4JHZ5w3I34ynsbTUD\\/HB\\/4mZz6ONuWJ6w+YMFPPojeECgYEAkbab\\/4RImr1KShX7RXWVWucObnWRV0LTczMaRAnDsTgTzfgqTYzEdqog\\/vH3YcNYMSCMZbCYGnoogUa2loTAlR7AyW9WZyQ5OHxlMkefoxs+eysvSQJX4J2xWbhrjjpZI6fNx895gRcCcdml2d+HJz6TdWap\\/v0UX18uiHfV+aECgYAa5SjnCAOwzCdGyWQ3Q+UrFC03xHF4RgBufH+fX5AWqSsq\\/4kuhuGDLYtTjsd3JWfXUxTsVOEXHZT3h\\/f9HiNt11xN7ye3GcG\\/PmzabdcBcwgzW\\/wJ7M51082kSLKUhXtOqeUDNW\\/sX91HJupM\\/+PwD9ac2HCtmK+pWPIsjsKzig==\",\"41\":\"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsImRk93g8E9Ay7oBYc7RaWP81NqA3qo9sZeTu8mvx+Lrxl1SocxPYMjtZmDsMNdabGyWMHOgu2lqRo57lJvSsctuAiO5QYkRudWqPKJtYTvfXDOurkX6nHwul3hWhABpbpNEkEPGdShZN49YKXybMeoAQxq6o+ab+aB2jO\\/Lso6LLYRUHwnsxhmQb9TPKkTDGwmP6hhZwN5AeB9zAFBIxio07TtrxmEGjU5xLw3j4BBmsxWUAIy5iALJkLlbG6cvnFm9etlcQfkGSgF2vT330CLxH0C9mEG7FkhWz4QRF5uHA1l4oo0EUz3hs9mZgrDsMISre5fw40XrJhLJ0CmeIQIDAQAB\",\"44\":\"1\",\"47\":\"1\",\"48\":\"默认头像\",\"49\":\"uQwNPIGv8286\",\"50\":\"bfb19806230b4dc288cf4e9fdffe135c\",\"51\":\"4c7ba44514fa89c4bf02b67b76bf187c\"},\"id\":\"\"}','2022-06-26 16:48:57','2022-06-26 16:48:57'),
-	(2,1,'admin','127.0.0.1','http://shop.me/admin/system/config/update','{\"config\":{\"1\":\"smallshop\",\"2\":\"shop68.com.cn\",\"3\":\"smallshop\",\"4\":\"smallshop\",\"42\":\"0\",\"43\":\"\",\"45\":\"600\",\"46\":\"\",\"5\":\"1800\",\"6\":\"604800\",\"7\":\"604800\",\"8\":\"604800\",\"9\":\"604800\",\"10\":\"0\",\"11\":\"\",\"12\":\"\",\"13\":\"\",\"14\":\"\",\"15\":\"\",\"16\":\"\",\"17\":\"\",\"18\":\"\",\"19\":\"\",\"20\":\"\",\"21\":\"\",\"22\":\"\",\"23\":\"\",\"24\":\"\",\"25\":\"\",\"26\":\"\",\"27\":\"\",\"28\":\"\",\"54\":\"0\",\"29\":\"60\",\"30\":\"300\",\"31\":\"\",\"32\":\"\",\"52\":\"0\",\"53\":\"0\",\"55\":\"0\",\"33\":\"\",\"34\":\"\",\"35\":\"\",\"36\":\"\",\"37\":\"\",\"38\":\"\",\"39\":\"2017121900970712\",\"40\":\"MIIEpAIBAAKCAQEAvjRb1qtr+7GU63ueAcAIYWd2LVy7pJmAeoU8dSbVYxj\\/G992G\\/1qQRrWj9207b0ReMv7uL\\/Jear6eultTVrvNEqA6EKVHiIstHW6pQC9FDLST\\/VpUGl7BOdAiklwIJZp6eh9p0\\/HsOwJrbdDTuM0ZxuJAr2P5Ybr7yIZLwXP6JsXmhVdj+lL\\/ACr5augpxVOXkM\\/RwucwaqB2dWdfjxMKuvOQAdSrK943WXDH8S9QCcXHgm9+xG4wax64sEMh9buHKAu\\/czCKKfsVqSdXDyGWhQMT7R\\/OPO20cgQ0TWFglZGZEYuvdRjKrMkhW947cpCXyVHz8TYvNgok9z9Y2O5qQIDAQABAoIBAGr3Fw7KqJeLbqxfgKSLUis0\\/AjWtdADY3WDqFRZ2nc4f381VD65bR\\/f7\\/pIPI\\/WXBUK4i0r7io2NVcaHxX5pbxKieQUTbf8kBeMfcJ9f9f0HMJKyUcnir9fLbSXSC+LZ1TcIo4NF8gvdeHzxi5\\/J+E0YwDfiiUSk2yQSIlhQ2MTnGlPCG9BH\\/268MOt54Q\\/0\\/Nc+Vf4YIn2J4N\\/zfhfhqMQNlGllQtlObEZsJvofYPUpmgLOUB6pDJOjBb+jcRnm\\/kqWYosMq\\/RoZD+4O+FGD2BtDGBpWp3+OE9r5ieHTLAEF2psg\\/l4RYfvCKg6fEwvijROzxOo+ps2aZSzy4EGAECgYEA7nwkr6GC+fb7QohBbVuI4kIuiafL\\/Eyx7ImCPHcxpkcZ6UOx9w799zfApB\\/vblf672y9DRpSg4F1WJuAzXx5yWuXK9tcsZeWeeIt5nxE9X+JIL9mZWarhwu9GCDvfh3CnElzrGWF86Y\\/8ufq82FLQ0nGtLDwfZI8L\\/WZ8xckp6ECgYEAzCx5lf5WNgWAOfmuIyphFANKk814Bj2URgHedF0iGrsKkFfhuxMJUtCvuP5vuILNV1ZEvFrNSipbtWIEJQSoi8ObP1ahpyCDhI0+aTPVD1zyQ522PfekPSgvawDAWS6x+5Uq+YbC5gPql8moqhkCB4TXoNzblA9ubtgTqIx1tQkCgYEAvTTa+kienGiZ4agumG+Fw1SUjXwF9451nt9d51D9oBlK8mlV2VgYn7mo6c24bQf6O1g\\/CRU4H8Nm8Ty2TNET4nysvAvWl8NXjC2pEvLG1ysvBT81Iv\\/42DS0+l6vA5Ti4JHZ5w3I34ynsbTUD\\/HB\\/4mZz6ONuWJ6w+YMFPPojeECgYEAkbab\\/4RImr1KShX7RXWVWucObnWRV0LTczMaRAnDsTgTzfgqTYzEdqog\\/vH3YcNYMSCMZbCYGnoogUa2loTAlR7AyW9WZyQ5OHxlMkefoxs+eysvSQJX4J2xWbhrjjpZI6fNx895gRcCcdml2d+HJz6TdWap\\/v0UX18uiHfV+aECgYAa5SjnCAOwzCdGyWQ3Q+UrFC03xHF4RgBufH+fX5AWqSsq\\/4kuhuGDLYtTjsd3JWfXUxTsVOEXHZT3h\\/f9HiNt11xN7ye3GcG\\/PmzabdcBcwgzW\\/wJ7M51082kSLKUhXtOqeUDNW\\/sX91HJupM\\/+PwD9ac2HCtmK+pWPIsjsKzig==\",\"41\":\"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsImRk93g8E9Ay7oBYc7RaWP81NqA3qo9sZeTu8mvx+Lrxl1SocxPYMjtZmDsMNdabGyWMHOgu2lqRo57lJvSsctuAiO5QYkRudWqPKJtYTvfXDOurkX6nHwul3hWhABpbpNEkEPGdShZN49YKXybMeoAQxq6o+ab+aB2jO\\/Lso6LLYRUHwnsxhmQb9TPKkTDGwmP6hhZwN5AeB9zAFBIxio07TtrxmEGjU5xLw3j4BBmsxWUAIy5iALJkLlbG6cvnFm9etlcQfkGSgF2vT330CLxH0C9mEG7FkhWz4QRF5uHA1l4oo0EUz3hs9mZgrDsMISre5fw40XrJhLJ0CmeIQIDAQAB\",\"44\":\"1\",\"47\":\"1\",\"48\":\"默认头像\",\"49\":\"uQwNPIGv8286\",\"50\":\"bfb19806230b4dc288cf4e9fdffe135c\",\"51\":\"4c7ba44514fa89c4bf02b67b76bf187c\"},\"id\":\"\"}','2022-06-26 16:49:30','2022-06-26 16:49:30'),
-	(3,1,'admin','127.0.0.1','http://shop.me/admin/system/config/update','{\"config\":{\"1\":\"smallshop\",\"2\":\"shop68.com.cn\",\"3\":\"smallshop\",\"4\":\"smallshop\",\"42\":\"0\",\"43\":\"\",\"45\":\"600\",\"46\":\"\",\"5\":\"1800\",\"6\":\"604800\",\"7\":\"604800\",\"8\":\"604800\",\"9\":\"604800\",\"10\":\"0\",\"11\":\"\",\"12\":\"\",\"13\":\"\",\"14\":\"\",\"15\":\"\",\"16\":\"\",\"17\":\"\",\"18\":\"\",\"19\":\"\",\"20\":\"\",\"21\":\"\",\"22\":\"\",\"23\":\"\",\"24\":\"\",\"25\":\"\",\"26\":\"\",\"27\":\"\",\"28\":\"\",\"54\":\"0\",\"29\":\"60\",\"30\":\"300\",\"31\":\"\",\"32\":\"\",\"52\":\"0\",\"53\":\"0\",\"55\":\"0\",\"33\":\"\",\"34\":\"\",\"35\":\"\",\"36\":\"\",\"37\":\"\",\"38\":\"\",\"39\":\"\",\"40\":\"\",\"41\":\"\",\"44\":\"0\",\"47\":\"1\",\"48\":\"默认头像\",\"49\":\"\",\"50\":\"\",\"51\":\"\"},\"id\":\"\"}','2022-06-26 16:49:47','2022-06-26 16:49:47');
-
-/*!40000 ALTER TABLE `sm_admin_log` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # 转储表 sm_admin_login_log
@@ -123,8 +113,8 @@ CREATE TABLE `sm_admin_login_log` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_m_id` (`m_id`),
-  KEY `idx_token` (`token`)
+  KEY `idx_token` (`token`),
+  KEY `idx_mid` (`m_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='管理员登陆记录';
 
 
@@ -392,7 +382,7 @@ CREATE TABLE `sm_adv` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_group_id` (`group_id`)
+  KEY `idx_groupid` (`group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='广告列表';
 
 
@@ -434,7 +424,7 @@ CREATE TABLE `sm_areas` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_parent_id` (`parent_id`)
+  KEY `idx_parentid` (`parent_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='省市区';
 
 LOCK TABLES `sm_areas` WRITE;
@@ -4410,7 +4400,7 @@ CREATE TABLE `sm_article` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_category_id` (`category_id`)
+  KEY `idx_categoryid` (`category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='文章';
 
 
@@ -4462,7 +4452,7 @@ CREATE TABLE `sm_attribute` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_category_id` (`category_id`)
+  KEY `idx_categoryid` (`category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品属性';
 
 
@@ -4481,7 +4471,7 @@ CREATE TABLE `sm_attribute_value` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_attribute_id` (`attribute_id`)
+  KEY `idx_attributeid` (`attribute_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品属性值';
 
 
@@ -4498,7 +4488,8 @@ CREATE TABLE `sm_balance` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_mid` (`m_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='现金账户';
 
 
@@ -4522,7 +4513,7 @@ CREATE TABLE `sm_balance_detail` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_m_id` (`m_id`),
-  KEY `idx_event` (`event`)
+  KEY `idx_mid_event` (`m_id`,`event`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='现金账户明细';
 
 
@@ -4547,7 +4538,7 @@ CREATE TABLE `sm_balance_recharge` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unq_recharge_no` (`recharge_no`),
-  KEY `idx_m_id` (`m_id`)
+  KEY `idx_mid` (`m_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='钱包在线充值表';
 
 
@@ -4587,7 +4578,7 @@ CREATE TABLE `sm_cart` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_m_id` (`m_id`)
+  KEY `idx_mid` (`m_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='购物车';
 
 
@@ -4629,8 +4620,8 @@ CREATE TABLE `sm_comment` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_goods_id` (`goods_id`),
-  KEY `idx_m_id` (`m_id`)
+  KEY `idx_mid` (`m_id`),
+  KEY `idx_goodsid` (`goods_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品评价';
 
 
@@ -4646,7 +4637,7 @@ CREATE TABLE `sm_comment_url` (
   `type` tinyint(2) NOT NULL DEFAULT '0' COMMENT '类型1图片2视频',
   `url` varchar(255) NOT NULL COMMENT '地址',
   PRIMARY KEY (`id`),
-  KEY `idx_e_id` (`comment_id`)
+  KEY `idx_commentid` (`comment_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='评价图片';
 
 
@@ -4668,7 +4659,7 @@ CREATE TABLE `sm_config` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uniq_key_name` (`key_name`)
+  KEY `uniq_keyname` (`key_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='网站配置';
 
 LOCK TABLES `sm_config` WRITE;
@@ -4761,7 +4752,7 @@ CREATE TABLE `sm_coupons` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_seller_id` (`seller_id`)
+  KEY `idx_sellerid` (`seller_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='优惠券';
 
 
@@ -4782,7 +4773,7 @@ CREATE TABLE `sm_coupons_detail` (
   `use_at` timestamp NULL DEFAULT NULL COMMENT '使用时间',
   `bind_at` timestamp NULL DEFAULT NULL COMMENT '绑定时间',
   PRIMARY KEY (`id`),
-  KEY `idx_m_id` (`m_id`)
+  KEY `idx_mid` (`m_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='优惠券明细，生成数据';
 
 
@@ -4800,7 +4791,8 @@ CREATE TABLE `sm_coupons_rule` (
   `obj_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '对象id，商品、品牌、分类',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_couponsid` (`coupons_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='优惠券规则';
 
 
@@ -4831,7 +4823,7 @@ CREATE TABLE `sm_delivery` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_seller_id` (`seller_id`)
+  KEY `idx_sellerid` (`seller_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='配送方式';
 
 
@@ -4851,7 +4843,7 @@ CREATE TABLE `sm_delivery_traces` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_company_code_code` (`company_code`,`code`)
+  KEY `idx_companycode_code` (`company_code`,`code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='物流信息';
 
 
@@ -4928,7 +4920,7 @@ CREATE TABLE `sm_favorite` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_m_id_type` (`m_id`,`type`)
+  KEY `idx_mid_type_objectid` (`m_id`,`type`,`object_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户收藏';
 
 
@@ -4983,9 +4975,9 @@ CREATE TABLE `sm_goods` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_brand_id` (`brand_id`),
-  KEY `idx_seller_id` (`seller_id`),
-  KEY `idx_title` (`title`)
+  KEY `idx_title` (`title`),
+  KEY `idx_categoryid` (`category_id`),
+  KEY `idx_sellerid` (`seller_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品';
 
 
@@ -5001,7 +4993,7 @@ CREATE TABLE `sm_goods_attribute` (
   `attribute_id` int(11) unsigned NOT NULL COMMENT '属性id',
   `value` varchar(255) DEFAULT '' COMMENT '自定义内容',
   PRIMARY KEY (`id`),
-  KEY `idx_goods_id` (`goods_id`)
+  KEY `idx_goodsid` (`goods_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品属性';
 
 
@@ -5043,7 +5035,7 @@ CREATE TABLE `sm_goods_image` (
   `goods_id` int(11) unsigned NOT NULL COMMENT '商品id',
   `url` varchar(255) NOT NULL COMMENT '图片地址',
   PRIMARY KEY (`id`),
-  KEY `idx_goods_id` (`goods_id`)
+  KEY `idx_goodsid` (`goods_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品图片';
 
 
@@ -5072,7 +5064,7 @@ CREATE TABLE `sm_goods_seller_category` (
   `goods_id` int(11) unsigned NOT NULL COMMENT '商品id',
   `category_id` int(11) unsigned NOT NULL COMMENT '分类id',
   PRIMARY KEY (`id`),
-  KEY `idx_category_id` (`category_id`)
+  KEY `idx_categoryid` (`goods_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品商家分类';
 
 
@@ -5097,7 +5089,7 @@ CREATE TABLE `sm_goods_sku` (
   `max_buy` smallint(5) unsigned NOT NULL DEFAULT '1' COMMENT '最大购买数量',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '状态1正常99删除',
   PRIMARY KEY (`id`),
-  KEY `idx_goods_id` (`goods_id`)
+  KEY `idx_goodsid` (`goods_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='子商品';
 
 
@@ -5139,7 +5131,8 @@ CREATE TABLE `sm_member_auth` (
   `type` tinyint(2) unsigned NOT NULL COMMENT '类型1微信2微博3qq',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_type_unionid` (`type`,`union_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='第三方授权登录';
 
 
@@ -5180,7 +5173,8 @@ CREATE TABLE `sm_member_login_log` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_m_id` (`m_id`)
+  KEY `idx_mid` (`m_id`),
+  KEY `idx_token` (`token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='登陆记录';
 
 
@@ -5382,9 +5376,9 @@ CREATE TABLE `sm_order` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_m_id` (`m_id`),
-  KEY `idx_seller_id` (`seller_id`),
-  KEY `unq_order_no` (`order_no`)
+  KEY `unq_order_no` (`order_no`),
+  KEY `idx_mid` (`m_id`),
+  KEY `idx_sellerid` (`seller_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='订单表';
 
 
@@ -5405,7 +5399,7 @@ CREATE TABLE `sm_order_delivery` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_order_id` (`order_id`)
+  KEY `idx_orderid` (`order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='订单物流';
 
 
@@ -5425,7 +5419,8 @@ CREATE TABLE `sm_order_delivery_template` (
   `content` text NOT NULL COMMENT '打印内容',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_orderid` (`order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='快递单打印模板';
 
 
@@ -5458,7 +5453,7 @@ CREATE TABLE `sm_order_goods` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_order_id` (`order_id`)
+  KEY `idx_orderid` (`order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='订单商品表';
 
 
@@ -5474,7 +5469,8 @@ CREATE TABLE `sm_order_invoice` (
   `type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '类型1个人2企业',
   `title` varchar(50) NOT NULL COMMENT '抬头',
   `tax_no` varchar(50) DEFAULT '' COMMENT '纳税号',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_orderid` (`order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 
@@ -5495,7 +5491,8 @@ CREATE TABLE `sm_order_log` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_order_id` (`order_id`)
+  KEY `idx_order_id` (`order_id`),
+  KEY `idx_usertype_userid` (`user_type`,`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='订单日志表';
 
 
@@ -5547,7 +5544,8 @@ CREATE TABLE `sm_point` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_mid` (`m_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='积分账户';
 
 
@@ -5570,8 +5568,7 @@ CREATE TABLE `sm_point_detail` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_m_id` (`m_id`),
-  KEY `idx_event` (`type`)
+  KEY `idx_mid_event` (`m_id`,`event`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='积分账户明细';
 
 
@@ -5594,7 +5591,9 @@ CREATE TABLE `sm_promo_group` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_sellerid` (`seller_id`),
+  KEY `idx_goodsid` (`goods_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='拼团';
 
 
@@ -5615,7 +5614,8 @@ CREATE TABLE `sm_promo_group_order` (
   `end_at` timestamp NULL DEFAULT NULL COMMENT '结束时间',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_grouporderid` (`group_order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='拼团订单';
 
 
@@ -5636,7 +5636,9 @@ CREATE TABLE `sm_promo_seckill` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_sellerid` (`seller_id`),
+  KEY `idx_goodsid` (`goods_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='秒杀';
 
 
@@ -5662,7 +5664,7 @@ CREATE TABLE `sm_promotion` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_seller_id` (`seller_id`)
+  KEY `idx_type_sellerid` (`type`,`seller_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='优惠活动';
 
 
@@ -5696,10 +5698,10 @@ CREATE TABLE `sm_refund` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_m_id` (`order_id`),
-  KEY `idx_seller_id` (`seller_id`),
-  KEY `idx_order_goods_id` (`order_goods_id`),
-  KEY `unq_refund_no` (`refund_no`)
+  KEY `uniq_refundno` (`refund_no`),
+  KEY `idx_mid` (`m_id`),
+  KEY `idx_sellerid` (`seller_id`),
+  KEY `idx_ordergoodsid` (`order_goods_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='售后';
 
 
@@ -5718,7 +5720,8 @@ CREATE TABLE `sm_refund_delivery` (
   `code` varchar(50) NOT NULL DEFAULT '' COMMENT '物流单号',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_refundid` (`refund_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='退款物流';
 
 
@@ -5733,7 +5736,7 @@ CREATE TABLE `sm_refund_image` (
   `log_id` int(11) unsigned NOT NULL COMMENT '退款日志id',
   `image` varchar(255) NOT NULL DEFAULT '' COMMENT '图片地址',
   PRIMARY KEY (`id`),
-  KEY `idx_log_id` (`log_id`)
+  KEY `idx_logid` (`log_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='售后图片';
 
 
@@ -5754,7 +5757,7 @@ CREATE TABLE `sm_refund_log` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_refund_id` (`refund_id`)
+  KEY `idx_refundid` (`refund_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='退款明细';
 
 
@@ -5813,7 +5816,7 @@ CREATE TABLE `sm_seller_address` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_seller_id` (`seller_id`)
+  KEY `idx_sellerid` (`seller_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商家发货地址';
 
 
@@ -5830,7 +5833,8 @@ CREATE TABLE `sm_seller_balance` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_mid` (`m_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商家账户';
 
 
@@ -5853,7 +5857,8 @@ CREATE TABLE `sm_seller_balance_detail` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_m_id` (`m_id`)
+  KEY `idx_mid` (`m_id`),
+  KEY `idx_type_event` (`type`,`event`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商家账户明细';
 
 
@@ -5874,8 +5879,8 @@ CREATE TABLE `sm_seller_category` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_parent_id` (`parent_id`),
-  KEY `idx_seller_id` (`seller_id`)
+  KEY `idx_sellerid` (`seller_id`),
+  KEY `idx_parent_id` (`parent_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品分类';
 
 
@@ -5895,8 +5900,8 @@ CREATE TABLE `sm_seller_login_log` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_m_id` (`m_id`),
-  KEY `idx_token` (`token`)
+  KEY `idx_token` (`token`),
+  KEY `idx_mid` (`m_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商家登陆记录';
 
 
@@ -5949,7 +5954,7 @@ CREATE TABLE `sm_seller_withdraw` (
   `done_at` timestamp NULL DEFAULT NULL COMMENT '完成时间',
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_m_id` (`m_id`)
+  KEY `idx_mid` (`m_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='提现记录';
 
 
@@ -5966,7 +5971,8 @@ CREATE TABLE `sm_sms_log` (
   `error_msg` varchar(255) DEFAULT '' COMMENT '成功或错误记录',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_mobile` (`mobile`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='短信发送记录';
 
 
@@ -6020,7 +6026,7 @@ CREATE TABLE `sm_spec` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_category_id` (`category_id`)
+  KEY `idx_categoryid` (`category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品规格';
 
 
@@ -6039,7 +6045,7 @@ CREATE TABLE `sm_spec_value` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_spec_id` (`spec_id`)
+  KEY `idx_specid` (`spec_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品规格值';
 
 
@@ -6067,8 +6073,8 @@ CREATE TABLE `sm_trade` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unq_trade_no` (`trade_no`),
-  KEY `idx_m_id` (`m_id`)
+  KEY `uniq_tradeno` (`trade_no`),
+  KEY `idx_mid` (`m_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='交易单';
 
 
@@ -6096,7 +6102,9 @@ CREATE TABLE `sm_trade_refund` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `unq_refund_no` (`refund_no`)
+  KEY `uniq_refundno` (`refund_no`),
+  KEY `idx_mid` (`m_id`),
+  KEY `idx_orderno` (`order_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='退款交易单';
 
 
@@ -6120,7 +6128,7 @@ CREATE TABLE `sm_withdraw` (
   `done_at` timestamp NULL DEFAULT NULL COMMENT '完成时间',
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_m_id` (`m_id`)
+  KEY `idx_mid` (`m_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='提现记录';
 
 

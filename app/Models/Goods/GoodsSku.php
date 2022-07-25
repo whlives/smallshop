@@ -9,6 +9,7 @@
 namespace App\Models\Goods;
 
 use App\Models\BaseModel;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * 商品sku
@@ -28,5 +29,22 @@ class GoodsSku extends BaseModel
     protected $guarded = ['id'];
 
     public $timestamps = false;
+
+    /**
+     * 获取商品sku缓存信息
+     * @param int $id
+     * @return mixed
+     */
+    public static function getGoodsSku(int $id)
+    {
+        $cache_key = 'goods_sku:' . $id;
+        $goods_sku = Cache::get($cache_key);
+        if (!$goods_sku) {
+            $goods_sku = self::select('id', 'goods_id', 'stock', 'min_buy', 'max_buy')->find($id);
+            if ($goods_sku) $goods_sku = $goods_sku->toArray();
+            Cache::put($cache_key, $goods_sku, get_custom_config('cache_time'));
+        }
+        return $goods_sku;
+    }
 
 }

@@ -149,6 +149,10 @@ class SeckillController extends BaseController
                 Goods::where('id', $save_data['goods_id'])->update(['promo_type' => Goods::PROMO_TYPE_SECKILL]);
                 return true;
             });
+            Goods::syncRedisStock($save_data['goods_id']);//同步redis库存
+            if ($detail['goods_id'] != $save_data['goods_id']) {
+                Goods::delGoodsCache($detail['goods_id']);//删除商品缓存
+            }
         } catch (\Exception $e) {
             $res = false;
         }
@@ -196,6 +200,7 @@ class SeckillController extends BaseController
                 PromoSeckill::whereIn('id', $ids)->delete();
                 return true;
             });
+            Goods::delGoodsCache($goods_ids);//删除商品缓存
         } catch (\Exception $e) {
             $res = false;
         }
@@ -204,25 +209,6 @@ class SeckillController extends BaseController
         } else {
             api_error(__('admin.del_error'));
         }
-    }
-
-    /**
-     * 同步库存
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
-     */
-    public function syncStock(Request $request)
-    {
-        $ids = $this->checkBatchId();
-        $res_seckill = PromoSeckill::select('goods_id', 'end_at')->whereIn('id', $ids)->get();
-        if ($res_seckill->isEmpty()) {
-            api_error(__('admin.content_is_empty'));
-        }
-        foreach ($res_seckill->toArray() as $value) {
-            PromoSeckill::syncStock($value['goods_id'], $value['end_at']);
-        }
-        return $this->success();
     }
 
     /**

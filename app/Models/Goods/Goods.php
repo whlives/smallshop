@@ -12,11 +12,13 @@ use App\Jobs\MiniProgramQrcode;
 use App\Libs\Weixin\MiniProgram;
 use App\Models\BaseModel;
 use App\Models\Market\Coupons;
+use App\Models\Market\PromoSeckill;
 use App\Models\Seller\Seller;
 use App\Services\GoodsService;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Validation\Rule;
 use Validator;
 
@@ -359,14 +361,14 @@ class Goods extends BaseModel
             $coupons_id = 0;
         }
         try {
-            return DB::transaction(function () use ($id, $seller_id, $goods, $content, $image, $goods_sku, $goods_attribute, $seller_category, $coupons_id) {
+            $res = DB::transaction(function () use ($id, $seller_id, $goods, $content, $image, $goods_sku, $goods_attribute, $seller_category, $coupons_id) {
                 //修改主商品
                 if ($id) {
-                    unset($goods['type']);//类型不允许修改
                     self::where(['id' => $id, 'seller_id' => $goods['seller_id']])->update($goods);
                     GoodsContent::where('goods_id', $id)->update(['content' => $content]);
                     GoodsImage::where('goods_id', $id)->delete();
                     GoodsAttribute::where('goods_id', $id)->delete();
+                    GoodsCoupons::where(['goods_id' => $id])->delete();
                     GoodsSku::where('goods_id', $id)->update(['status' => GoodsSku::STATUS_DEL]);
                 } else {
                     $result = self::create($goods);
@@ -430,6 +432,8 @@ class Goods extends BaseModel
                 }
                 return true;
             });
+            self::syncRedisStock($id);//同步redis库存
+            return $res;
         } catch (\Exception $e) {
             return false;
         }
@@ -631,7 +635,7 @@ class Goods extends BaseModel
         if (!is_array($ids)) $ids = [$ids];
         foreach ($ids as $_id) {
             $cache_key = 'goods:' . $_id;
-            $detail_cache_key = 'goods:' . $_id;
+            $detail_cache_key = 'goods_detail:' . $_id;
             Cache::put($cache_key, '', 0);
             Cache::put($detail_cache_key, '', 0);
         }
@@ -642,7 +646,7 @@ class Goods extends BaseModel
      * @param int $id
      * @return mixed
      */
-    public static function getCacheGoods(int $id)
+    public static function getGoods(int $id)
     {
         $cache_key = 'goods:' . $id;
         $goods = Cache::get($cache_key);
@@ -659,7 +663,7 @@ class Goods extends BaseModel
      * @param int $id
      * @return mixed
      */
-    public static function getCacheGoodsDetail(int $id)
+    public static function getGoodsDetail(int $id)
     {
         $cache_key = 'goods_detail:' . $id;
         $goods_detail = Cache::get($cache_key);
@@ -744,5 +748,77 @@ class Goods extends BaseModel
             Cache::put($cache_key, $goods, get_custom_config('cache_time'));
         }
         return $goods;
+    }
+
+    /**
+     * 同步redis库存
+     * @param int $goods_id
+     * @return false|void
+     */
+    public static function syncRedisStock(int $goods_id)
+    {
+        $end_at = '';
+        $goods = self::where('id', $goods_id)->first();
+        if ($goods['promo_type'] == self::PROMO_TYPE_SECKILL) {
+            $end_at = PromoSeckill::where('goods_id', $goods_id)->value('end_at');
+        } elseif ($goods['type'] == self::TYPE_COUPONS) {
+            $coupons_id = GoodsCoupons::where('goods_id', $goods_id)->value('coupons_id');
+            $end_at = Coupons::where('id', $coupons_id)->value('end_at');
+        }
+        if (!$end_at) return false;
+        $sku_data = GoodsSku::where(['goods_id' => $goods_id])->pluck('stock', 'id')->toArray();
+        $save_data = $sku_data;
+        $save_data['all'] = array_sum($sku_data);
+        $stock_redis_key = 'goods_redis_stock:' . $goods_id;
+        Redis::del($stock_redis_key);
+        Redis::hmset($stock_redis_key, $save_data);
+        Redis::expire($stock_redis_key, strtotime($end_at) - time());
+    }
+
+    /**
+     * 还原秒杀库存
+     * @param array $goods
+     * @return void
+     */
+    public static function stockRedisIncr(array $goods)
+    {
+        $stock_redis_key = 'goods_redis_stock:' . $goods['goods_id'];
+        Redis::hincrby($stock_redis_key, $goods['sku_id'], $goods['buy_qty']);
+    }
+
+    /**
+     * 获取秒杀redis库存
+     * @param int $goods_id
+     * @return array|false
+     */
+    public static function getRedisStock(int $goods_id)
+    {
+        $stock_redis_key = 'goods_redis_stock:' . $goods_id;
+        $stock = Redis::hgetall($stock_redis_key);
+        if (!$stock) return false;
+        $remaining_stock = array_sum($stock) - $stock['all'];//剩余库存
+        $all_stock = $stock['all'];//总库存
+        $pct = format_price(1 - ($remaining_stock / $all_stock), 2, false) * 100;//剩余库存比例
+        //$sale = $stock['all'] - $remaining_stock;//已经销售的存库
+        return [$pct, $stock, $remaining_stock];//已经销售比例，库存信息，剩余库存
+    }
+
+    /**
+     * 获取商品sku redis库存
+     * @param int $goods_id
+     * @param bool $stock_decr
+     * @return array|false
+     */
+    public static function getRedisSkuStock(int $cart, bool $stock_decr = false)
+    {
+        $stock_redis_key = 'goods_redis_stock:' . $cart['goods_id'];
+        $stock = Redis::hget($stock_redis_key, $cart['sku_id']);
+        if ($stock < $cart['buy_qty']) {
+            api_error(__('api.goods_stock_no_enough'));//秒杀库存不足
+        }
+        //开始减去库存
+        if ($stock_decr) {
+            Redis::hincrby($stock_redis_key, $cart['sku_id'], -$cart['buy_qty']);
+        }
     }
 }

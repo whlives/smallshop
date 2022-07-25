@@ -57,13 +57,13 @@ class OrderController extends BaseController
     {
         //验证基础信息
         [$cart, $type] = $this->goods_service->formatCart();
-        $address = $this->goods_service->checkAddress();
-        //格式化优惠券配送备注发票等信息
-        [$coupons, $delivery, $note, $invoice] = GoodsService::formatParams();
         //验证活动类型
         if ($type == Cart::TYPE_NOW) {
-            $promo_data = $this->goods_service->checkPromoActivity($cart[0]);
+            $promo_data = $this->goods_service->checkRule($cart[0]);
         }
+        $address = $this->goods_service->checkAddress(true);
+        //格式化优惠券配送备注发票等信息
+        [$coupons, $delivery, $note, $invoice] = GoodsService::formatParams();
         $seller_goods = $this->goods_service->formatSellerGoods($cart, $type);
         $seller_goods = $this->goods_service->getOrderPrice($seller_goods, $address, $coupons);//获取商品信息
         $price = $this->goods_service->sumOrderPrice($seller_goods);//组装价格信息
@@ -83,11 +83,11 @@ class OrderController extends BaseController
     {
         //验证基础信息
         [$cart, $type] = $this->goods_service->formatCart();
-        $address = $this->goods_service->checkAddress();
         //验证活动类型
         if ($type == Cart::TYPE_NOW) {
-            $promo_data = $this->goods_service->checkPromoActivity($cart[0]);
+            $promo_data = $this->goods_service->checkRule($cart[0]);
         }
+        $address = $this->goods_service->checkAddress();
         $seller_goods = $this->goods_service->formatSellerGoods($cart, $type);
         $seller_goods = $this->goods_service->getConfirm($seller_goods, $address);//确认订单信息
         $order_price = $this->goods_service->sumOrderPrice($seller_goods);
@@ -110,14 +110,10 @@ class OrderController extends BaseController
     {
         //验证基础信息
         [$cart, $type] = $this->goods_service->formatCart();
-        $address = $this->goods_service->checkAddress();
-        if (!$address) {
-            //下单的时候地址必须
-            api_error(__('api.address_not_exists'));
-        }
-        //验证活动类型
+        $address = $this->goods_service->checkAddress(true);
+        //验证商品信息（包含秒杀、团购等）
         if ($type == Cart::TYPE_NOW) {
-            $promo_data = $this->goods_service->checkPromoActivity($cart[0], true);
+            $promo_data = $this->goods_service->checkRule($cart[0], true);
         }
         //格式化优惠券配送备注发票等信息
         [$coupons, $delivery, $note, $invoice] = GoodsService::formatParams();
@@ -127,7 +123,7 @@ class OrderController extends BaseController
         foreach ($seller_goods as $value) {
             if ($value['delivery']['sku_ids']) {
                 //活动时如果存在不能送达的商品，还原库存
-                $this->goods_service->promoActivityStockIncr($value['goods']);
+                $this->goods_service->activityStockIncr($value['goods']);
                 api_error(__('api.goods_can_not_delivery'));
             }
         }

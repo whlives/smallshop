@@ -33,7 +33,9 @@ class AdminController extends BaseController
         $where = [];
         $username = $request->input('username');
         $role_id = (int)$request->input('role_id');
+        $status = $request->input('status');
         if ($username) $where[] = ['username', 'like', '%' . $username . '%'];
+        if (is_numeric($status)) $where[] = ['status', $status];
         $query = Admin::select('id', 'username', 'role_id', 'tel', 'email', 'status', 'created_at')->where($where);
         if ($role_id) $query->whereRaw("find_in_set('$role_id', role_id)");
         $total = $query->count();//总条数

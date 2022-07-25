@@ -125,8 +125,8 @@ class FavoriteController extends BaseController
         }
         $data = [
             'm_id' => $this->m_id,
+            'type' => $type,
             'object_id' => $id,
-            'type' => $type
         ];
         if (Favorite::where($data)->exists()) {
             //已经存在就取消

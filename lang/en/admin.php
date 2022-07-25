@@ -73,6 +73,7 @@ return [
     'goods_coupon_error' => '50002|优惠券信息错误',
     'goods_not_exists' => '50003|商品不存在',
     'goods_is_bind_promotion' => '50004|商品已经绑定了其他活动',
+    'goods_stock_error' => '50005|商品库存不足',
 
     //促销50000
     //优惠券50000
@@ -89,7 +90,7 @@ return [
     'promotion_coupons_id_error' => '50103|优惠券id不能为空',
 
     //秒杀活动50200
-    'seckill_goods_stock_error' => '50200|秒杀商品库存不足',
+
 
     //财务60000
     //交易单60000

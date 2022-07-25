@@ -3,9 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Exceptions\ApiError;
-use App\Models\Admin\AdminLog;
-use App\Models\Admin\AdminRole;
-use App\Services\TokenService;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;

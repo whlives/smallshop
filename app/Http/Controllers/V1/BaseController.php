@@ -14,7 +14,23 @@ use App\Services\TokenService;
 
 class BaseController extends \App\Http\Controllers\BaseController
 {
-    
+    /**
+     * 仅获取用户id，不验证（适用场景比如商品收藏）
+     * @return int
+     * @throws ApiError
+     */
+    public function getOnlyUserId(): int
+    {
+        $token_service = new TokenService();
+        $token = $token_service->getToken();
+        if (isset($token['id']) && $token['id']) {
+            return $token['id'];
+        } else {
+            return false;
+        }
+    }
+
+
     /**
      * 获取用户id
      * @return int
