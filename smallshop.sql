@@ -7,7 +7,7 @@
 #
 # 主机: localhost (MySQL 5.7.34)
 # 数据库: smallshop3
-# 生成时间: 2022-08-22 07:13:50 +0000
+# 生成时间: 2022-08-22 08:26:43 +0000
 # ************************************************************
 
 
@@ -96,19 +96,6 @@ CREATE TABLE `sm_admin_log` (
   KEY `idx_adminid` (`admin_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='后台操作日志表';
 
-LOCK TABLES `sm_admin_log` WRITE;
-/*!40000 ALTER TABLE `sm_admin_log` DISABLE KEYS */;
-
-INSERT INTO `sm_admin_log` (`id`, `admin_id`, `username`, `ip`, `url`, `content`, `created_at`, `updated_at`)
-VALUES
-	(1,1,'admin','127.0.0.1','http://shop.me/admin/admin/admin','{\"title\":\"\",\"role_id\":\"\",\"status\":\"1\"}','2022-07-25 10:18:04','2022-07-25 10:18:04'),
-	(2,1,'admin','127.0.0.1','http://shop.me/admin/admin/admin','{\"title\":\"\",\"role_id\":\"\",\"status\":\"0\"}','2022-07-25 10:18:07','2022-07-25 10:18:07'),
-	(3,1,'admin','127.0.0.1','http://shop.me/admin/market/coupons/save','{\"title\":\"1111\",\"seller_id\":\"1\",\"image\":\"\",\"type\":\"1\",\"is_buy\":\"0\",\"open\":\"1\",\"use_price\":\"111\",\"amount\":\"11\",\"day_num\":\"2\",\"start_at\":\"\",\"end_at\":\"\",\"note\":\"\",\"id\":\"\"}','2022-08-11 15:30:36','2022-08-11 15:30:36'),
-	(4,1,'admin','127.0.0.1','http://shop.me/admin/market/coupons/status','{\"id\":\"1\",\"status\":\"1\"}','2022-08-11 15:30:57','2022-08-11 15:30:57'),
-	(5,1,'admin','127.0.0.1','http://shop.me/admin/market/coupons/status','{\"id\":\"1\",\"status\":\"0\"}','2022-08-11 15:50:31','2022-08-11 15:50:31');
-
-/*!40000 ALTER TABLE `sm_admin_log` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # 转储表 sm_admin_login_log
@@ -130,18 +117,6 @@ CREATE TABLE `sm_admin_login_log` (
   KEY `idx_mid` (`m_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='管理员登陆记录';
 
-LOCK TABLES `sm_admin_login_log` WRITE;
-/*!40000 ALTER TABLE `sm_admin_login_log` DISABLE KEYS */;
-
-INSERT INTO `sm_admin_login_log` (`id`, `m_id`, `token`, `user_agent`, `ip`, `status`, `created_at`, `updated_at`)
-VALUES
-	(1,1,'04889f74fbc500c6c1e48cfec72c1166','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36','127.0.0.1',1,'2022-07-25 10:15:08','2022-07-25 10:15:08'),
-	(2,1,'cfc44820d07e99f3ad20a20d65e5a08c','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36','127.0.0.1',1,'2022-08-05 11:24:46','2022-08-05 11:24:46'),
-	(3,1,'13e47dcf9f17627b7c640438e62c2fc5','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36','127.0.0.1',1,'2022-08-11 15:30:12','2022-08-11 15:30:12'),
-	(4,1,'cf5a4335b6def9c642f2924a598b972b','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36','127.0.0.1',1,'2022-08-19 14:02:07','2022-08-19 14:02:07');
-
-/*!40000 ALTER TABLE `sm_admin_login_log` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # 转储表 sm_admin_right
@@ -4782,15 +4757,6 @@ CREATE TABLE `sm_coupons` (
   KEY `idx_sellerid` (`seller_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='优惠券';
 
-LOCK TABLES `sm_coupons` WRITE;
-/*!40000 ALTER TABLE `sm_coupons` DISABLE KEYS */;
-
-INSERT INTO `sm_coupons` (`id`, `title`, `type`, `is_buy`, `open`, `image`, `amount`, `use_price`, `limit`, `seller_id`, `note`, `status`, `start_at`, `end_at`, `day_num`, `created_at`, `updated_at`, `deleted_at`)
-VALUES
-	(1,'1111',1,0,1,'',11.00,111.00,2,1,'',0,NULL,NULL,2,'2022-08-11 15:30:36','2022-08-11 15:50:31',NULL);
-
-/*!40000 ALTER TABLE `sm_coupons` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # 转储表 sm_coupons_detail
