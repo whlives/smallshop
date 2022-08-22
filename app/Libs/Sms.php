@@ -16,6 +16,13 @@ use Illuminate\Support\Facades\Redis;
 
 class Sms
 {
+    public array $custom_config;
+
+    public function __construct()
+    {
+        $this->custom_config = get_custom_config_all();
+    }
+
     /**
      * 发送验证码
      * @param string $mobile 手机号
@@ -44,7 +51,7 @@ class Sms
         //检测是否已经发送
         $cache_key = get_cache_key('captcha:', $mobile);
         $captcha = Cache::get($cache_key);
-        $interval_time = get_custom_config('sms_interval_time');
+        $interval_time = $this->custom_config['sms_interval_time'];
         if ($captcha && $captcha['end_at'] > (time() - $interval_time)) {
             return __('api.sms_frequent');
         }
@@ -59,7 +66,7 @@ class Sms
                 'code' => $send_data['code'],
                 'end_at' => time()
             ];
-            Cache::put($cache_key, $log_data, get_custom_config('cache_time'));
+            Cache::put($cache_key, $log_data, $this->custom_config['cache_time']);
             return true;
         } else {
             return __('api.sms_send_fail');
@@ -86,7 +93,7 @@ class Sms
         $cache_key = get_cache_key('captcha:', $mobile);
         $captcha = Cache::get($cache_key);
         $error = '';
-        $out_time = get_custom_config('sms_out_time');
+        $out_time = $this->custom_config['sms_out_time'];
         if (!$captcha) {
             $error = __('api.sms_captcha_error');//错误
         } elseif ($captcha['end_at'] < (time() - $out_time)) {
@@ -184,8 +191,8 @@ class Sms
     public function sendTo(string $content, string $mobile)
     {
         $post_data = [
-            'account' => get_custom_config('sms_account'),
-            'password' => get_custom_config('sms_password'),
+            'account' => $this->custom_config['sms_account'],
+            'password' => $this->custom_config['sms_password'],
             'msg' => urlencode($content),
             'phone' => $mobile,
             'report' => true

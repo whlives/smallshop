@@ -9,6 +9,7 @@
 namespace App\Models\Member;
 
 use App\Models\BaseModel;
+use Illuminate\Support\Facades\Redis;
 
 /**
  * 收藏
@@ -28,4 +29,55 @@ class Favorite extends BaseModel
 
     protected $table = 'favorite';
     protected $guarded = ['id'];
+
+    /**
+     * redis key
+     * @param int $live_id
+     * @return string
+     */
+    public static function redisKey(int $type, $m_id)
+    {
+        return 'favorite:' . $type . ':' . ($m_id % 1000);
+    }
+
+    /**
+     * 获取收藏状态
+     * @param int $live_id
+     * @param int $m_id
+     * @param int $goods_id
+     * @return mixed
+     */
+    public static function getFavorite(int $m_id, int $type, int $object_id)
+    {
+        $redis_key = self::redisKey($type, $m_id);
+        return Redis::sismember($redis_key, $m_id . '_' . $object_id);
+    }
+
+    /**
+     * 设置收藏状态
+     * @param int $live_id
+     * @param int $m_id
+     * @param int $goods_id
+     * @return bool
+     */
+    public static function setFavorite(int $m_id, int $type, int $object_id)
+    {
+        $redis_key = self::redisKey($type, $m_id);
+        Redis::sadd($redis_key, $m_id . '_' . $object_id);
+        return true;
+    }
+
+    /**
+     * 删除收藏状态
+     * @param int $live_id
+     * @param int $m_id
+     * @param int $goods_id
+     * @return bool
+     */
+    public static function delFavorite(int $m_id, int $type, int $object_id)
+    {
+        $redis_key = self::redisKey($type, $m_id);
+        Redis::srem($redis_key, $m_id . '_' . $object_id);
+        return true;
+    }
 }

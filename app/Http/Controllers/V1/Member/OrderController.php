@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\V1\Member;
 
 use App\Http\Controllers\V1\BaseController;
+use App\Models\Goods\Comment;
 use App\Models\Member\Member;
 use App\Models\Order\DeliveryTraces;
 use App\Models\Order\Order;
@@ -88,6 +89,7 @@ class OrderController extends BaseController
                 'goods' => $order_goods[$value['id']] ?? [],
                 'product_num' => $value['product_num'],
                 'subtotal' => $value['subtotal'],
+                'delivery_price_real' => $value['delivery_price_real'],
                 'status' => $value['status'],
                 'status_text' => Order::STATUS_MEMBER_DESC[$value['status']],
                 'button' => OrderService::orderButton($value)
@@ -312,8 +314,12 @@ class OrderController extends BaseController
                     'level' => $level,
                     'content' => $value['content'] ?? '好评',
                     'image' => isset($value['image']) ? explode(',', $value['image']) : [],
-                    'video' => []
+                    'is_image' => Comment::IS_IMAGE_FALSE,
+                    'video' => [],
+                    'is_video' => Comment::IS_VIDEO_FALSE
                 ];
+                if ($_item['image']) $_item['is_image'] = Comment::IS_IMAGE_TRUE;
+                if ($_item['video']) $_item['is_video'] = Comment::IS_VIDEO_TRUE;
                 $comment[] = $_item;
             }
         }

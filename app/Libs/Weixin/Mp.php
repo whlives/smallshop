@@ -14,6 +14,7 @@ use EasyWeChat\OfficialAccount\Application;
 class Mp
 {
     private $app;
+    public array $custom_config;
 
     function __construct()
     {
@@ -23,9 +24,10 @@ class Mp
         } else {
             $type = 'mp';
         }
+        $this->custom_config = get_custom_config_all();
         $config = [
-            'app_id' => get_custom_config($type . '_appid'),
-            'secret' => get_custom_config($type . '_secret'),
+            'app_id' => $this->custom_config[$type . '_appid'],
+            'secret' => $this->custom_config[$type . '_secret'],
             'token' => '',
             'aes_key' => ''
         ];

@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Libs\Weixin\MiniProgram;
 use App\Models\Goods\Goods;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -38,7 +37,6 @@ class MiniProgramQrcode implements ShouldQueue
      */
     public function handle()
     {
-        $mini_program = new MiniProgram();
         $auto_create_mini_program_qrcode = get_custom_config('auto_create_mini_program_qrcode');
         if ($auto_create_mini_program_qrcode) {
             switch ($this->type) {

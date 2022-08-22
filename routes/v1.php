@@ -92,7 +92,7 @@ Route::group(['middleware' => \App\Http\Middleware\SignCheck::class], function (
         Route::prefix('order')->controller('OrderController')->group(function () {
             Route::post('get_price', 'getPrice');
             Route::post('confirm_price', 'confirmPrice');
-            Route::post('confirm', 'confirm');
+            Route::post('confirm', 'confirm')->middleware(\App\Http\Middleware\ApiPostRepeat::class);
             Route::post('submit', 'submit')->middleware(\App\Http\Middleware\ApiPostRepeat::class);
         });
         //支付信息

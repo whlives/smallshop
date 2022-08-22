@@ -23,19 +23,20 @@ class Alipay
 
     public function __construct($platform)
     {
+        $custom_config = get_custom_config_all();
         $this->platform = $platform;
         $options = new Config();
         $options->protocol = 'https';
         $options->gatewayHost = 'openapi.alipay.com';
         $options->signType = 'RSA2';
-        $options->appId = get_custom_config('alipay_appid');
+        $options->appId = $custom_config['alipay_appid'];
         // 为避免私钥随源码泄露，推荐从文件中读取私钥字符串而不是写入源码中
-        $options->merchantPrivateKey = get_custom_config('alipay_private_key');
+        $options->merchantPrivateKey = $custom_config['alipay_private_key'];
         //$options->alipayCertPath = '<-- 请填写您的支付宝公钥证书文件路径 -->';
         //$options->alipayRootCertPath = '<-- 请填写您的支付宝根证书文件路径 -->';
         //$options->merchantCertPath = '<-- 请填写您的应用公钥证书文件路径 -->';
         //注：如果采用非证书模式，则无需赋值上面的三个证书路径，改为赋值如下的支付宝公钥字符串即可
-        $options->alipayPublicKey = get_custom_config('alipay_public_key');
+        $options->alipayPublicKey = $custom_config['alipay_public_key'];
         //可设置异步通知接收服务地址（可选）
         $options->notifyUrl = url('/v1/out_push/pay_notify/' . Payment::PAYMENT_ALIPAY . '/' . $this->platform);
         //可设置AES密钥，调用AES加解密相关接口时需要（可选）

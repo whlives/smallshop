@@ -23,9 +23,10 @@ class Delivery
 
     public function __construct()
     {
-        $this->key = get_custom_config('kuaidi_100_key');//客户授权key
-        $this->secret = get_custom_config('kuaidi_100_secret');//客户授权secret
-        $this->salt = get_custom_config('kuaidi_100_salt');
+        $custom_config = get_custom_config_all();
+        $this->key = $custom_config['kuaidi_100_key'];//客户授权key
+        $this->secret = $custom_config['kuaidi_100_secret'];//客户授权secret
+        $this->salt = $custom_config['kuaidi_100_salt'];
         $this->callback_url = url('/v1/out_push/delivery_traces');
     }
 

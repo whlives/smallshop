@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <link rel="stylesheet" href="../../../../layuiadmin/layui/css/layui.css" media="all">
     <link rel="stylesheet" href="../../../../layuiadmin/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../../../layuiadmin/style/table.css" media="all">
     <style>
         .layui-table tbody tr:hover, .layui-table-hover {
             background-color: #ffffff;
@@ -90,7 +91,7 @@
                                             <select name="seller_id" lay-filter="seller_id" lay-search="">
                                                 <option value=""></option>
                                                 {{# layui.each(d.data, function(index, item){ }}
-                                                <option value="{{ item.id }}" {{# if(item.id== d.params.seller_id){ }}selected{{# } }}>{{ item.title }}</option>
+                                                <option value="{{ item.id }}">{{ item.title }}</option>
                                                 {{# }); }}
                                             </select>
                                         </script>
@@ -189,7 +190,7 @@
                                     <td>
                                         {{# if(item.image != ''){ }}
                                         <a href="{{ item.image }}" target="_blank">
-                                            <img src="{{ layui.common.image_resize(item.image, 75, 75) }}">
+                                            <img src="{{ layui.common.image_resize(item.image, 75, 75) }}" width="75" height="75">
                                         </a>
                                         {{# } }}
                                     </td>

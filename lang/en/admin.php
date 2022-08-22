@@ -111,7 +111,7 @@ return [
     'default_seller_no_del' => '70000|默认商家禁止删除',
     'seller_is_must' => '70001|商家信息不存在',
 
-    //第三方调用的80000
-    'mini_program_qrcode_error' => '80000|小程序生成失败',
+    //第三方调用的70200
+    'mini_program_qrcode_error' => '70200|小程序生成失败',
 
 ];

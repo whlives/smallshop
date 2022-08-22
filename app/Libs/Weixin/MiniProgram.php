@@ -17,12 +17,14 @@ use Illuminate\Support\Facades\Storage;
 class MiniProgram
 {
     private $app;
+    public array $custom_config;
 
     function __construct()
     {
+        $this->custom_config = get_custom_config_all();
         $config = [
-            'app_id' => get_custom_config('mini_appid'),
-            'secret' => get_custom_config('mini_secret'),
+            'app_id' => $this->custom_config['mini_appid'],
+            'secret' => $this->custom_config['mini_secret'],
         ];
         $this->app = new Application($config);
     }
@@ -48,7 +50,7 @@ class MiniProgram
                 $result = $utils->codeToSession($code);
                 if (isset($result['session_key'])) {
                     $session_data = $result;
-                    Cache::put($cache_key, $session_data, get_custom_config('cache_time'));
+                    Cache::put($cache_key, $session_data, $this->custom_config['cache_time']);
                 } else {
                     return false;
                 }
@@ -137,7 +139,7 @@ class MiniProgram
             $url = $dir . md5($scene) . '.jpg';
             $content = $response->getContent(true);
             Storage::put($url, $content);
-            $upload_type = get_custom_config('upload_type');
+            $upload_type = $this->custom_config['upload_type'];
             if ($upload_type == 1) {
                 //上传到阿里云
                 $tmp_file_name = storage_path('app') . '/' . $url;
@@ -146,7 +148,7 @@ class MiniProgram
                 unlink($tmp_file_name);
                 return $oss_url;
             } else {
-                return get_custom_config('img_domain') . '/' . $url;
+                return $this->custom_config['img_domain'] . '/' . $url;
             }
         } catch (\Throwable $e) {
             return false;

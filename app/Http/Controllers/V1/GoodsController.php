@@ -125,56 +125,38 @@ class GoodsController extends BaseController
         $goods['show_price'] = min(array_column($goods['sku'], 'show_price'));
         $goods['line_price'] = min(array_column($goods['sku'], 'line_price'));
         //是否收藏
-        if ($m_id && Favorite::where(['m_id' => $m_id, 'type' => Favorite::TYPE_GOODS, 'object_id' => $goods['id']])->exists()) {
-            $goods['favorite'] = 1;
+        if ($m_id) {
+            $goods['favorite'] = Favorite::getFavorite($m_id, Favorite::TYPE_GOODS, $goods['id']);
         }
         $error = '';
         //获取活动商品信息
         if ($goods['promo_type'] == Goods::PROMO_TYPE_SECKILL) {
             //查询秒杀信息
-            $seckill = PromoSeckill::select('start_at', 'end_at', 'end_at', 'status')->where('goods_id', $id)->first();
-            if (!$seckill) {
-                $error = __('api.seckill_error');
-            } elseif ($seckill['start_at'] > get_date()) {
-                $error = __('api.seckill_not_start');
-            } elseif ($seckill['end_at'] < get_date()) {
-                $error = __('api.seckill_is_end');
-            } elseif ($seckill['status'] != PromoSeckill::STATUS_ON) {
-                $error = __('api.seckill_status_error');
-            }
+            $seckill = PromoSeckill::checkSeckill($id);
             [$pct, $stock, $remaining_stock] = Goods::getRedisStock($id);
             $seckill['pct'] = $pct;//秒杀进度
             $goods['seckill'] = $seckill;
             //秒杀库存读取redis
             $goods['stock'] = $remaining_stock;
-            $goods_sku = $goods['sku'];
-            foreach ($goods_sku as $key => $val) {
-                $goods_sku[$key]['stock'] = $stock[$val['id']] ?? 0;
+            $promo_goods_sku = $goods['sku'];
+            foreach ($promo_goods_sku as $key => $val) {
+                $promo_goods_sku[$key]['stock'] = $stock[$val['id']] ?? 0;
             }
-            $goods['sku'] = $goods_sku;
+            $goods['sku'] = $promo_goods_sku;
         } elseif ($goods['promo_type'] == Goods::PROMO_TYPE_GROUP) {
             //查询拼团信息
-            $group = PromoGroup::select('group_num', 'status', 'start_at', 'end_at')->where('goods_id', $id)->first();
-            if (!$group) {
-                $error = __('api.group_error');
-            } elseif ($group['status'] != PromoGroup::STATUS_ON) {
-                $error = __('api.group_status_error');
-            } elseif ($group['start_at'] > get_date()) {
-                $error = __('api.group_not_start');
-            } elseif ($group['end_at'] < get_date()) {
-                $error = __('api.group_is_end');
-            }
+            $group = PromoGroup::checkGroup($id);
             $goods['group'] = $group;
         } elseif ($goods['type'] == Goods::TYPE_COUPONS) {
             //有价优惠券
             [$pct, $stock, $remaining_stock] = Goods::getRedisStock($id);
             //秒杀库存读取redis
             $goods['stock'] = $remaining_stock;
-            $goods_sku = $goods['sku'];
-            foreach ($goods_sku as $key => $val) {
-                $goods_sku[$key]['stock'] = $stock[$val['id']] ?? 0;
+            $promo_goods_sku = $goods['sku'];
+            foreach ($promo_goods_sku as $key => $val) {
+                $promo_goods_sku[$key]['stock'] = $stock[$val['id']] ?? 0;
             }
-            $goods['sku'] = $goods_sku;
+            $goods['sku'] = $promo_goods_sku;
         }
         $goods['error'] = substr($error, 6);
         //按钮显示
@@ -237,36 +219,35 @@ class GoodsController extends BaseController
                 ->offset($offset)
                 ->limit($limit)
                 ->get();
-            if ($res_list->isEmpty()) {
-                api_error(__('api.content_is_empty'));
-            }
-            $res_list = $res_list->toArray();
-            $m_ids = array_column($res_list, 'm_id');
-            $comment_ids = array_column($res_list, 'id');
-            //查询用户信息
-            $res_member = Member::whereIn('id', $m_ids)->select('id', 'nickname', 'headimg')->get();
-            $member = array_column($res_member->toArray(), null, 'id');
-            //查询图片、视频信息
-            $image_url = $video_url = [];
-            $url_res = CommentUrl::select('comment_id', 'url', 'type')->whereIn('comment_id', array_unique($comment_ids))->get();
-            if (!$url_res->isEmpty()) {
-                foreach ($url_res as $value) {
-                    if ($value['type'] == CommentUrl::TYPE_IMAGE) {
-                        $image_url[$value['comment_id']][] = ['url' => $value['url']];
-                    } elseif ($value['type'] == CommentUrl::TYPE_VIDEO) {
-                        $video_url[$value['comment_id']][] = ['url' => $value['url']];
+            $data_list = [];
+            if (!$res_list->isEmpty()) {
+                $res_list = $res_list->toArray();
+                $m_ids = array_column($res_list, 'm_id');
+                $comment_ids = array_column($res_list, 'id');
+                //查询用户信息
+                $res_member = Member::whereIn('id', $m_ids)->select('id', 'nickname', 'headimg')->get();
+                $member = array_column($res_member->toArray(), null, 'id');
+                //查询图片、视频信息
+                $image_url = $video_url = [];
+                $url_res = CommentUrl::select('comment_id', 'url', 'type')->whereIn('comment_id', array_unique($comment_ids))->get();
+                if (!$url_res->isEmpty()) {
+                    foreach ($url_res as $value) {
+                        if ($value['type'] == CommentUrl::TYPE_IMAGE) {
+                            $image_url[$value['comment_id']][] = ['url' => $value['url']];
+                        } elseif ($value['type'] == CommentUrl::TYPE_VIDEO) {
+                            $video_url[$value['comment_id']][] = ['url' => $value['url']];
+                        }
                     }
                 }
-            }
-            $data_list = [];
-            foreach ($res_list as $value) {
-                $_item = $value;
-                $_item['spec_value'] = GoodsService::formatSpecValue($value['spec_value']);
-                $_item['nickname'] = $member[$value['m_id']]['nickname'] ?? '';
-                $_item['headimg'] = $member[$value['m_id']]['headimg'] ?? '';
-                $_item['image'] = $image_url[$value['id']] ?? [];
-                $_item['video'] = $video_url[$value['id']] ?? [];
-                $data_list[] = $_item;
+                foreach ($res_list as $value) {
+                    $_item = $value;
+                    $_item['spec_value'] = GoodsService::formatSpecValue($value['spec_value']);
+                    $_item['nickname'] = $member[$value['m_id']]['nickname'] ?? '';
+                    $_item['headimg'] = $member[$value['m_id']]['headimg'] ?? '';
+                    $_item['image'] = $image_url[$value['id']] ?? [];
+                    $_item['video'] = $video_url[$value['id']] ?? [];
+                    $data_list[] = $_item;
+                }
             }
             $return = [
                 'lists' => $data_list,

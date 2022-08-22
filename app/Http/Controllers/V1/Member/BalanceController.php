@@ -124,7 +124,7 @@ class BalanceController extends BaseController
         $name = $request->post('name');
         $bank_name = $request->post('bank_name');
         $pay_number = $request->post('pay_number');
-        if (!$amount || !check_price($amount) || !$name || !$pay_number) {
+        if (!$amount || !$name || !$pay_number) {
             api_error(__('api.missing_params'));
         } elseif (!check_price($amount) || !isset(Withdraw::TYPE_DESC[$type])) {
             api_error(__('api.invalid_params'));

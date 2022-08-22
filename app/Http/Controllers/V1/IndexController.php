@@ -8,16 +8,16 @@
 
 namespace App\Http\Controllers\V1;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
-class IndexController extends Controller
+class IndexController extends BaseController
 {
 
     /**
      * 首页
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
         return 'ok';
     }

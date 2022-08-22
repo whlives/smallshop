@@ -70,6 +70,7 @@ class RefundController extends BaseController
             $_item = [
                 'id' => $value['id'],
                 'refund_no' => $value['refund_no'],
+                'order_goods_id' => $value['order_goods_id'],
                 'refund_type_text' => Refund::REFUND_TYPE_DESC[$value['refund_type']],
                 'refund_type' => $value['refund_type'],
                 'status' => $value['status'],

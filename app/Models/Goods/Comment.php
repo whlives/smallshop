@@ -25,6 +25,14 @@ class Comment extends BaseModel
         self::STATUS_ON => '已审核',
     ];
 
+    //是否有图
+    const IS_IMAGE_TRUE = 1;
+    const IS_IMAGE_FALSE = 0;
+
+    //是否有视频
+    const IS_VIDEO_TRUE = 1;
+    const IS_VIDEO_FALSE = 0;
+
     protected $table = 'comment';
     protected $guarded = ['id'];
 

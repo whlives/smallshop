@@ -11,7 +11,7 @@
         {{# layui.each(d.params.goods, function(index, item){ }}
         <tr>
             <td>
-                <a target="_blank" href="{{ item.image }}"><img src="{{ layui.common.image_resize(item.image, 80, 80) }}"></a>
+                <a target="_blank" href="{{ item.image }}"><img src="{{ layui.common.image_resize(item.image, 80, 80) }}" width="80" height="80"></a>
             </td>
             <td>{{ item.goods_title }}</td>
             <td>{{ item.sell_price }}</td>

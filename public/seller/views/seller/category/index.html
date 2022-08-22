@@ -45,7 +45,7 @@
                                         <i class="sm_iconfont {{# if(item.children){ }}children icon-jianhaoshouqi{{# }else{ }}icon-jurassic_form-blank{{# } }}" data-id="{{ item.id }}"></i>
                                         {{ item.title }}
                                         {{# if(item.image){ }}
-                                        <a href="{{ item.image }}" target="_blank"><img src="{{ layui.common.image_resize(item.image, 30, 30) }}"></a>
+                                        <a href="{{ item.image }}" target="_blank"><img src="{{ layui.common.image_resize(item.image, 30, 30) }}" width="30" height="30"></a>
                                         {{# } }}
                                     </td>
                                     <td class="td_center">{{ item.position }}</td>
@@ -66,7 +66,7 @@
                                         <i class="sm_iconfont {{# if(item1.children){ }}children icon-jianhaoshouqi{{# }else{ }}icon-jurassic_form-blank{{# } }}" data-id="{{ item1.id }}"></i>
                                         {{ item1.title }}
                                         {{# if(item1.image){ }}
-                                        <a href="{{ item1.image }}" target="_blank"><img src="{{ layui.common.image_resize(item1.image, 30, 30) }}"></a>
+                                        <a href="{{ item1.image }}" target="_blank"><img src="{{ layui.common.image_resize(item1.image, 30, 30) }}" width="30" height="30"></a>
                                         {{# } }}
                                     </td>
                                     <td class="td_center">{{ item1.position }}</td>

@@ -41,10 +41,11 @@ class RefundCancel extends Command
      */
     public function handle()
     {
+        $custom_config = get_custom_config_all();
         //高访问的时候关闭
-        $high_qps = get_custom_config('high_qps');
+        $high_qps = $custom_config['high_qps'];
         if ($high_qps) return false;
-        $refund_cancel_time = get_custom_config('refund_cancel_time');
+        $refund_cancel_time = $custom_config['refund_cancel_time'];
         if (!$refund_cancel_time) return false;
         LogService::putLog('crontab', '取消超时处理的售后');
         $user_data = [

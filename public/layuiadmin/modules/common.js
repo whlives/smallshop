@@ -128,14 +128,15 @@ layui.define(function (exports) {
          * @param title 弹框名称
          * @param view_url 地址
          * @param default_data 默认参数
-         * @param id 数据id
+         * @param width 弹出框宽度
+         * @param height 弹出框高度
          */
-        detail: function (title, view_url, default_data) {
+        detail: function (title, view_url, default_data, width = '100%', height = '100%') {
             if (!default_data) default_data = {};
             view_url = layui.setter.viewsDir + model_url + '/' + view_url;
             admin.popup({
                 title: title,
-                area: ['100%', '100%'],
+                area: [width, height],
                 id: new Date().getTime(),
                 success: function (layero, index) {
                     view(this.id).render(view_url, default_data).done(function () {

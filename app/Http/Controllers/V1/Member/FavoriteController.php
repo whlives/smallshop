@@ -131,9 +131,11 @@ class FavoriteController extends BaseController
         if (Favorite::where($data)->exists()) {
             //已经存在就取消
             $res = Favorite::where($data)->delete();
+            Favorite::delFavorite($this->m_id, $type, $id);
             $action = 'del';
         } else {
             $res = Favorite::create($data);
+            Favorite::setFavorite($this->m_id, $type, $id);
             $action = 'add';
         }
         if ($res) {

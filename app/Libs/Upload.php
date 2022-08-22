@@ -59,7 +59,7 @@ class Upload
     {
         $dir = self::getDir($model);//获取存储地址
         $path = $file->store(trim($dir, '/'));//存储文件
-        $url = get_custom_config('img_domain') . '/' . $path;
+        $url = $this->img_domain . '/' . $path;
         $title = $file->getClientOriginalName();
         FileLog::create(['title' => $title, 'url' => $url, 'type' => FileLog::TYPE_FILE]);
         return $url;

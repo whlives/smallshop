@@ -38,4 +38,37 @@ class Adv extends BaseModel
     protected $table = 'adv';
     protected $guarded = ['id'];
 
+    /**
+     * 获取广告
+     * @param int $code
+     * @return array
+     */
+    public static function getAdv(int $code)
+    {
+        $return = [];
+        $group_where = [
+            ['code', $code],
+            ['status', AdvGroup::STATUS_ON]
+        ];
+        $group_id = AdvGroup::where($group_where)->value('id');
+        if (!$group_id) {
+            return $return;
+        }
+        $adv_where = [
+            ['group_id', $group_id],
+            ['status', Adv::STATUS_ON],
+            ['start_at', '<=', get_date()],
+            ['end_at', '>=', get_date()]
+        ];
+        $res_list = Adv::select('title', 'image', 'target_type', 'target_value')
+            ->where($adv_where)
+            ->orderBy('position', 'asc')
+            ->orderBy('id', 'desc')
+            ->get();
+        if ($res_list->isEmpty()) {
+            return $return;
+        }
+        return $res_list->toArray();
+    }
+
 }

@@ -1411,17 +1411,6 @@ html {
     cursor: pointer;
 }
 
-/* 表格高度自适应 */
-.layui-table-cell {
-    font-size: 14px;
-    padding: 0 5px;
-    height: auto;
-    overflow: visible;
-    text-overflow: inherit;
-    white-space: normal;
-    word-break: break-all;
-}
-
 /* 表格头部切换 */
 .table_tab {
     margin-top: 0px;

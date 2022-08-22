@@ -22,10 +22,12 @@ class Wechat
     public string $platform = '';
     public string $type = '';
     public string $appid = '';
+    public array $config = [];
     public string $notify_url = '';
 
     public function __construct($platform)
     {
+        $custom_config = get_custom_config_all();
         $this->platform = $platform;
         if (in_array($platform, [Payment::CLIENT_TYPE_ANDROID, Payment::CLIENT_TYPE_IOS])) {
             $this->type = 'app';//app等使用开放平台
@@ -35,15 +37,15 @@ class Wechat
             $this->type = 'mp';
         }
         $this->notify_url = url('/v1/out_push/pay_notify/' . Payment::PAYMENT_WECHAT . '/' . $this->platform);
-        $this->appid = get_custom_config($this->type . '_appid');
-        $config = [
-            'mch_id' => get_custom_config($this->type . '_mch_id'),
-            'private_key' => get_custom_config($this->type . '_key_path'),
-            'certificate' => get_custom_config($this->type . '_cert_path'),
-            'secret_key' => get_custom_config($this->type . '_api_key'),//v3 API秘钥
-            'v2_secret_key' => get_custom_config($this->type . '_api_key'),//v2 API秘钥
+        $this->appid = $custom_config[$this->type . '_appid'];
+        $this->config = [
+            'mch_id' => $custom_config[$this->type . '_mch_id'],
+            'private_key' => $custom_config[$this->type . '_key_path'],
+            'certificate' => $custom_config[$this->type . '_cert_path'],
+            'secret_key' => $custom_config[$this->type . '_api_key'],//v3 API秘钥
+            'v2_secret_key' => $custom_config[$this->type . '_api_key'],//v2 API秘钥
         ];
-        $this->app = new Application($config);
+        $this->app = new Application($this->config);
     }
 
     /**
@@ -57,7 +59,7 @@ class Wechat
     public function getPayData(array $pay_info)
     {
         $post_data = [
-            'mchid' => get_custom_config($this->type . '_mch_id'),
+            'mchid' => $this->config['mch_id'],
             'out_trade_no' => $pay_info['trade_no'],
             'appid' => $this->appid,
             'description' => $pay_info['title'],

@@ -1,0 +1,10 @@
+/* 表格高度自适应 */
+.layui-table-body .layui-table-cell {
+    font-size: 14px;
+    padding: 5px 5px;
+    height: auto;
+    overflow: visible;
+    text-overflow: inherit;
+    white-space: normal;
+    word-break: break-all;
+}

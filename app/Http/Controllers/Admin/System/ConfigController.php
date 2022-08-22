@@ -132,7 +132,7 @@ class ConfigController extends BaseController
             }
         } else {
             //分布式环境下
-            get_custom_config('', true);
+            get_custom_config_all(true);
         }
     }
 }

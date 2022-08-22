@@ -105,29 +105,8 @@ class HelperController extends BaseController
         if (!$code) {
             api_error(__('api.missing_params'));
         }
-        $group_where = [
-            ['code', $code],
-            ['status', AdvGroup::STATUS_ON]
-        ];
-        $group_id = AdvGroup::where($group_where)->value('id');
-        if (!$group_id) {
-            api_error(__('api.content_is_empty'));
-        }
-        $adv_where = [
-            ['group_id', $group_id],
-            ['status', Adv::STATUS_ON],
-            ['start_at', '<=', get_date()],
-            ['end_at', '>=', get_date()]
-        ];
-        $res_list = Adv::select('title', 'image', 'target_type', 'target_value')
-            ->where($adv_where)
-            ->orderBy('position', 'asc')
-            ->orderBy('id', 'desc')
-            ->get();
-        if ($res_list->isEmpty()) {
-            api_error(__('api.content_is_empty'));
-        }
-        return $this->success($res_list);
+        $res = Adv::getAdv($code);
+        return $this->success($res);
     }
 
     /**

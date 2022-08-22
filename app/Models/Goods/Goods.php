@@ -430,10 +430,10 @@ class Goods extends BaseModel
                 if ($coupons_id && $goods['type'] == Goods::TYPE_COUPONS) {
                     GoodsCoupons::create(['goods_id' => $id, 'coupons_id' => $coupons_id]);
                 }
-                return true;
+                return $id;
             });
-            self::syncRedisStock($id);//同步redis库存
-            return $res;
+            self::syncRedisStock($res);//同步redis库存
+            return true;
         } catch (\Exception $e) {
             return false;
         }

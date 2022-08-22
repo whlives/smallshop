@@ -207,7 +207,7 @@
                 {{# layui.each(d, function(index, item){ }}
                 <tr>
                     <td>
-                        <img src="{{ layui.common.image_resize(item.goods.image, 30, 30) }}">
+                        <img src="{{ layui.common.image_resize(item.goods.image, 30, 30) }}" width="30" height="30">
                     </td>
                     <td>{{ item.goods.goods_title }}{{# if(item.goods.spec_value){ }}<span class="layui-font-gray">({{ item.goods.spec_value }})</span>{{# } }}</td>
                     <td>{{ item.refund_no }}</td>

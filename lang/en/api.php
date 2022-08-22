@@ -159,8 +159,8 @@ return [
     'seller_error' => '70000|商家信息错误',
 
 
-    //第三方调用的80000
-    'mini_program_qrcode_error' => '80000|小程序生成失败',
+    //第三方调用的70200
+    'mini_program_qrcode_error' => '70200|小程序生成失败',
 
 
 ];

@@ -39,30 +39,47 @@ if (!function_exists('get_date')) {
     }
 }
 
-if (!function_exists('get_custom_config')) {
+if (!function_exists('get_custom_config_all')) {
     /**
-     * 获取后台自定义配置信息
-     * @param string $key_name 配置key
+     * 获取所有自定义配置信息
      * @param bool $del 是否删除缓存
-     * @return mixed
+     * @return array|false
      */
-    function get_custom_config(string $key_name = '', bool $del = false): mixed
+    function get_custom_config_all(bool $del = false): array|false
     {
-        //如果在访问量大的情况下，可以只少部分配置在后台，通过前缀来区分。只有指定前缀的才用后台配置的，其他的直接写到配置文件
         if (!config('app.is_slb')) {
             //单机部署
-            return config('custom.' . $key_name);
+            return config('custom');
         } else {
             //分布式环境下
             $cache_key = 'custom_config:' . config('app.key');
             if ($del) {
                 \Illuminate\Support\Facades\Cache::forget($cache_key);
+                return false;
             }
             $custom_config = \Illuminate\Support\Facades\Cache::get($cache_key);
             if (!$custom_config) {
                 $custom_config = \App\Models\System\Config::select('key_name', 'value')->pluck('value', 'key_name')->toArray();
                 \Illuminate\Support\Facades\Cache::put($cache_key, $custom_config, 3600 * 24 * 20);//注意memcache最大缓存时间是30天
             }
+        }
+        return $custom_config;
+    }
+}
+
+if (!function_exists('get_custom_config')) {
+    /**
+     * 获取后台自定义配置信息
+     * @param string $key_name 配置key
+     * @return mixed
+     */
+    function get_custom_config(string $key_name = ''): mixed
+    {
+        if (!config('app.is_slb')) {
+            //单机部署
+            return config('custom.' . $key_name);
+        } else {
+            $custom_config = get_custom_config_all();
             if ($key_name && isset($custom_config[$key_name])) {
                 return $custom_config[$key_name];
             }

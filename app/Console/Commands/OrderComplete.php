@@ -41,10 +41,11 @@ class OrderComplete extends Command
      */
     public function handle()
     {
+        $custom_config = get_custom_config_all();
         //高访问的时候关闭
-        $high_qps = get_custom_config('high_qps');
+        $high_qps = $custom_config['high_qps'];
         if ($high_qps) return false;
-        $order_complete_time = get_custom_config('order_complete_time');
+        $order_complete_time = $custom_config['order_complete_time'];
         if (!$order_complete_time) return false;
         LogService::putLog('crontab', '完成订单');
         $user_data = [

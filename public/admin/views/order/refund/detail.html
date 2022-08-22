@@ -59,7 +59,7 @@
                     {{# } }}
                     {{# if(item.image){ }}
                     {{# layui.each(item.image, function(k, url){ }}
-                    <a target="_blank" href="{{ url.image }}"><img src="{{ layui.common.image_resize(url.image, 30, 30) }}"></a>
+                    <a target="_blank" href="{{ url.image }}"><img src="{{ layui.common.image_resize(url.image, 30, 30) }}" width="30" height="30"></a>
                     {{# }); }}
                     {{# } }}
                 </td>

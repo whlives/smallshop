@@ -21,16 +21,17 @@ class Sts
 
     public function __construct()
     {
+        $custom_config = get_custom_config_all();
         $this->config = [
-            'aliyun_key_id' => get_custom_config('aliyun_key_id'),
-            'aliyun_key_secret' => get_custom_config('aliyun_key_secret'),
-            'aliyun_sts_rolearn' => get_custom_config('aliyun_sts_rolearn'),
-            'aliyun_oss_bucket' => get_custom_config('aliyun_oss_bucket'),
-            'aliyun_oss_endpoint' => get_custom_config('aliyun_oss_endpoint'),
-            'aliyun_oss_region' => get_custom_config('aliyun_oss_region'),
+            'aliyun_key_id' => $custom_config['aliyun_key_id'],
+            'aliyun_key_secret' => $custom_config['aliyun_key_secret'],
+            'aliyun_sts_rolearn' => $custom_config['aliyun_sts_rolearn'],
+            'aliyun_oss_bucket' => $custom_config['aliyun_oss_bucket'],
+            'aliyun_oss_endpoint' => $custom_config['aliyun_oss_endpoint'],
+            'aliyun_oss_region' => $custom_config['aliyun_oss_region'],
         ];
         $this->role_name = get_platform() ?: 'admin';
-        $this->img_domain = get_custom_config('img_domain');
+        $this->img_domain = $custom_config['img_domain'];
     }
 
     /**
@@ -80,7 +81,7 @@ class Sts
                     'policy' => $policy,
                     'signature' => $signature,
                     'dirname' => $dir,
-                    'domain' => get_custom_config('img_domain')
+                    'domain' => $this->img_domain
                 ];
                 return $sts_data;
             } else {

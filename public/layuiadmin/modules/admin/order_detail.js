@@ -15,7 +15,7 @@ layui.define(function (exports) {
         common = layui.common,
         params = '',
         model_url = '/order/order';
-    
+
     common.set_model_url(model_url);//设置默认模块地址
 
     //定模快捷切换选项
@@ -25,15 +25,8 @@ layui.define(function (exports) {
             case 'detail':
                 get_detail();
                 break;
-            case 'delivery':
-                get_delivery();
-                break;
-            case 'log':
-                get_log();
-                break;
-            case 'refund':
-                get_refund();
-                break
+            default:
+                get_tab_list(type);
         }
         common.set_button(model_url);//设置按钮权限
     });
@@ -44,52 +37,20 @@ layui.define(function (exports) {
         if (result) {
             laytpl($('#detail_tpl').html()).render(result.data, function (html) {
                 $('#detail').html(html);
-                //转化静态表格
-                table.init('detail_goods', {
-                    escape: false,
-                });
                 form.render();
                 common.set_button(model_url);//设置按钮权限
             })
         }
     }
 
-    //发货信息
-    function get_delivery() {
-        let result = common.ajax(model_url + '/get_delivery', {order_id: params.id});
+    //tab切换数据请求
+    function get_tab_list(type) {
+        let result = common.ajax(model_url + '/' + type, {live_id: params.id});
         if (result) {
-            laytpl($('#delivery_tpl').html()).render(result.data, function (html) {
-                $('#delivery').html(html);
+            laytpl($('#' + type + '_tpl').html()).render(result.data, function (html) {
+                $('#' + type).html(html);
                 //转化静态表格
-                table.init('detail_delivery', {
-                    escape: false,
-                });
-            })
-        }
-    }
-
-    //订单日志
-    function get_log() {
-        let result = common.ajax(model_url + '/get_log', {order_id: params.id});
-        if (result) {
-            laytpl($('#log_tpl').html()).render(result.data, function (html) {
-                $('#log').html(html);
-                //转化静态表格
-                table.init('detail_log', {
-                    escape: false,
-                });
-            })
-        }
-    }
-
-    //订单售后
-    function get_refund() {
-        let result = common.ajax(model_url + '/get_refund', {order_id: params.id});
-        if (result) {
-            laytpl($('#refund_tpl').html()).render(result.data, function (html) {
-                $('#refund').html(html);
-                //转化静态表格
-                table.init('detail_refund', {
+                table.init('detail_' + type, {
                     escape: false,
                 });
             })

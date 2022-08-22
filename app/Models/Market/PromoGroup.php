@@ -40,7 +40,7 @@ class PromoGroup extends BaseModel
      */
     public static function checkGroup(int $goods_id, int $group_order_id = 0)
     {
-        $group = self::where('goods_id', $goods_id)->first();
+        $group = self::select('group_num', 'status', 'start_at', 'end_at')->where('goods_id', $goods_id)->first();
         if (!$group) {
             api_error(__('api.group_error'));
         } elseif ($group['status'] != self::STATUS_ON) {

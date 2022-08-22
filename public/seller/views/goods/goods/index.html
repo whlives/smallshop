@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <link rel="stylesheet" href="../../../../layuiadmin/layui/css/layui.css" media="all">
     <link rel="stylesheet" href="../../../../layuiadmin/style/admin.css" media="all">
+    <link rel="stylesheet" href="../../../../layuiadmin/style/table.css" media="all">
 </head>
 <body>
 <div class="layui-fluid">
@@ -42,13 +43,13 @@
                                             <select name="category_id" lay-search="">
                                                 <option value=""></option>
                                                 {{# layui.each(d.data, function(index, item){ }}
-                                                <option value="{{ item.id }}" {{# if(item.children){ }}disabled{{# } }}{{# if(item.id== d.params.category_id){ }}selected{{# } }}>{{ item.title }}</option>
+                                                <option value="{{ item.id }}" {{# if(item.children){ }}disabled{{# } }}>{{ item.title }}</option>
                                                 {{# if(item.children){ }}
                                                 {{# layui.each(item.children, function(index1, item1){ }}
-                                                <option value="{{ item1.id }}" {{# if(item1.children){ }}disabled{{# } }}{{# if(item1.id== d.params.category_id){ }}selected{{# } }}>|--{{ item1.title }}</option>
+                                                <option value="{{ item1.id }}" {{# if(item1.children){ }}disabled{{# } }}>|--{{ item1.title }}</option>
                                                 {{# if(item1.children){ }}
                                                 {{# layui.each(item1.children, function(index2, item2){ }}
-                                                <option value="{{ item2.id }}" {{# if(item2.id== d.params.category_id){ }}selected{{# } }}>|--|--{{ item2.title }}</option>
+                                                <option value="{{ item2.id }}">|--|--{{ item2.title }}</option>
                                                 {{# }); }}
                                                 {{# } }}
                                                 {{# }); }}
@@ -119,13 +120,13 @@
                                             <select name="category_id" lay-search="">
                                                 <option value=""></option>
                                                 {{# layui.each(d.data, function(index, item){ }}
-                                                <option value="{{ item.id }}" {{# if(item.children){ }}disabled{{# } }}{{# if(item.id== d.params.category_id){ }}selected{{# } }}>{{ item.title }}</option>
+                                                <option value="{{ item.id }}" {{# if(item.children){ }}disabled{{# } }}>{{ item.title }}</option>
                                                 {{# if(item.children){ }}
                                                 {{# layui.each(item.children, function(index1, item1){ }}
-                                                <option value="{{ item1.id }}" {{# if(item1.children){ }}disabled{{# } }}{{# if(item1.id== d.params.category_id){ }}selected{{# } }}>|--{{ item1.title }}</option>
+                                                <option value="{{ item1.id }}" {{# if(item1.children){ }}disabled{{# } }}>|--{{ item1.title }}</option>
                                                 {{# if(item1.children){ }}
                                                 {{# layui.each(item1.children, function(index2, item2){ }}
-                                                <option value="{{ item2.id }}" {{# if(item2.id== d.params.category_id){ }}selected{{# } }}>|--|--{{ item2.title }}</option>
+                                                <option value="{{ item2.id }}">|--|--{{ item2.title }}</option>
                                                 {{# }); }}
                                                 {{# } }}
                                                 {{# }); }}
@@ -158,7 +159,7 @@
                         <script type="text/html" id="img_tmp">
                             {{# if(d.image != ''){ }}
                             <a href="{{ d.image }}" target="_blank">
-                                <img src="{{ layui.common.image_resize(d.image, 80, 80) }}"></a>
+                                <img src="{{ layui.common.image_resize(d.image, 80, 80) }}" width="80" height="80"></a>
                             {{# } }}
                         </script>
                         <script type="text/html" id="title_tmp">
