@@ -7,7 +7,7 @@
 #
 # 主机: localhost (MySQL 5.7.34)
 # 数据库: smallshop3
-# 生成时间: 2022-08-22 08:26:43 +0000
+# 生成时间: 2022-08-23 08:13:40 +0000
 # ************************************************************
 
 
@@ -5066,7 +5066,7 @@ CREATE TABLE `sm_goods_seller_category` (
   `goods_id` int(11) unsigned NOT NULL COMMENT '商品id',
   `category_id` int(11) unsigned NOT NULL COMMENT '分类id',
   PRIMARY KEY (`id`),
-  KEY `idx_categoryid` (`goods_id`)
+  KEY `idx_categoryid` (`category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品商家分类';
 
 
@@ -5525,10 +5525,10 @@ LOCK TABLES `sm_payment` WRITE;
 
 INSERT INTO `sm_payment` (`id`, `title`, `image`, `type`, `client_type`, `class_name`, `content`, `status`, `position`, `created_at`, `updated_at`, `deleted_at`)
 VALUES
-	(1,'微信','http://oss.shop168.com.cn/payment/weixin.jpg',1,'h5,mp,wechat,ios,android','Wechat','',1,999,'2018-05-16 11:29:53','2022-06-20 21:18:06',NULL),
-	(2,'支付宝','http://oss.shop168.com.cn/payment/zhifubao.jpg',1,'web,h5,ios,android','Alipay','',1,999,'2018-05-16 11:29:53','2022-06-20 21:18:07',NULL),
-	(3,'银联','http://oss.shop168.com.cn/payment/yinlian.jpg',1,'web','Unionpay','',0,999,'2018-05-16 11:29:53','2022-06-16 16:30:02',NULL),
-	(4,'余额支付','http://oss.shop168.com.cn/payment/yue.jpg',1,'web,h5,mp,wechat,ios,android','Balance','',1,999,'2018-05-16 11:29:53','2022-06-16 16:30:07',NULL);
+	(2,'微信','http://oss.shop168.com.cn/payment/weixin.jpg',1,'h5,mp,wechat,ios,android','Wechat','',1,999,'2018-05-16 11:29:53','2022-06-20 21:18:06',NULL),
+	(3,'支付宝','http://oss.shop168.com.cn/payment/zhifubao.jpg',1,'web,h5,ios,android','Alipay','',1,999,'2018-05-16 11:29:53','2022-06-20 21:18:07',NULL),
+	(4,'银联','http://oss.shop168.com.cn/payment/yinlian.jpg',1,'web','Unionpay','',0,999,'2018-05-16 11:29:53','2022-06-16 16:30:02',NULL),
+	(5,'余额支付','http://oss.shop168.com.cn/payment/yue.jpg',1,'web,h5,mp,wechat,ios,android','Balance','',1,999,'2018-05-16 11:29:53','2022-06-16 16:30:07',NULL);
 
 /*!40000 ALTER TABLE `sm_payment` ENABLE KEYS */;
 UNLOCK TABLES;
