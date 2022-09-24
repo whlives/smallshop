@@ -56,13 +56,13 @@ class OrderConfirm extends Command
             ['send_at', '<', get_date(time() - $order_confirm_time)]
         ];
         $page = 1;
-        $pagesize = 10;
+        $limit = 10;
         while (true) {
-            $offset = ($page - 1) * $pagesize;
+            $offset = ($page - 1) * $limit;
             $res_list = Order::select('id', 'status')
                 ->where($where)
                 ->offset($offset)
-                ->limit($pagesize)
+                ->limit($limit)
                 ->orderBy('id', 'asc')
                 ->get();
             if ($res_list->isEmpty()) {

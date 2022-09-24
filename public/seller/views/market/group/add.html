@@ -42,6 +42,7 @@
     </div>
 </form>
 <script type="text/html" template lay-done="layui.data.sendParams(d.params);"></script>
+<script src="../../../../layuiadmin/lib/xm-select.js"></script>
 <script>
     layui.data.sendParams = function (params) {
         layui.use(function () {
@@ -57,28 +58,34 @@
                 type: 'datetime',
                 range: ['#start_at', '#end_at']
             });
-
-            //选择商品
-            function get_goods(goods_id) {
-                let result = common.ajax(model_url + '/search');
-                if (result) {
-                    let html = '<option value="">请选择</option>';
-                    $.each(result.data, function (index, item) {
-                        let selected = '';
-                        if (item.id == goods_id) {
-                            selected = 'selected';
-                        }
-                        html += '<option value="' + item.id + '" ' + selected + '>' + item.id + '、' + item.title + '</option>';
-                    })
-                    $('[name="goods_id"]').html(html);
+            //商品选择
+            let goods_id = xmSelect.render({
+                el: '#goods_id',
+                name: 'goods_id',
+                radio: true,
+                autoRow: true,
+                filterable: true,
+                remoteSearch: true,
+                remoteMethod: function (val, cb) {
+                    //这里如果val为空, 则不触发搜索
+                    if (!val) {
+                        return cb([]);
+                    }
+                    if (!seller_id) {
+                        layer.msg('请先选择商家');
+                        return cb([]);
+                    }
+                    common.ajax(model_url + '/search', {title: val}, function (result) {
+                        return cb(result.data)
+                    }, function () {
+                        return cb([]);
+                    });
                 }
-                form.render('select');
-            }
-
-            if (params.seller_id) {
-                get_goods(params.goods_id);
-            } else {
-                get_goods();
+            });
+            if (params.goods) {
+                goods_id.setValue([
+                    {name: params.goods.title, value: params.goods.id},
+                ]);
             }
         });
     }

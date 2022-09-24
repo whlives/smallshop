@@ -153,8 +153,9 @@ class Wechat
             LogService::putLog('wechat_alipay', $message);//记录回调日志
             $transaction_id = $message['transaction_id'];
             $post_data = [
-                'mchid' => $message['mchid'],
-                'transaction_id' => $transaction_id,
+                'query' => [
+                    'mchid' => $message['mchid'],
+                ]
             ];
             $response = $this->app->getClient()->get('v3/pay/transactions/id/' . $transaction_id, $post_data);
             $res = $response->toArray(false);

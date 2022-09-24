@@ -60,8 +60,8 @@ class OrderGoods extends BaseModel
         }
         foreach ($goods_res->toArray() as $value) {
             $_item = $value;
-            $_item['sell_price'] = '￥' . $value['sell_price'];
-            $_item['market_price'] = '￥' . $value['market_price'];
+            $_item['sell_price'] = $value['sell_price'];
+            $_item['market_price'] = $value['market_price'];
             $_item['delivery_text'] = OrderGoods::DELIVERY_DESC[$value['delivery']];
             $_item['refund'] = OrderGoods::REFUND_DESC[$value['refund']];
             if ($is_group) {
@@ -92,8 +92,8 @@ class OrderGoods extends BaseModel
         }
         foreach ($goods_res->toArray() as $value) {
             $_item = $value;
-            $_item['sell_price'] = '￥' . $value['sell_price'];
-            $_item['market_price'] = '￥' . $value['market_price'];
+            $_item['sell_price'] = $value['sell_price'];
+            $_item['market_price'] = $value['market_price'];
             $_item['delivery_text'] = OrderGoods::DELIVERY_DESC[$value['delivery']];
             $_item['refund'] = OrderGoods::REFUND_DESC[$value['refund']];
             if ($is_group) {

@@ -44,10 +44,10 @@ layui.define(['common'], function (exports) {
         switch (type) {
             case 'delete':
                 layer.confirm('确定删除吗', function (index) {
-                    if (common.action_ajax('delete', {id: id}, false)) {
+                    common.action_ajax('delete', {id: id}, function () {
                         $('#row_menu_id_' + id).remove();
                         layer.close(index);
-                    }
+                    });
                 });
                 break;
             case 'edit':
@@ -62,7 +62,9 @@ layui.define(['common'], function (exports) {
     //监听锁定操作
     form.on('switch(status_btn)', function (obj) {
         let send_data = {id: this.value, status: obj.elem.checked == true ? 1 : 0};
-        common.action_ajax('status', send_data, false);
+        common.action_ajax('status', send_data, function () {
+            layer.msg('操作成功');
+        });
     });
 
     //全部展开或折叠

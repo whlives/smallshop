@@ -1,0 +1,35 @@
+/* 表格高度自适应 */
+.layui-table-body .layui-table-cell {
+    font-size: 14px;
+    padding: 5px 5px;
+    height: auto;
+    overflow: visible;
+    text-overflow: inherit;
+    white-space: normal;
+    word-break: break-all;
+}
+
+.layui-table tbody tr:hover, .layui-table-hover {
+    background-color: #ffffff;
+}
+
+.layui-table-view .layui-table {
+    width: 100%;
+}
+
+.order_table td {
+    vertical-align: text-top;
+}
+
+.order_goods_table tr td {
+    border-style: none;
+}
+
+.order_goods_table td {
+    vertical-align: middle;
+    padding-top: 5px;
+}
+
+.layui-table-view .layui-table td, .layui-table-view .layui-table th {
+    padding: 2px 0;
+}

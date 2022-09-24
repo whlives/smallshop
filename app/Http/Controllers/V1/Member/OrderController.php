@@ -180,7 +180,7 @@ class OrderController extends BaseController
     }
 
     /**
-     * 取消订单
+     * 确认订单
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse|void
      * @throws \App\Exceptions\ApiError

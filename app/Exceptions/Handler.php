@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Services\LogService;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
@@ -48,19 +49,22 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $e)
     {
-        /*$debug = config('app.debug');
-        if ($e->getMessage() && !$debug) {
-            $return = [
-                'msg' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'addtime' => get_date()
-            ];
-            //在这里可以替换成写入到第三方的日志库
-        } else {
+        if (!$e instanceof ApiError) {
+            /*$debug = config('app.debug');
+            if ($e->getMessage() && !$debug) {
+                $return = [
+                    'msg' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'addtime' => get_date()
+                ];
+                //在这里可以替换成写入到第三方的日志库
+                LogService::putLog('500error', $return);
+            } else {
+                parent::report($e);
+            }*/
             parent::report($e);
-        }*/
-        parent::report($e);
+        }
     }
 
     /**

@@ -42,7 +42,7 @@ layui.define(function (exports) {
          * 列表公共ajax请求
          * @param url 请求地址
          * @param data 请求数据
-         * @param reload 是否刷新
+         * @param reload 是否刷新，或者回调
          * @param table_id 当前table id
          * @returns {boolean}
          */
@@ -55,14 +55,12 @@ layui.define(function (exports) {
                     return false;
                 }
             }
-            let return_status = false;//返回数据
             admin.req({
                 url: layui.setter.apiHost + model_url + '/' + url,
                 data: data,
-                async: false,
                 success: function (result) {
                     if (result.code == 0) {
-                        if (reload) {
+                        if (reload === true) {
                             layer.msg('操作成功', {time: 1000}, function () {
                                 if ($('#' + table_id).length > 0) {
                                     table.reload(table_id);
@@ -70,8 +68,12 @@ layui.define(function (exports) {
                                     location.reload();
                                 }
                             })
+                        } else {
+                            try {
+                                reload(result);//不刷新的看是否有回调
+                            } catch (e) {
+                            }
                         }
-                        return_status = true;
                     } else if (result.msg) {
                         layer.msg(result.msg);
                     } else {
@@ -79,30 +81,35 @@ layui.define(function (exports) {
                     }
                 }
             })
-            return return_status;
         },
         /**
          * 发起ajax请求
          * @param url 地址
          * @param data 数据
+         * @param callback 回调函数
+         * @param error 错误回调函数
          */
-        ajax: function (url, data) {
-            let res_data = '';//返回数据
+        ajax: function (url, data, callback = {}, error = {}) {
             admin.req({
                 url: layui.setter.apiHost + url,
                 data: data,
-                async: false,
                 success: function (result) {
                     if (result.code == 0) {
-                        res_data = result;
+                        try {
+                            callback(result);
+                        } catch (e) {
+                        }
                     } else if (result.msg) {
-                        layer.msg(result.msg);
+                        try {
+                            error(result);
+                        } catch (e) {
+                            layer.msg(result.msg);
+                        }
                     } else {
                         layer.msg('操作失败');
                     }
                 }
             })
-            return res_data;
         },
         /**
          * 获取已经选择的数据id

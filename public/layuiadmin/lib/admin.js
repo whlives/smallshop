@@ -1,1 +1,860 @@
-/** The Web UI Theme-v1.8.0 */;layui.define("view",function(e){function t(e){e.attr("lay-id");var a=e.attr("lay-attr"),e=e.index();A.tabsBodyChange(e,{url:a})}var a,r=layui.jquery,s=layui.laytpl,i=layui.element,l=layui.table,n=layui.upload,o=layui.setter,u=layui.view,d=layui.device(),c=r(window),y=r("body"),m=r("#"+o.container),f="layui-show",h="layui-this",p="layui-disabled",b="#LAY_app_body",v="LAY_app_flexible",g="layadmin-layout-tabs",x="layadmin-side-spread-sm",C="layadmin-tabsbody-item",k="layui-icon-shrink-right",P="layui-icon-spread-left",F="layadmin-side-shrink",A={v:"1.8.0",mode:"iframe",req:u.req,exit:u.exit,escape:function(e){return String(e||"").replace(/&(?!#?[a-zA-Z0-9]+;)/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/'/g,"&#39;").replace(/"/g,"&quot;")},on:function(e,a){return layui.onevent.call(this,o.MOD_NAME,e,a)},sendAuthCode:function(i){function l(e){--n<0?(t.removeClass(p).html("\u83b7\u53d6\u9a8c\u8bc1\u7801"),n=i.seconds,clearInterval(a)):t.addClass(p).html(n+"\u79d2\u540e\u91cd\u83b7"),e||(a=setInterval(function(){l(!0)},1e3))}var a,n=(i=r.extend({seconds:60,elemPhone:"#LAY_phone",elemVercode:"#LAY_vercode"},i)).seconds,t=r(i.elem);i.elemPhone=r(i.elemPhone),i.elemVercode=r(i.elemVercode),t.on("click",function(){var a,e=i.elemPhone,t=e.val();if(n===i.seconds&&!r(this).hasClass(p)){if(!/^1\d{10}$/.test(t))return e.focus(),layer.msg("\u8bf7\u8f93\u5165\u6b63\u786e\u7684\u624b\u673a\u53f7");"object"==typeof i.ajax&&(a=i.ajax.success,delete i.ajax.success),A.req(r.extend(!0,{url:"/auth/code",type:"get",data:{phone:t},success:function(e){layer.msg("\u9a8c\u8bc1\u7801\u5df2\u53d1\u9001\u81f3\u4f60\u7684\u624b\u673a\uff0c\u8bf7\u6ce8\u610f\u67e5\u6536",{icon:1,shade:0}),i.elemVercode.focus(),l(),a&&a(e)}},i.ajax))}})},screen:function(){var e=c.width();return 1200<e?3:992<e?2:768<e?1:0},sideFlexible:function(e){var a=m,t=r("#"+v),i=A.screen();"spread"===e?(t.removeClass(P).addClass(k),i<2?a.addClass(x):a.removeClass(x),a.removeClass(F)):(t.removeClass(k).addClass(P),i<2?a.removeClass(F):a.addClass(F),a.removeClass(x)),layui.event.call(this,o.MOD_NAME,"side({*})",{status:e})},popup:u.popup,popupRight:function(e){return A.popup.index=layer.open(r.extend({type:1,id:"LAY_adminPopupR",anim:-1,title:!1,closeBtn:!1,offset:"r",shade:.1,shadeClose:!0,skin:"layui-anim layui-anim-rl layui-layer-adminRight",area:"300px"},e))},theme:function(e){o.theme;var t=layui.data(o.tableName),a="LAY_layadmin_theme",i=document.createElement("style"),l=s([".layui-side-menu,",".layui-layer-admin .layui-layer-title,",".layadmin-side-shrink .layui-side-menu .layui-nav>.layui-nav-item>.layui-nav-child","{background-color:{{d.color.main}} !important;}",".layadmin-pagetabs .layui-tab-title li:after,",".layadmin-pagetabs .layui-tab-title li.layui-this:after,",".layui-nav-tree .layui-this,",".layui-nav-tree .layui-this>a,",".layui-nav-tree .layui-nav-child dd.layui-this,",".layui-nav-tree .layui-nav-child dd.layui-this a","{background-color:{{d.color.selected}} !important;}",".layadmin-pagetabs .layui-tab-title li:hover,",".layadmin-pagetabs .layui-tab-title li.layui-this","{color: {{d.color.selected}} !important;}",".layui-layout-admin .layui-logo{background-color:{{d.color.logo || d.color.main}} !important;}","{{# if(d.color.header){ }}",".layui-layout-admin .layui-header{background-color:{{ d.color.header }};}",".layui-layout-admin .layui-header a,",".layui-layout-admin .layui-header a cite{color: #f8f8f8;}",".layui-layout-admin .layui-header a:hover{color: #fff;}",".layui-layout-admin .layui-header .layui-nav .layui-nav-more{border-top-color: #fbfbfb;}",".layui-layout-admin .layui-header .layui-nav .layui-nav-mored{border-color: transparent; border-bottom-color: #fbfbfb;}",".layui-layout-admin .layui-header .layui-nav .layui-this:after, .layui-layout-admin .layui-header .layui-nav-bar{background-color: #fff; background-color: rgba(255,255,255,.5);}",".layadmin-pagetabs .layui-tab-title li:after{display: none;}","{{# } }}"].join("")).render(e=r.extend({},t.theme,e)),n=document.getElementById(a);"styleSheet"in i?(i.setAttribute("type","text/css"),i.styleSheet.cssText=l):i.innerHTML=l,i.id=a,n&&y[0].removeChild(n),y[0].appendChild(i),y.attr("layadmin-themealias",e.color.alias),t.theme=t.theme||{},layui.each(e,function(e,a){t.theme[e]=a}),layui.data(o.tableName,{key:"theme",value:t.theme})},initTheme:function(e){var a=o.theme;a.color[e=e||0]&&(a.color[e].index=e,A.theme({color:a.color[e]}))},tabsPage:{},tabsBody:function(e){return r(b).find("."+C).eq(e||0)},tabsBodyChange:function(e,a){a=a||{},A.tabsBody(e).addClass(f).siblings().removeClass(f),z.rollPage("auto",e),layui.event.call(this,o.MOD_NAME,"tabsPage({*})",{url:a.url,text:a.text})},resize:function(e){var a=layui.router().path.join("-");A.resizeFn[a]&&(c.off("resize",A.resizeFn[a]),delete A.resizeFn[a]),"off"!==e&&(e(),A.resizeFn[a]=e,c.on("resize",A.resizeFn[a]))},resizeFn:{},runResize:function(){var e=layui.router().path.join("-");A.resizeFn[e]&&A.resizeFn[e]()},delResize:function(){this.resize("off")},closeThisTabs:function(){A.tabsPage.index&&r(_).eq(A.tabsPage.index).find(".layui-tab-close").trigger("click")},fullScreen:function(){var e=document.documentElement,a=e.requestFullScreen||e.webkitRequestFullScreen||e.mozRequestFullScreen||e.msRequestFullscreen;void 0!==a&&a&&a.call(e)},exitScreen:function(){document.documentElement;document.exitFullscreen?document.exitFullscreen():document.mozCancelFullScreen?document.mozCancelFullScreen():document.webkitCancelFullScreen?document.webkitCancelFullScreen():document.msExitFullscreen&&document.msExitFullscreen()}},z=A.events={flexible:function(e){e=e.find("#"+v).hasClass(P);A.sideFlexible(e?"spread":null)},refresh:function(){var e=r("."+C).length;A.tabsPage.index>=e&&(A.tabsPage.index=e-1),A.tabsBody(A.tabsPage.index).find(".layadmin-iframe")[0].contentWindow.location.reload(!0)},serach:function(t){t.off("keypress").on("keypress",function(e){var a;this.value.replace(/\s/g,"")&&13===e.keyCode&&(e=t.attr("lay-action"),a=t.attr("lay-text")||"\u641c\u7d22",e+=this.value,a=a+' <span style="color: #FF5722;">'+A.escape(this.value)+"</span>",layui.index.openTabsPage(e,a),z.serach.keys||(z.serach.keys={}),z.serach.keys[A.tabsPage.index]=this.value,this.value===z.serach.keys[A.tabsPage.index]&&z.refresh(t),this.value="")})},message:function(e){e.find(".layui-badge-dot").remove()},theme:function(){A.popupRight({id:"LAY_adminPopupTheme",success:function(){u(this.id).render("system/theme")}})},note:function(e){var a=A.screen()<2,t=layui.data(o.tableName).note;z.note.index=A.popup({title:"\u672c\u5730\u4fbf\u7b7e",shade:0,offset:["41px",a?null:e.offset().left-250+"px"],anim:-1,id:"LAY_adminNote",skin:"layadmin-note layui-anim layui-anim-upbit",content:'<textarea placeholder="\u5185\u5bb9"></textarea>',resize:!1,success:function(e,a){e.find("textarea").val(void 0===t?"\u4fbf\u7b7e\u4e2d\u7684\u5185\u5bb9\u4f1a\u5b58\u50a8\u5728\u672c\u5730\uff0c\u8fd9\u6837\u5373\u4fbf\u4f60\u5173\u6389\u4e86\u6d4f\u89c8\u5668\uff0c\u5728\u4e0b\u6b21\u6253\u5f00\u65f6\uff0c\u4f9d\u7136\u4f1a\u8bfb\u53d6\u5230\u4e0a\u4e00\u6b21\u7684\u8bb0\u5f55\u3002\u662f\u4e2a\u975e\u5e38\u5c0f\u5de7\u5b9e\u7528\u7684\u672c\u5730\u5907\u5fd8\u5f55":t).focus().on("keyup",function(){layui.data(o.tableName,{key:"note",value:this.value})})}})},fullscreen:function(e){var a="layui-icon-screen-full",t="layui-icon-screen-restore",e=e.children("i");e.hasClass(a)?(A.fullScreen(),e.addClass(t).removeClass(a)):(A.exitScreen(),e.addClass(a).removeClass(t))},about:function(){A.popupRight({id:"LAY_adminPopupAbout",success:function(){u(this.id).render("system/about")}})},more:function(){A.popupRight({id:"LAY_adminPopupMore",success:function(){u(this.id).render("system/more")}})},back:function(){history.back()},setTheme:function(e){var a=e.data("index");e.siblings(".layui-this").data("index");e.hasClass(h)||(e.addClass(h).siblings(".layui-this").removeClass(h),A.initTheme(a))},rollPage:function(e,a){var t,i=r("#LAY_app_tabsheader"),l=i.children("li"),n=(i.prop("scrollWidth"),i.outerWidth()),s=parseFloat(i.css("left"));if("left"===e)!s&&s<=0||(t=-s-n,l.each(function(e,a){a=r(a).position().left;if(t<=a)return i.css("left",-a),!1}));else if("auto"===e){var o,e=l.eq(a);if(e[0]){if((a=e.position().left)<-s)return void i.css("left",-a);a+e.outerWidth()>=n-s&&(o=a+e.outerWidth()-(n-s),l.each(function(e,a){a=r(a).position().left;if(0<a+s&&o<a-s)return i.css("left",-a),!1}))}}else l.each(function(e,a){var a=r(a),t=a.position().left;if(t+a.outerWidth()>=n-s)return i.css("left",-t),!1})},leftPage:function(){z.rollPage("left")},rightPage:function(){z.rollPage()},closeThisTabs:function(){(parent===self?A:parent.layui.admin).closeThisTabs()},closeOtherTabs:function(e){var t="LAY-system-pagetabs-remove";"all"===e?(r(_+":gt(0)").remove(),r(b).find("."+C+":gt(0)").remove(),r(_).eq(0).trigger("click")):(r(_).each(function(e,a){e&&e!=A.tabsPage.index&&(r(a).addClass(t),A.tabsBody(e).addClass(t))}),r("."+t).remove())},closeAllTabs:function(){z.closeOtherTabs("all")},shade:function(){A.sideFlexible()},im:function(){A.popup({id:"LAY-popup-layim-demo",shade:0,area:["800px","300px"],title:"\u9762\u677f\u5916\u7684\u64cd\u4f5c\u793a\u4f8b",offset:"lb",success:function(){layui.view(this.id).render("layim/demo").then(function(){layui.use("im")})}})}},_=((a=layui.data(o.tableName)).theme?A.theme(a.theme):o.theme&&A.initTheme(o.theme.initColorIndex),"pageTabs"in layui.setter||(layui.setter.pageTabs=!0),o.pageTabs||(r("#LAY_app_tabs").addClass("layui-hide"),m.addClass("layadmin-tabspage-none")),d.ie&&d.ie<10&&u.error("IE"+d.ie+"\u4e0b\u8bbf\u95ee\u53ef\u80fd\u4e0d\u4f73\uff0c\u63a8\u8350\u4f7f\u7528\uff1aChrome / Firefox / Edge \u7b49\u9ad8\u7ea7\u6d4f\u89c8\u5668",{offset:"auto",id:"LAY_errorIE"}),i.on("tab("+g+")",function(e){A.tabsPage.index=e.index}),A.on("tabsPage(setMenustatus)",function(e){function n(e){return{list:e.children(".layui-nav-child"),a:e.children("*[lay-href]")}}var s=e.url,e=r("#LAY-system-side-menu"),o="layui-nav-itemed";e.find("."+h).removeClass(h),A.screen()<2&&A.sideFlexible(),e.children("li").each(function(e,a){var a=r(a),t=n(a),i=t.list.children("dd"),l=s===t.a.attr("lay-href");if(i.each(function(e,a){var a=r(a),t=n(a),i=t.list.children("dd"),l=s===t.a.attr("lay-href");if(i.each(function(e,a){var a=r(a),t=n(a);if(s===t.a.attr("lay-href"))return t=t.list[0]?o:h,a.addClass(t).siblings().removeClass(t),!1}),l)return i=t.list[0]?o:h,a.addClass(i).siblings().removeClass(i),!1}),l)return i=t.list[0]?o:h,a.addClass(i).siblings().removeClass(i),!1})}),i.on("nav(layadmin-system-side-menu)",function(e){e.siblings(".layui-nav-child")[0]&&m.hasClass(F)&&(A.sideFlexible("spread"),layer.close(e.data("index"))),A.tabsPage.type="nav"}),i.on("nav(layadmin-pagetabs-nav)",function(e){e=e.parent();e.removeClass(h),e.parent().removeClass(f)}),"#LAY_app_tabsheader>li"),T=(y.on("click",_,function(){var e=r(this),a=e.index();A.tabsPage.type="tab",A.tabsPage.index=a,t(e)}),i.on("tabDelete("+g+")",function(e){var a=r(_+".layui-this");e.index&&A.tabsBody(e.index).remove(),t(a),A.delResize()}),y.on("click","*[lay-href]",function(){var e=r(this),a=e.attr("lay-href"),t=e.attr("lay-text");layui.router();A.tabsPage.elem=e,(parent===self?layui:top.layui).index.openTabsPage(a,t||e.text()),a===A.tabsBody(A.tabsPage.index).find("iframe").attr("src")&&A.events.refresh()}),y.on("click","*[layadmin-event]",function(){var e=r(this),a=e.attr("layadmin-event");z[a]&&z[a].call(this,e)}),y.on("mouseenter","*[lay-tips]",function(){var t,e,a,i=r(this);i.parent().hasClass("layui-nav-item")&&!m.hasClass(F)||(a=i.attr("lay-tips"),t=i.attr("lay-offset"),e=i.attr("lay-direction"),a=layer.tips(a,this,{tips:e||1,time:-1,success:function(e,a){t&&e.css("margin-left",t+"px")}}),i.data("index",a))}).on("mouseleave","*[lay-tips]",function(){layer.close(r(this).data("index"))}),layui.data.resizeSystem=function(){layer.closeAll("tips"),T.lock||setTimeout(function(){A.sideFlexible(A.screen()<2?"":"spread"),delete T.lock},100),T.lock=!0});c.on("resize",layui.data.resizeSystem),(a=o.request).tokenName&&((d={})[a.tokenName]=layui.data(o.tableName)[a.tokenName]||"",l.set({headers:d,where:d}),n.set({headers:d,data:d})),e("admin",A)});
+
+/*!
+ * 界面核心模块   
+ */
+ 
+layui.define('view', function(exports){
+  var $ = layui.jquery
+  ,laytpl = layui.laytpl
+  ,element = layui.element
+  ,table = layui.table
+  ,upload = layui.upload
+  ,setter = layui.setter
+  ,view = layui.view
+  ,device = layui.device()
+  
+  ,$win = $(window), $body = $('body')
+  ,container = $('#'+ setter.container)
+  
+  ,SHOW = 'layui-show', HIDE = 'layui-hide', THIS = 'layui-this', DISABLED = 'layui-disabled', TEMP = 'template'
+  ,APP_BODY = '#LAY_app_body', APP_FLEXIBLE = 'LAY_app_flexible'
+  ,FILTER_TAB_TBAS = 'layadmin-layout-tabs'
+  ,APP_SPREAD_SM = 'layadmin-side-spread-sm', TABS_BODY = 'layadmin-tabsbody-item'
+  ,ICON_SHRINK = 'layui-icon-shrink-right', ICON_SPREAD = 'layui-icon-spread-left'
+  ,SIDE_SHRINK = 'layadmin-side-shrink', SIDE_MENU = 'LAY-system-side-menu'
+
+  //通用方法
+  ,admin = {
+    v: '1.7.2 std'
+    
+    //数据的异步请求
+    ,req: view.req
+    
+    //清除本地 token，并跳转到登入页
+    ,exit: view.exit
+    
+    //xss 转义
+    ,escape: function(html){
+      return String(html || '').replace(/&(?!#?[a-zA-Z0-9]+;)/g, '&amp;')
+      .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+    }
+    
+    //事件监听
+    ,on: function(events, callback){
+      return layui.onevent.call(this, setter.MOD_NAME, events, callback);
+    }
+    
+    //发送验证码
+    ,sendAuthCode: function(options){
+      options = $.extend({
+        seconds: 60
+        ,elemPhone: '#LAY_phone'
+        ,elemVercode: '#LAY_vercode'
+      }, options);
+
+      var seconds = options.seconds
+      ,btn = $(options.elem)
+      ,token = null
+      ,timer, countDown = function(loop){
+        seconds--;
+        if(seconds < 0){
+          btn.removeClass(DISABLED).html('获取验证码');
+          seconds = options.seconds;
+          clearInterval(timer);
+        } else {
+          btn.addClass(DISABLED).html(seconds + '秒后重获');
+        }
+
+        if(!loop){
+          timer = setInterval(function(){
+            countDown(true);
+          }, 1000);
+        }
+      };
+      
+      options.elemPhone = $(options.elemPhone);
+      options.elemVercode = $(options.elemVercode);
+
+      btn.on('click', function(){
+        var elemPhone = options.elemPhone
+        ,value = elemPhone.val();
+
+        if(seconds !== options.seconds || $(this).hasClass(DISABLED)) return;
+
+        if(!/^1\d{10}$/.test(value)){
+          elemPhone.focus();
+          return layer.msg('请输入正确的手机号')
+        };
+        
+        if(typeof options.ajax === 'object'){
+          var success = options.ajax.success;
+          delete options.ajax.success;
+        }
+        
+        admin.req($.extend(true, {
+          url: '/auth/code'
+          ,type: 'get'
+          ,data: {
+            phone: value
+          }
+          ,success: function(res){
+            layer.msg('验证码已发送至你的手机，请注意查收', {
+              icon: 1
+              ,shade: 0
+            });
+            options.elemVercode.focus();
+            countDown();
+            success && success(res);
+          }
+        }, options.ajax));
+      });
+    }
+    
+    //屏幕类型
+    ,screen: function(){
+      var width = $win.width()
+      if(width > 1200){
+        return 3; //大屏幕
+      } else if(width > 992){
+        return 2; //中屏幕
+      } else if(width > 768){
+        return 1; //小屏幕
+      } else {
+        return 0; //超小屏幕
+      }
+    }
+    
+    //侧边伸缩
+    ,sideFlexible: function(status){
+      var app = container
+      ,iconElem =  $('#'+ APP_FLEXIBLE)
+      ,screen = admin.screen();
+
+      //设置状态，PC：默认展开、移动：默认收缩
+      if(status === 'spread'){
+        //切换到展开状态的 icon，箭头：←
+        iconElem.removeClass(ICON_SPREAD).addClass(ICON_SHRINK);
+        
+        //移动：从左到右位移；PC：清除多余选择器恢复默认
+        if(screen < 2){
+          app.addClass(APP_SPREAD_SM);
+        } else {
+          app.removeClass(APP_SPREAD_SM);
+        }
+        
+        app.removeClass(SIDE_SHRINK)
+      } else {
+        //切换到搜索状态的 icon，箭头：→
+        iconElem.removeClass(ICON_SHRINK).addClass(ICON_SPREAD);
+        
+        //移动：清除多余选择器恢复默认；PC：从右往左收缩
+        if(screen < 2){
+          app.removeClass(SIDE_SHRINK);
+        } else {
+          app.addClass(SIDE_SHRINK);
+        }
+        
+        app.removeClass(APP_SPREAD_SM)
+      }
+      
+      layui.event.call(this, setter.MOD_NAME, 'side({*})', {
+        status: status
+      });
+    }
+    
+    //弹出面板
+    ,popup: view.popup
+    
+    //右侧面板
+    ,popupRight: function(options){
+      //layer.close(admin.popup.index);
+      return admin.popup.index = layer.open($.extend({
+        type: 1
+        ,id: 'LAY_adminPopupR'
+        ,anim: -1
+        ,title: false
+        ,closeBtn: false
+        ,offset: 'r'
+        ,shade: 0.1
+        ,shadeClose: true
+        ,skin: 'layui-anim layui-anim-rl layui-layer-adminRight'
+        ,area: '300px'
+      }, options));
+    }
+    
+    //主题设置
+    ,theme: function(options){
+      var theme = setter.theme
+      ,local = layui.data(setter.tableName)
+      ,id = 'LAY_layadmin_theme'
+      ,style = document.createElement('style')
+      ,styleText = laytpl([
+        //主题色
+        '.layui-side-menu,'
+        ,'.layadmin-pagetabs .layui-tab-title li:after,'
+        ,'.layadmin-pagetabs .layui-tab-title li.layui-this:after,'
+        ,'.layui-layer-admin .layui-layer-title,'
+        ,'.layadmin-side-shrink .layui-side-menu .layui-nav>.layui-nav-item>.layui-nav-child'
+        ,'{background-color:{{d.color.main}} !important;}'
+ 
+        //选中色
+        ,'.layui-nav-tree .layui-this,'
+        ,'.layui-nav-tree .layui-this>a,'
+        ,'.layui-nav-tree .layui-nav-child dd.layui-this,'
+        ,'.layui-nav-tree .layui-nav-child dd.layui-this a'
+        ,'{background-color:{{d.color.selected}} !important;}'
+        
+        //logo
+        ,'.layui-layout-admin .layui-logo{background-color:{{d.color.logo || d.color.main}} !important;}'
+        
+        //头部色
+        ,'{{# if(d.color.header){ }}'
+          ,'.layui-layout-admin .layui-header{background-color:{{ d.color.header }};}'
+          ,'.layui-layout-admin .layui-header a,'
+          ,'.layui-layout-admin .layui-header a cite{color: #f8f8f8;}'
+          ,'.layui-layout-admin .layui-header a:hover{color: #fff;}'
+          ,'.layui-layout-admin .layui-header .layui-nav .layui-nav-more{border-top-color: #fbfbfb;}'
+          ,'.layui-layout-admin .layui-header .layui-nav .layui-nav-mored{border-color: transparent; border-bottom-color: #fbfbfb;}'
+          ,'.layui-layout-admin .layui-header .layui-nav .layui-this:after, .layui-layout-admin .layui-header .layui-nav-bar{background-color: #fff; background-color: rgba(255,255,255,.5);}'
+          ,'.layadmin-pagetabs .layui-tab-title li:after{display: none;}'
+        ,'{{# } }}'
+      ].join('')).render(options = $.extend({}, local.theme, options))
+      ,styleElem = document.getElementById(id);
+      
+      //添加主题样式
+      if('styleSheet' in style){
+        style.setAttribute('type', 'text/css');
+        style.styleSheet.cssText = styleText;
+      } else {
+        style.innerHTML = styleText;
+      }
+      style.id = id;
+      
+      styleElem && $body[0].removeChild(styleElem);
+      $body[0].appendChild(style);
+      $body.attr('layadmin-themealias', options.color.alias);
+      
+      //本地存储记录
+      local.theme = local.theme || {};
+      layui.each(options, function(key, value){
+        local.theme[key] = value;
+      });
+      layui.data(setter.tableName, {
+        key: 'theme'
+        ,value: local.theme
+      }); 
+    }
+    
+    //初始化主题
+    ,initTheme: function(index){
+      var theme = setter.theme;
+      index = index || 0;
+      if(theme.color[index]){
+        theme.color[index].index = index;
+        admin.theme({
+          color: theme.color[index]
+        });
+      }
+    }
+    
+    //记录最近一次点击的页面标签数据
+    ,tabsPage: {}
+    
+    //获取页面标签主体元素
+    ,tabsBody: function(index){
+      return $(APP_BODY).find('.'+ TABS_BODY).eq(index || 0);
+    }
+    
+    //切换页面标签主体
+    ,tabsBodyChange: function(index, options){
+      options = options || {};
+      
+      admin.tabsBody(index).addClass(SHOW).siblings().removeClass(SHOW);
+      events.rollPage('auto', index);
+      
+      //执行 {setter.MOD_NAME}.tabsPage 下的事件
+      layui.event.call(this, setter.MOD_NAME, 'tabsPage({*})', {
+        url: options.url
+        ,text: options.text
+      });
+    }
+    
+    //resize事件管理
+    ,resize: function(fn){
+      var router = layui.router()
+      ,key = router.path.join('-');
+      
+      if(admin.resizeFn[key]){
+        $win.off('resize', admin.resizeFn[key]);
+        delete admin.resizeFn[key];
+      }
+      
+      if(fn === 'off') return; //如果是清除 resize 事件，则终止往下执行
+      
+      fn(), admin.resizeFn[key] = fn;
+      $win.on('resize', admin.resizeFn[key]);
+    }
+    ,resizeFn: {}
+    ,runResize: function(){
+      var router = layui.router()
+      ,key = router.path.join('-');
+      admin.resizeFn[key] && admin.resizeFn[key]();
+    }
+    ,delResize: function(){
+      this.resize('off');
+    }
+    
+    //关闭当前 pageTabs
+    ,closeThisTabs: function(){
+      if(!admin.tabsPage.index) return;
+      $(TABS_HEADER).eq(admin.tabsPage.index).find('.layui-tab-close').trigger('click');
+    }
+    
+    //全屏
+    ,fullScreen: function(){
+      var ele = document.documentElement
+      ,reqFullScreen = ele.requestFullScreen || ele.webkitRequestFullScreen 
+      || ele.mozRequestFullScreen || ele.msRequestFullscreen;      
+      if(typeof reqFullScreen !== 'undefined' && reqFullScreen) {
+        reqFullScreen.call(ele);
+      };
+    }
+    
+    //退出全屏
+    ,exitScreen: function(){
+      var ele = document.documentElement
+      if (document.exitFullscreen) {  
+        document.exitFullscreen();  
+      } else if (document.mozCancelFullScreen) {  
+        document.mozCancelFullScreen();  
+      } else if (document.webkitCancelFullScreen) {  
+        document.webkitCancelFullScreen();  
+      } else if (document.msExitFullscreen) {  
+        document.msExitFullscreen();  
+      }
+    }
+    
+    //……
+  };
+  
+  //事件
+  var events = admin.events = {
+    //伸缩
+    flexible: function(othis){
+      var iconElem = othis.find('#'+ APP_FLEXIBLE)
+      ,isSpread = iconElem.hasClass(ICON_SPREAD);
+      admin.sideFlexible(isSpread ? 'spread' : null);
+    }
+    
+    //刷新
+    ,refresh: function(){
+      var ELEM_IFRAME = '.layadmin-iframe'
+      ,length = $('.'+ TABS_BODY).length;
+      
+      if(admin.tabsPage.index >= length){
+        admin.tabsPage.index = length - 1;
+      }
+      
+      var iframe = admin.tabsBody(admin.tabsPage.index).find(ELEM_IFRAME);
+      iframe[0].contentWindow.location.reload(true);
+    }
+
+    //输入框搜索
+    ,serach: function(othis){
+      othis.off('keypress').on('keypress',function(e){
+        if(!this.value.replace(/\s/g, '')) return;
+        //回车跳转
+        if(e.keyCode === 13){
+          var href = othis.attr('lay-action')
+          ,text = othis.attr('lay-text') || '搜索';
+          
+          href = href + this.value;
+          text = text + ' <span style="color: #FF5722;">'+ admin.escape(this.value) +'</span>';
+          
+          //打开标签页
+          layui.index.openTabsPage(href, text);
+          
+          //如果搜索关键词已经打开，则刷新页面即可
+          events.serach.keys || (events.serach.keys = {});
+          events.serach.keys[admin.tabsPage.index] = this.value;
+          if(this.value === events.serach.keys[admin.tabsPage.index]){
+            events.refresh(othis);
+          }
+          
+          //清空输入框
+          this.value = '';
+        }       
+      });
+    }
+    
+    //点击消息
+    ,message: function(othis){
+      othis.find('.layui-badge-dot').remove();
+    }
+    
+    //弹出主题面板
+    ,theme: function(){
+      admin.popupRight({
+        id: 'LAY_adminPopupTheme'
+        ,success: function(){
+          view(this.id).render('system/theme')
+        }
+      });
+    }
+    
+    //本地便签
+    ,note: function(othis){
+      var mobile = admin.screen() < 2
+      ,note = layui.data(setter.tableName).note;
+      
+      events.note.index = admin.popup({
+        title: '本地便签'
+        ,shade: 0
+        ,offset: [
+          '41px'
+          ,(mobile ? null : (othis.offset().left - 250) + 'px')
+        ]
+        ,anim: -1
+        ,id: 'LAY_adminNote'
+        ,skin: 'layadmin-note layui-anim layui-anim-upbit'
+        ,content: '<textarea placeholder="内容"></textarea>'
+        ,resize: false
+        ,success: function(layero, index){
+          var textarea = layero.find('textarea')
+          ,value = note === undefined ? '便签中的内容会存储在本地，这样即便你关掉了浏览器，在下次打开时，依然会读取到上一次的记录。是个非常小巧实用的本地备忘录' : note;
+          
+          textarea.val(value).focus().on('keyup', function(){
+            layui.data(setter.tableName, {
+              key: 'note'
+              ,value: this.value
+            });
+          });
+        }
+      })
+    }
+
+    //全屏
+    ,fullscreen: function(othis){
+      var SCREEN_FULL = 'layui-icon-screen-full'
+      ,SCREEN_REST = 'layui-icon-screen-restore'
+      ,iconElem = othis.children("i");
+      
+      if(iconElem.hasClass(SCREEN_FULL)){
+        admin.fullScreen();
+        iconElem.addClass(SCREEN_REST).removeClass(SCREEN_FULL);
+      } else {
+        admin.exitScreen();
+        iconElem.addClass(SCREEN_FULL).removeClass(SCREEN_REST);
+      }
+    }
+
+    //弹出关于面板
+    ,about: function(){
+      admin.popupRight({
+        id: 'LAY_adminPopupAbout'
+        ,success: function(){
+          view(this.id).render('system/about');
+        }
+      });
+    }
+    
+    //弹出更多面板
+    ,more: function(){
+      admin.popupRight({
+        id: 'LAY_adminPopupMore'
+        ,success: function(){
+          view(this.id).render('system/more');
+        }
+      });
+    }
+    
+    //返回上一页
+    ,back: function(){
+      history.back();
+    }
+    
+    //主题设置
+    ,setTheme: function(othis){
+      var index = othis.data('index')
+      ,nextIndex = othis.siblings('.layui-this').data('index');
+      
+      if(othis.hasClass(THIS)) return;
+      
+      othis.addClass(THIS).siblings('.layui-this').removeClass(THIS);
+      admin.initTheme(index);
+    }
+    
+    //左右滚动页面标签
+    ,rollPage: function(type, index){
+      var tabsHeader = $('#LAY_app_tabsheader')
+      ,liItem = tabsHeader.children('li')
+      ,scrollWidth = tabsHeader.prop('scrollWidth')
+      ,outerWidth = tabsHeader.outerWidth()
+      ,tabsLeft = parseFloat(tabsHeader.css('left'));
+      
+      //右左往右
+      if(type === 'left'){
+        if(!tabsLeft && tabsLeft <=0) return;
+        
+        //当前的left减去可视宽度，用于与上一轮的页标比较
+        var  prefLeft = -tabsLeft - outerWidth; 
+
+        liItem.each(function(index, item){
+          var li = $(item)
+          ,left = li.position().left;
+          
+          if(left >= prefLeft){
+            tabsHeader.css('left', -left);
+            return false;
+          }
+        });
+      } else if(type === 'auto'){ //自动滚动
+        (function(){
+          var thisLi = liItem.eq(index), thisLeft;
+          
+          if(!thisLi[0]) return;
+          thisLeft = thisLi.position().left;
+          
+          //当目标标签在可视区域左侧时
+          if(thisLeft < -tabsLeft){
+            return tabsHeader.css('left', -thisLeft);
+          }
+          
+          //当目标标签在可视区域右侧时
+          if(thisLeft + thisLi.outerWidth() >= outerWidth - tabsLeft){
+            var subLeft = thisLeft + thisLi.outerWidth() - (outerWidth - tabsLeft);
+            liItem.each(function(i, item){
+              var li = $(item)
+              ,left = li.position().left;
+              
+              //从当前可视区域的最左第二个节点遍历，如果减去最左节点的差 > 目标在右侧不可见的宽度，则将该节点放置可视区域最左
+              if(left + tabsLeft > 0){
+                if(left - tabsLeft > subLeft){
+                  tabsHeader.css('left', -left);
+                  return false;
+                }
+              }
+            });
+          }
+        }());
+      } else {
+        //默认向左滚动
+        liItem.each(function(i, item){
+          var li = $(item)
+          ,left = li.position().left;
+
+          if(left + li.outerWidth() >= outerWidth - tabsLeft){
+            tabsHeader.css('left', -left);
+            return false;
+          }
+        });
+      }      
+    }
+    
+    //向右滚动页面标签
+    ,leftPage: function(){
+      events.rollPage('left');
+    }
+    
+    //向左滚动页面标签
+    ,rightPage: function(){
+      events.rollPage();
+    }
+    
+    //关闭当前标签页
+    ,closeThisTabs: function(){
+      var topAdmin = parent === self ? admin : parent.layui.admin;
+      topAdmin.closeThisTabs();
+    }
+    
+    //关闭其它标签页
+    ,closeOtherTabs: function(type){
+      var TABS_REMOVE = 'LAY-system-pagetabs-remove';
+      if(type === 'all'){
+        $(TABS_HEADER+ ':gt(0)').remove();
+        $(APP_BODY).find('.'+ TABS_BODY+ ':gt(0)').remove();
+
+        $(TABS_HEADER).eq(0).trigger('click');
+      } else {
+        $(TABS_HEADER).each(function(index, item){
+          if(index && index != admin.tabsPage.index){
+            $(item).addClass(TABS_REMOVE);
+            admin.tabsBody(index).addClass(TABS_REMOVE);
+          }
+        });
+        $('.'+ TABS_REMOVE).remove();
+      }
+    }
+    
+    //关闭全部标签页
+    ,closeAllTabs: function(){
+      events.closeOtherTabs('all');
+      //location.hash = '';
+    }
+    
+    //遮罩
+    ,shade: function(){
+      admin.sideFlexible();
+    }
+    
+    
+    //呼出IM 示例
+    ,im: function(){
+      admin.popup({
+        id: 'LAY-popup-layim-demo' //定义唯一ID，防止重复弹出
+        ,shade: 0
+        ,area: ['800px', '300px']
+        ,title: '面板外的操作示例'
+        ,offset: 'lb'
+        ,success: function(){
+          //将 views 目录下的某视图文件内容渲染给该面板
+          layui.view(this.id).render('layim/demo').then(function(){
+            layui.use('im');
+          });
+        }
+      })
+    }
+  };
+  
+  //初始
+  !function(){
+    //主题初始化，本地主题记录优先，其次为 initColorIndex
+    var local = layui.data(setter.tableName);
+    if(local.theme){
+      admin.theme(local.theme);
+    } else if(setter.theme){
+      admin.initTheme(setter.theme.initColorIndex);
+    }
+    
+    //常规版默认开启多标签页
+    if(!('pageTabs' in layui.setter)) layui.setter.pageTabs = true;
+    
+    //不开启页面标签时
+    if(!setter.pageTabs){
+      $('#LAY_app_tabs').addClass(HIDE);
+      container.addClass('layadmin-tabspage-none');
+    }
+
+    //低版本IE提示
+    if(device.ie && device.ie < 10){
+      view.error('IE'+ device.ie + '下访问可能不佳，推荐使用：Chrome / Firefox / Edge 等高级浏览器', {
+        offset: 'auto'
+        ,id: 'LAY_errorIE'
+      });
+    }
+    
+  }();
+  
+  //admin.prevRouter = {}; //上一个路由
+  
+  //监听 tab 组件切换，同步 index
+  element.on('tab('+ FILTER_TAB_TBAS +')', function(data){
+    admin.tabsPage.index = data.index;
+  });
+  
+  //监听选项卡切换，改变菜单状态
+  admin.on('tabsPage(setMenustatus)', function(router){
+    var pathURL = router.url, getData = function(item){
+      return {
+        list: item.children('.layui-nav-child')
+        ,a: item.children('*[lay-href]')
+      }
+    }
+    ,sideMenu = $('#'+ SIDE_MENU)
+    ,SIDE_NAV_ITEMD = 'layui-nav-itemed'
+    
+    //捕获对应菜单
+    ,matchMenu = function(list){
+      list.each(function(index1, item1){
+        var othis1 = $(item1)
+        ,data1 = getData(othis1)
+        ,listChildren1 = data1.list.children('dd')
+        ,matched1 = pathURL === data1.a.attr('lay-href');
+        
+        listChildren1.each(function(index2, item2){
+          var othis2 = $(item2)
+          ,data2 = getData(othis2)
+          ,listChildren2 = data2.list.children('dd')
+          ,matched2 = pathURL === data2.a.attr('lay-href');
+          
+          listChildren2.each(function(index3, item3){
+            var othis3 = $(item3)
+            ,data3 = getData(othis3)
+            ,matched3 = pathURL === data3.a.attr('lay-href');
+            
+            if(matched3){
+              var selected = data3.list[0] ? SIDE_NAV_ITEMD : THIS;
+              othis3.addClass(selected).siblings().removeClass(selected); //标记选择器
+              return false;
+            }
+            
+          });
+
+          if(matched2){
+            var selected = data2.list[0] ? SIDE_NAV_ITEMD : THIS;
+            othis2.addClass(selected).siblings().removeClass(selected); //标记选择器
+            return false
+          }
+          
+        });
+        
+        if(matched1){
+          var selected = data1.list[0] ? SIDE_NAV_ITEMD : THIS;
+          othis1.addClass(selected).siblings().removeClass(selected); //标记选择器
+          return false;
+        }
+        
+      });
+    }
+    
+    //重置状态
+    sideMenu.find('.'+ THIS).removeClass(THIS);
+    
+    //移动端点击菜单时自动收缩
+    if(admin.screen() < 2) admin.sideFlexible();
+    
+    //开始捕获
+    matchMenu(sideMenu.children('li'));
+  });
+  
+  //监听侧边导航点击事件
+  element.on('nav(layadmin-system-side-menu)', function(elem){
+    if(elem.siblings('.layui-nav-child')[0] && container.hasClass(SIDE_SHRINK)){
+      admin.sideFlexible('spread');
+      layer.close(elem.data('index'));
+    };
+    admin.tabsPage.type = 'nav';
+  });
+  
+  //监听选项卡的更多操作
+  element.on('nav(layadmin-pagetabs-nav)', function(elem){
+    var dd = elem.parent();
+    dd.removeClass(THIS);
+    dd.parent().removeClass(SHOW);
+  });
+  
+  //同步路由
+  var setThisRouter = function(othis){
+    var layid = othis.attr('lay-id')
+    ,attr = othis.attr('lay-attr')
+    ,index = othis.index();
+    
+    admin.tabsBodyChange(index, {
+      url: attr
+    });
+    //location.hash = layid === setter.entry ? '/' : attr;
+  }
+  ,TABS_HEADER = '#LAY_app_tabsheader>li';
+  
+  //标签页标题点击
+  $body.on('click', TABS_HEADER, function(){
+    var othis = $(this)
+    ,index = othis.index();
+    
+    admin.tabsPage.type = 'tab';
+    admin.tabsPage.index = index;
+
+    setThisRouter(othis);
+  });
+  
+  //监听 tabspage 删除
+  element.on('tabDelete('+ FILTER_TAB_TBAS +')', function(obj){
+    var othis = $(TABS_HEADER+ '.layui-this');
+    
+    obj.index && admin.tabsBody(obj.index).remove();
+    setThisRouter(othis);
+    
+    //移除resize事件
+    admin.delResize();
+  });
+  
+  //页面跳转
+  $body.on('click', '*[lay-href]', function(){
+    var othis = $(this)
+    ,href = othis.attr('lay-href')
+    ,text = othis.attr('lay-text')
+    ,router = layui.router();
+    
+    admin.tabsPage.elem = othis;
+    //admin.prevRouter[router.path[0]] = router.href; //记录上一次各菜单的路由信息
+
+    //执行跳转
+    var topLayui = parent === self ? layui : top.layui;
+    topLayui.index.openTabsPage(href, text || othis.text());
+    
+    //如果为当前页，则执行刷新
+    if(href === admin.tabsBody(admin.tabsPage.index).find('iframe').attr('src')){
+      admin.events.refresh();
+    }
+  });
+  
+  //点击事件
+  $body.on('click', '*[layadmin-event]', function(){
+    var othis = $(this)
+    ,attrEvent = othis.attr('layadmin-event');
+    events[attrEvent] && events[attrEvent].call(this, othis);
+  });
+  
+  //tips
+  $body.on('mouseenter', '*[lay-tips]', function(){
+    var othis = $(this);
+    
+    if(othis.parent().hasClass('layui-nav-item') && !container.hasClass(SIDE_SHRINK)) return;
+    
+    var tips = othis.attr('lay-tips')
+    ,offset = othis.attr('lay-offset') 
+    ,direction = othis.attr('lay-direction')
+    ,index = layer.tips(tips, this, {
+      tips: direction || 1
+      ,time: -1
+      ,success: function(layero, index){
+        if(offset){
+          layero.css('margin-left', offset + 'px');
+        }
+      }
+    });
+    othis.data('index', index);
+  }).on('mouseleave', '*[lay-tips]', function(){
+    layer.close($(this).data('index'));
+  });
+  
+  //窗口resize事件
+  var resizeSystem = layui.data.resizeSystem = function(){
+    //layer.close(events.note.index);
+    layer.closeAll('tips');
+    
+    if(!resizeSystem.lock){
+      setTimeout(function(){
+        admin.sideFlexible(admin.screen() < 2 ? '' : 'spread');
+        delete resizeSystem.lock;
+      }, 100);
+    }
+    
+    resizeSystem.lock = true;
+  }
+  $win.on('resize', layui.data.resizeSystem);
+  
+  //设置组件全局 token
+  ;!function(){
+    var request = setter.request;
+    if(request.tokenName){
+      var obj = {};
+      obj[request.tokenName] = layui.data(setter.tableName)[request.tokenName] || ''
+      
+      //table
+      table.set({
+        headers: obj, //通过 request 头传递
+        where: obj //通过参数传递
+      });
+      //upload
+      upload.set({
+        headers: obj, //通过 request 头传递
+        data: obj //通过参数传递
+      });
+    }
+  }();
+
+  //接口输出
+  exports('admin', admin);
+});

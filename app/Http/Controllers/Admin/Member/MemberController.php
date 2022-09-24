@@ -31,10 +31,12 @@ class MemberController extends BaseController
         //搜索
         $where = [];
         $username = $request->input('username');
+        $id = (int)$request->input('id');
         $nickname = $request->input('nickname');
         $full_name = $request->input('full_name');
         $group_id = (int)$request->input('group_id');
         if ($username) $where[] = ['username', $username];
+        if ($id) $where[] = ['id', $id];
         if ($nickname) $where[] = ['nickname', 'like', '%' . $nickname . '%'];
         if ($full_name) $where[] = ['full_name', 'like', '%' . $full_name . '%'];
         if ($group_id) $where[] = ['group_id', $group_id];

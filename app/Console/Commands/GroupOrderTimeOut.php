@@ -55,14 +55,14 @@ class GroupOrderTimeOut extends Command
             ['end_at', '<', get_date()]
         ];
         $page = 1;
-        $pagesize = 10;
+        $limit = 10;
         while (true) {
-            $offset = ($page - 1) * $pagesize;
+            $offset = ($page - 1) * $limit;
             $res_list = PromoGroupOrder::select('id', 'order_id')
                 ->where($where)
                 ->whereIn('status', [PromoGroupOrder::STATUS_WAIT_PAY, PromoGroupOrder::STATUS_WAIT_SUCCESS])
                 ->offset($offset)
-                ->limit($pagesize)
+                ->limit($limit)
                 ->orderBy('id', 'asc')
                 ->get();
             if ($res_list->isEmpty()) {

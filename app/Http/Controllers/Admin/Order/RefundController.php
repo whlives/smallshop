@@ -324,8 +324,7 @@ class RefundController extends BaseController
             api_error(__('admin.missing_params'));
         }
         $refund = self::checkRefund($id);
-        $original_road = $type == 'original_road_pay';
-        $res = RefundService::sellerPay($refund, $this->user_data, RefundLog::USER_TYPE_ADMIN, $note, $original_road);
+        $res = RefundService::sellerPay($refund, $this->user_data, RefundLog::USER_TYPE_ADMIN, $note, $type);
         if ($res === true) {
             return $this->success();
         } elseif ($res === false) {

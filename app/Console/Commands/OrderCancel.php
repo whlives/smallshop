@@ -53,13 +53,13 @@ class OrderCancel extends Command
             ['created_at', '<', get_date(time() - $order_cancel_time)]
         ];
         $page = 1;
-        $pagesize = 10;
+        $limit = 10;
         while (true) {
-            $offset = ($page - 1) * $pagesize;
+            $offset = ($page - 1) * $limit;
             $res_list = Order::select('id', 'trade_id', 'order_no', 'subtotal', 'promo_type', 'status', 'coupons_id')
                 ->where($where)
                 ->offset($offset)
-                ->limit($pagesize)
+                ->limit($limit)
                 ->orderBy('id', 'asc')
                 ->get();
             if ($res_list->isEmpty()) {

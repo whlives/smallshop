@@ -38,7 +38,7 @@ class AdminLoginLog extends BaseModel
         if (!is_array($id)) {
             $id = [$id];
         }
-        $token_data = self::whereIn('m_id', $id)->pluck('token');
+        $token_data = self::where('status', self::STATUS_ON)->whereIn('m_id', $id)->pluck('token');
         if ($token_data) {
             foreach ($token_data as $value) {
                 $token_service->delToken($value);

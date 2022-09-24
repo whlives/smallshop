@@ -143,8 +143,7 @@
 
             //详情
             function get_detail() {
-                let result = common.ajax(model_url + '/detail', {id: params.id});
-                if (result) {
+                common.ajax(model_url + '/detail', {id: params.id}, function (result) {
                     laytpl($('#detail_tpl').html()).render(result.data, function (html) {
                         $('#detail').html(html);
                         //转化静态表格
@@ -154,7 +153,7 @@
                         form.render();
                         common.set_button(model_url);//设置按钮权限
                     })
-                }
+                });
             }
 
             get_detail();
@@ -211,12 +210,11 @@
              * @param form_data
              */
             function form_submit(type, form_data) {
-                let result = common.ajax(model_url + '/' + type, form_data);
-                if (result) {
+                common.ajax(model_url + '/' + type, form_data, function (result) {
                     layer.msg('操作成功', {time: 1000}, function () {
                         get_detail();
                     })
-                }
+                });
             }
         });
     }

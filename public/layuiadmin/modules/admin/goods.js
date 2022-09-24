@@ -70,12 +70,11 @@ layui.define(['table_common'], function (exports) {
         },
         //小程序码
         qrcode: function (data) {
-            let result = common.ajax(model_url + '/qrcode', {id: data.id});
-            if (result) {
+            common.ajax(model_url + '/qrcode', {id: data.id}, function (result) {
                 window.open(result.data.mini_qrcode);
-            } else {
+            }, function () {
                 layer.msg(result.msg);
-            }
+            });
         },
     }
     table_common.set_callback_obj(table_callback);
@@ -89,8 +88,7 @@ layui.define(['table_common'], function (exports) {
             id: new Date().getTime(),
             success: function (layero, category_index) {
                 view(this.id).render(view_category_url).done(function () {
-                    let result = common.ajax('/goods/category/select_all', {parent_id: 0});
-                    if (result) {
+                    common.ajax('/goods/category/select_all', {parent_id: 0}, function (result) {
                         tree.render({
                             elem: '#category_id',
                             data: result.data,
@@ -107,7 +105,7 @@ layui.define(['table_common'], function (exports) {
                                 }
                             }
                         });
-                    }
+                    });
                 });
             }
         });

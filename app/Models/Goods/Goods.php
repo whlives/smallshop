@@ -666,8 +666,8 @@ class Goods extends BaseModel
     public static function getGoodsDetail(int $id)
     {
         $cache_key = 'goods_detail:' . $id;
-        $goods_detail = Cache::get($cache_key);
-        if (!$goods_detail) {
+        $goods = Cache::get($cache_key);
+        if (!$goods) {
             $goods = self::select('id', 'title', 'subtitle', 'image', 'video', 'shelves_status', 'seller_id', 'type', 'promo_type')->find($id);
             if ($goods) {
                 $goods['favorite'] = $goods['stock'] = 0;
@@ -744,8 +744,8 @@ class Goods extends BaseModel
                 $goods['attribute'] = array_values($goods_attr);
                 //商家信息
                 $goods['seller'] = Seller::select('id', 'title', 'image')->find($goods['seller_id']);
+                Cache::put($cache_key, $goods, get_custom_config('cache_time'));
             }
-            Cache::put($cache_key, $goods, get_custom_config('cache_time'));
         }
         return $goods;
     }

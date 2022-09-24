@@ -179,12 +179,12 @@ class OrderService
 
     /**
      * 组装订单信息
-     * @param $m_id
-     * @param $seller_goods
-     * @param $param
+     * @param int $m_id
+     * @param array $seller_goods
+     * @param array $param
      * @return array|bool|null
      */
-    public static function formatOrder($m_id, $seller_goods, $param)
+    public static function formatOrder(int $m_id, array $seller_goods, array $param)
     {
         //三级分销推荐人
         [$level_one_m_id, $level_two_m_id] = Member::getLevelParentId($m_id);
@@ -675,8 +675,14 @@ class OrderService
                     $_refund_amount = $refund_data[$_order['id']][$_goods['id']]['amount'] ?? 0;//单个商品售后金额
                     $_goods_amount = ($_goods['sell_price'] * $_goods['buy_qty']) - $_goods['promotion_price'] - $_refund_amount;//商品最终金额
                     $refund_amount = $refund_amount + $_refund_amount;//累计售后金额
-                    $level_one_amount = $level_one_amount + format_price($_goods_amount * $_goods['level_one_pct'] / 100);//累计一级推荐提成
-                    $level_two_amount = $level_two_amount + format_price($_goods_amount * $_goods['level_two_pct'] / 100);//累计二级推荐提成
+                    if ($_order['level_one_m_id']) {
+                        //只有存在一级的时候才计算
+                        $level_one_amount = $level_one_amount + format_price($_goods_amount * $_goods['level_one_pct'] / 100);//累计一级推荐提成
+                    }
+                    if ($_order['level_two_m_id']) {
+                        //只有存在二级的时候才计算
+                        $level_two_amount = $level_two_amount + format_price($_goods_amount * $_goods['level_two_pct'] / 100);//累计二级推荐提成
+                    }
                 }
                 //给商家结算
                 $pct = $seller[$_order['seller_id']] ?? 0;//商家结算手续费比例

@@ -108,9 +108,9 @@
                 if (data) {
                     post_data['id'] = data.id;
                 }
-                if (common.action_ajax('sync_stock', post_data, false)) {
+                common.action_ajax('sync_stock', post_data, function () {
                     layer.msg('同步完成');
-                }
+                });
             },
         }
         table_common.set_callback_obj(table_callback);

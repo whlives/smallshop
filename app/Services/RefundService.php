@@ -676,7 +676,7 @@ class RefundService
             'user_type' => $user_type,
             'user_id' => $user_data['id'],
             'username' => $user_data['username'],
-            'action' => RefundLog::ACTION_SELEER_SEND,
+            'action' => RefundLog::ACTION_SELLER_SEND,
             'note' => $log_note ? json_encode($log_note, JSON_UNESCAPED_UNICODE) : '',
         ];
         $delivery_data = [
@@ -746,7 +746,7 @@ class RefundService
             if ($refund_res !== true) {
                 //这里如果退款失败需要回滚数据
                 $refund_log['action'] = RefundLog::ACTION_CANCEL;
-                $refund_log['note'] = json_encode(['title' => '退款失败', 'info' => $refund_res], JSON_UNESCAPED_UNICODE);
+                $refund_log['note'] = json_encode([['title' => '退款失败', 'info' => $refund_res]], JSON_UNESCAPED_UNICODE);
                 try {
                     DB::transaction(function () use ($refund, $refund_log) {
                         RefundLog::create($refund_log);

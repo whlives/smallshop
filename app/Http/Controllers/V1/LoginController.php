@@ -209,7 +209,7 @@ class LoginController extends BaseController
         $auth_info = $mini_program->getPhoneNumber($code);
         $mobile = $auth_info['purePhoneNumber'] ?? '';
         if (!$mobile) {
-            api_error(__('api.missing_params'));
+            api_error(__('api.user_mobile_get_fail'));
         }
         $member_data = [
             'headimg' => $headimg,

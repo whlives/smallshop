@@ -181,10 +181,23 @@
 
             //获取省份
             let prov_data;
-            let result = common.ajax('/helper/area')
-            if (result) {
+            common.ajax('/helper/area', {}, function (result) {
                 prov_data = result.data;
-            }
+                //初始化数据
+                if (params.price_type) {
+                    //控制其他地区是否显示
+                    show_set_other_prov(params.price_type);
+                }
+                if (params.group_json) {
+                    //初始化其他地区
+                    add_delivery_prov({prov_data: prov_data, data: params.group_json});
+                }
+                if (params.group_area_id) {
+                    //初始化地区选择按钮
+                    group_area_id = params.group_area_id;
+                    check_prov();
+                }
+            });
             //监听删除和添加按钮
             let prov_list_id = 0;
             $('.group_delivery').on('click', '[type="button"]', function () {
@@ -235,21 +248,6 @@
                     }
                 })
                 form.render();
-            }
-
-            //初始化数据
-            if (params.price_type) {
-                //控制其他地区是否显示
-                show_set_other_prov(params.price_type);
-            }
-            if (params.group_json) {
-                //初始化其他地区
-                add_delivery_prov({prov_data: prov_data, data: params.group_json});
-            }
-            if (params.group_area_id) {
-                //初始化地区选择按钮
-                group_area_id = params.group_area_id;
-                check_prov();
             }
         });
     }

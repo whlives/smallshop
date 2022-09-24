@@ -49,7 +49,7 @@ Route::prefix('promo')->controller('PromoController')->group(function () {
 });
 //站外推送
 Route::prefix('out_push')->controller('OutPushController')->group(function () {
-    Route::post('/pay_notify/{payment_id:[0-9]+}[/{platform}]', 'payNotify');
+    Route::post('/pay_notify/{payment_id}/{platform?}', 'payNotify')->where(['payment_id' => '[0-9]+']);
     Route::post('/delivery_notify', 'deliveryNotify');
 });
 

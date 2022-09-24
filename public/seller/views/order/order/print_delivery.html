@@ -67,12 +67,11 @@
 
         //详情
         function print_delivery() {
-            let result = common.ajax(model_url + '/print_delivery', {id: id.split(',')})
-            if (result) {
+            common.ajax(model_url + '/print_delivery', {id: id.split(',')}, function (result) {
                 laytpl($('#print_delivery_tpl').html()).render(result.data, function (html) {
                     $('#print_delivery').html(html);
                 })
-            }
+            });
         }
 
         print_delivery();

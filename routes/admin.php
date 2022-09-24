@@ -151,13 +151,13 @@ Route::group(['middleware' => AdminToken::class], function () {
             Route::post('select_all', 'selectAll');
         });
         //文章
-        Route::prefix('article')->group(function () {
-            Route::post('/', 'ArticleController@index');
-            Route::post('detail', 'ArticleController@detail');
-            Route::post('save', 'ArticleController@save');
-            Route::post('delete', 'ArticleController@delete');
-            Route::post('status', 'ArticleController@status');
-            Route::post('field_update', 'ArticleController@fieldUpdate');
+        Route::prefix('article')->controller('ArticleController')->group(function () {
+            Route::post('/', 'index');
+            Route::post('detail', 'detail');
+            Route::post('save', 'save');
+            Route::post('delete', 'delete');
+            Route::post('status', 'status');
+            Route::post('field_update', 'fieldUpdate');
         });
         //广告位
         Route::prefix('adv_group')->controller('AdvGroupController')->group(function () {

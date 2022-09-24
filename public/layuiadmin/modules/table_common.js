@@ -40,14 +40,13 @@ layui.define(['common'], function (exports) {
     let now_time = new Date().getTime() / 1000;
     let expire = Number(layui.data(layui.setter.tableName)['expire']);
     if ((expire - 900) < now_time) {
-        let refresh_token_result = common.ajax('/refresh_token');
-        if (refresh_token_result) {
+        common.ajax('/refresh_token', {}, function (result) {
             let expire = new Date().getTime() / 1000;
             layui.data(layui.setter.tableName, {
                 key: 'expire',
-                value: Number(expire) + Number(refresh_token_result.data.expire)
+                value: Number(expire) + Number(result.data.expire)
             });
-        }
+        });
     }
 
     //表格头部表单搜索
@@ -142,10 +141,10 @@ layui.define(['common'], function (exports) {
                     callback_obj['delete'].call(this, data, obj)
                 } catch {
                     layer.confirm('确定删除吗', function (index) {
-                        if (common.action_ajax('delete', {id: data.id}, false)) {
+                        common.action_ajax('delete', {id: data.id}, function () {
                             obj.del();
                             layer.close(index);
-                        }
+                        });
                     });
                 }
                 break;
@@ -161,16 +160,16 @@ layui.define(['common'], function (exports) {
     //监听锁定操作
     form.on('switch(status_btn)', function (obj) {
         let data = {id: this.value, status: obj.elem.checked == true ? 1 : 0};
-        if (common.action_ajax('status', data, false)) {
+        common.action_ajax('status', data, function () {
             layer.msg('操作成功！');
-        }
+        });
     });
     //监听单元格编辑
     table.on('edit(table_list)', function (obj) {
         let data = {id: obj.data.id, field: obj.field, field_value: obj.value};
-        if (common.action_ajax('field_update', data, false)) {
+        common.action_ajax('field_update', data, function () {
             layer.msg('操作成功！');
-        }
+        });
     });
 
     /**

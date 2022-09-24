@@ -46,14 +46,14 @@ class OrderComment extends Command
         if ($high_qps) return false;
         LogService::putLog('crontab', '订单自动评价');
         $page = 1;
-        $pagesize = 10;
+        $limit = 10;
         while (true) {
-            $offset = ($page - 1) * $pagesize;
+            $offset = ($page - 1) * $limit;
             $res_list = Order::select('id', 'm_id', 'status', 'comment_at')
                 ->whereNull('comment_at')
                 ->wherein('status', [Order::STATUS_DONE, Order::STATUS_COMPLETE])
                 ->offset($offset)
-                ->limit($pagesize)
+                ->limit($limit)
                 ->orderBy('id', 'asc')->get();
             if ($res_list->isEmpty()) {
                 break;

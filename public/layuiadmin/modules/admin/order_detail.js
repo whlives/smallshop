@@ -33,20 +33,18 @@ layui.define(function (exports) {
 
     //详情
     function get_detail() {
-        let result = common.ajax(model_url + '/detail', {id: params.id});
-        if (result) {
+        common.ajax(model_url + '/detail', {id: params.id}, function (result) {
             laytpl($('#detail_tpl').html()).render(result.data, function (html) {
                 $('#detail').html(html);
                 form.render();
                 common.set_button(model_url);//设置按钮权限
             })
-        }
+        });
     }
 
     //tab切换数据请求
     function get_tab_list(type) {
-        let result = common.ajax(model_url + '/' + type, {live_id: params.id});
-        if (result) {
+        common.ajax(model_url + '/get_' + type, {order_id: params.id}, function (result) {
             laytpl($('#' + type + '_tpl').html()).render(result.data, function (html) {
                 $('#' + type).html(html);
                 //转化静态表格
@@ -54,7 +52,7 @@ layui.define(function (exports) {
                     escape: false,
                 });
             })
-        }
+        });
     }
 
     //监听支付提交
@@ -126,12 +124,11 @@ layui.define(function (exports) {
      * @param form_data
      */
     function form_submit(type, form_data) {
-        let result = common.ajax(model_url + '/' + type, form_data);
-        if (result) {
+        common.ajax(model_url + '/' + type, form_data, function () {
             layer.msg('操作成功', {time: 1000}, function () {
                 get_detail();
             })
-        }
+        });
     }
 
     let obj = {

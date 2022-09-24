@@ -3,11 +3,11 @@
 use Illuminate\Support\Facades\Facade;
 
 return [
-
+    'is_https' => true,//是否是https访问
     /**
-     * 是否负载均衡，默认否，所有配置都存储到文件，在多服务器的环境下配置不能保存到文件
+     * 是否负载均衡，所有配置都存储到文件，在多服务器的环境下配置不能保存到文件
      */
-    'is_slb' => env('IS_SLB', false),
+    'is_slb' => env('IS_SLB', true),
     /*
     |--------------------------------------------------------------------------
     | Application Name

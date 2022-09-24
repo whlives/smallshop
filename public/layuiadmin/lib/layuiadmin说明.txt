@@ -1,6 +1,6 @@
 view.js修改
-ajax
-的请求方式需要改为post
+所有 ajax 的请求方式需要改为post
+
 增加  loading_layer_index  加载层，关闭success 异常提示的代码
 
 laytpl 的请求方式需要改为post

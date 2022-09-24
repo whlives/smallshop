@@ -70,12 +70,11 @@
                         layer.msg('请先选择类型');
                         return cb([]);
                     }
-                    let result = common.ajax(model_url + '/search', {type: type, seller_id: params.seller_id, keyword: val});
-                    if (result) {
-                        return cb(result.data)
-                    } else {
+                    common.ajax(model_url + '/search', {type: type, seller_id: params.seller_id, keyword: val}, function (result) {
+                        return cb(result.data);
+                    }, function () {
                         return cb([]);
-                    }
+                    });
                 }
             })
         });

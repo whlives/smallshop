@@ -27,7 +27,9 @@ class AdvController extends BaseController
         //搜索
         $where = [];
         $title = $request->input('title');
+        $group_id = (int)$request->input('group_id');
         if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
+        if ($group_id) $where[] = ['group_id', $group_id];
         $query = Adv::select('id', 'title', 'image', 'target_type', 'target_value', 'position', 'start_at', 'end_at', 'status', 'created_at')
             ->where($where);
         $total = $query->count();//总条数

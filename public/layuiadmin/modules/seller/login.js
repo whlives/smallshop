@@ -19,8 +19,7 @@ layui.define(['my_hash'], function (exports) {
     let token = layui.data(setter.tableName)[setter.request.tokenName];
     //存在token的时候先验证token
     if (token) {
-        let result = common.ajax('/seller/seller/info');
-        if (result) {
+        common.ajax('/seller/seller/info', {}, function (result) {
             //登入成功的提示与跳转
             layer.msg('已经登录，即将跳转到首页', {
                 offset: '15px',
@@ -29,13 +28,12 @@ layui.define(['my_hash'], function (exports) {
             }, function () {
                 location.href = 'index.html'; //后台主页
             });
-        }
+        });
     }
     //提交
     form.on('submit(login-submit)', function (obj) {
         obj.field.password = my_hash.md5(obj.field.password);
-        let result = common.ajax('/login', obj.field);
-        if (result) {
+        common.ajax('/login', obj.field, function (result) {
             //判断是否需要手机验证码
             if (result.data.sms_captcha) {
                 $('.sms_captcha').removeClass('layui-hide');
@@ -72,18 +70,18 @@ layui.define(['my_hash'], function (exports) {
             }, function () {
                 location.href = 'index.html';//后台主页
             });
-        } else {
+        }, function (result) {
             get_code();
-        }
+            layer.msg(result.msg);
+        });
     });
 
     //获取验证码
     function get_code() {
-        let result = common.ajax('/login/captcha');
-        if (result) {
+        common.ajax('/login/captcha', {}, function (result) {
             $('#LAY-user-get-vercode').attr('src', result.data.img);
             $('[name="captcha_key"]').val(result.data.key);
-        }
+        });
     }
 
     get_code();
@@ -97,8 +95,7 @@ layui.define(['my_hash'], function (exports) {
         let timeInt = 60;
         let timeFunc;
         obj.field.password = my_hash.md5(obj.field.password);
-        let result = common.ajax('/login/sms_captcha', obj.field);
-        if (result) {
+        common.ajax('/login/sms_captcha', obj.field, function (result) {
             if (result.data.sms_captcha) {
                 layer.alert('短信验证码不能为空');
                 return false;
@@ -115,9 +112,9 @@ layui.define(['my_hash'], function (exports) {
                 }
             }, 1000);
             layer.alert('短信已发送到' + result.data.mobile + ',请查收!')
-        } else {
+        }, function () {
             get_code();
-        }
+        });
     });
 
     //对外暴露的接口

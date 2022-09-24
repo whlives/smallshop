@@ -242,7 +242,7 @@ class RefundController extends BaseController
             'user_type' => RefundLog::USER_TYPE_MEMBER,
             'user_id' => $this->member_data['id'],
             'username' => $this->member_data['username'],
-            'action' => RefundLog::ACTION_UPDATE,
+            'action' => RefundLog::ACTION_EDIT,
             'note' => $log_note ? json_encode($log_note, JSON_UNESCAPED_UNICODE) : '',
         ];
         if (!$refund) {

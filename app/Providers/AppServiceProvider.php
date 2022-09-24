@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 
@@ -24,6 +25,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        //判断是否是https
+        if (config('app.is_https')) {
+            URL::forceScheme('https');
+        }
         //验证金额
         Validator::extend('price', function ($attribute, $value, $parameters) {
             return preg_match("/(^[-]?[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[-]?[0-9]\.[0-9]([0-9])?$)/", $value);

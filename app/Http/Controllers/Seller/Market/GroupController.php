@@ -93,6 +93,7 @@ class GroupController extends BaseController
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
+        $data['goods'] = Goods::select('id', 'title')->where('id', $data['goods_id'])->first();
         return $this->success($data);
     }
 
@@ -235,7 +236,9 @@ class GroupController extends BaseController
         $where = [
             ['seller_id', $this->seller_id],
         ];
-        $res_list = Goods::select('id', 'title')
+        $title = $request->input('title');
+        if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
+        $res_list = Goods::select('id as value', 'title as name')
             ->where($where)
             ->whereIn('promo_type', [Goods::PROMO_TYPE_DEFAULT, Goods::PROMO_TYPE_GROUP])
             ->orderBy('id', 'desc')

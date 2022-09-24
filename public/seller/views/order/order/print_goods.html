@@ -120,12 +120,11 @@
 
         //详情
         function print_goods() {
-            let result = common.ajax(model_url + '/print_goods', {id: id.split(',')})
-            if (result) {
+            common.ajax(model_url + '/print_goods', {id: id.split(',')}, function (result) {
                 laytpl($('#print_goods_tpl').html()).render(result.data, function (html) {
                     $('#print_goods').html(html);
-                })
-            }
+                });
+            });
         }
 
         print_goods();

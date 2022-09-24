@@ -61,7 +61,7 @@ class OrderController extends BaseController
         $payment_no = $request->input('payment_no');
         $delivery = (int)$request->input('delivery');
         if ($order_no) $where[] = ['order_no', $order_no];
-        if ($full_name) $where[] = ['order_no', $full_name];
+        if ($full_name) $where[] = ['full_name', $full_name];
         if ($username) {
             $member_id = Member::where('username', $username)->value('id');
             if ($member_id) {
@@ -89,12 +89,13 @@ class OrderController extends BaseController
         if ($id) $where[] = ['id', $id];
         if ($payment_no) $where[] = ['payment_no', $payment_no];
         if ($delivery) {
+            //发货筛选
             switch ($delivery) {
                 case 1:
-                    $where[] = ['status', 1];
+                    $where[] = ['status', Order::STATUS_PAID];
                     break;
                 case 2:
-                    $where_in['status'] = [2, 7];
+                    $where_in['status'] = [Order::STATUS_SHIPMENT, Order::STATUS_PART_SHIPMENT];
                     break;
             }
         }

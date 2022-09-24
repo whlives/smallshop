@@ -26,7 +26,7 @@ if (!function_exists('get_device')) {
 
 if (!function_exists('get_platform')) {
     /**
-     * 获取设备号
+     * 获取平台类型
      * @return string
      */
     function get_platform(): string

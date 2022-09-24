@@ -118,7 +118,7 @@ layui.define(function (exports) {
                 try {
                     $("#" + plupload_btn_id).parent().parent('.layui-form-item').find('img').attr('src', callback_data.url).removeClass('layui-hide');
                     $("#" + plupload_btn_id).parent().parent('.layui-form-item').find('a').attr('href', callback_data.url);
-                    $("#" + plupload_btn_id).parent().parent('.layui-form-item').find('input').val(callback_data.url);
+                    $("#" + plupload_btn_id).parent().parent('.layui-form-item').find('[name="' + plupload_btn_id + '"]').val(callback_data.url);
                 } catch (e) {
                 }
             }

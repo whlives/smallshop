@@ -100,10 +100,9 @@
 
         //监听提交
         form.on('submit(form-submit)', function (data) {
-            let result = common.ajax(model_url + '/update', data.field)
-            if (result) {
+            common.ajax(model_url + '/update', data.field, function () {
                 layer.msg('保存成功');
-            }
+            });
         });
         //添加按钮
         form.on('submit(add)', function (data) {

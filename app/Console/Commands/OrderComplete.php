@@ -57,14 +57,14 @@ class OrderComplete extends Command
             ['done_at', '<', get_date(time() - $order_complete_time)]
         ];
         $page = 1;
-        $pagesize = 10;
+        $limit = 10;
         while (true) {
-            $offset = ($page - 1) * $pagesize;
+            $offset = ($page - 1) * $limit;
             $res_list = Order::select('id', 'seller_id', 'order_no', 'subtotal', 'status', 'level_one_m_id', 'level_two_m_id', 'is_settlement')
                 ->where($where)
                 ->whereIn('status', [Order::STATUS_DONE, Order::STATUS_REFUND_COMPLETE])
                 ->offset($offset)
-                ->limit($pagesize)
+                ->limit($limit)
                 ->orderBy('id', 'asc')
                 ->get();
             if ($res_list->isEmpty()) {

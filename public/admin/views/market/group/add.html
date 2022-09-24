@@ -38,9 +38,7 @@
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label label-required-next">商品</label>
-        <div class="layui-input-block">
-            <select name="goods_id" lay-filter="goods_id" lay-search="" lay-verify="required" lay-reqText="请选择商品">
-            </select>
+        <div class="layui-input-block" id="goods_id">
         </div>
     </div>
     <div class="layui-form-item">
@@ -53,6 +51,7 @@
     </div>
 </form>
 <script type="text/html" template lay-done="layui.data.sendParams(d.params);"></script>
+<script src="../../../../layuiadmin/lib/xm-select.js"></script>
 <script>
     layui.data.sendParams = function (params) {
         layui.use(function () {
@@ -60,6 +59,7 @@
                 form = layui.form,
                 common = layui.common,
                 laydate = layui.laydate,
+                seller_id = '',
                 model_url = '/market/group';
 
             //日期
@@ -71,28 +71,37 @@
 
 
             form.on('select(seller_id)', function (data) {
-                get_goods(data.value);
+                seller_id = data.value;
             });
-
-            //选择商品
-            function get_goods(seller_id, goods_id) {
-                let result = common.ajax(model_url + '/search', {seller_id: seller_id});
-                if (result) {
-                    let html = '<option value="">请选择</option>';
-                    $.each(result.data, function (index, item) {
-                        let selected = '';
-                        if (item.id == goods_id) {
-                            selected = 'selected';
-                        }
-                        html += '<option value="' + item.id + '" ' + selected + '>' + item.id + '、' + item.title + '</option>';
-                    })
-                    $('[name="goods_id"]').html(html);
+            //商品选择
+            let goods_id = xmSelect.render({
+                el: '#goods_id',
+                name: 'goods_id',
+                radio: true,
+                autoRow: true,
+                filterable: true,
+                remoteSearch: true,
+                remoteMethod: function (val, cb) {
+                    //这里如果val为空, 则不触发搜索
+                    if (!val) {
+                        return cb([]);
+                    }
+                    if (!seller_id) {
+                        layer.msg('请先选择商家');
+                        return cb([]);
+                    }
+                    common.ajax(model_url + '/search', {seller_id: seller_id, title: val}, function (result) {
+                        return cb(result.data)
+                    }, function () {
+                        return cb([]);
+                    });
                 }
-                form.render('select');
-            }
-
-            if (params.seller_id) {
-                get_goods(params.seller_id, params.goods_id);
+            });
+            if (params.goods) {
+                seller_id = params.seller_id;
+                goods_id.setValue([
+                    {name: params.goods.title, value: params.goods.id},
+                ]);
             }
         });
     }

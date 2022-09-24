@@ -79,11 +79,7 @@ class MiniProgram
         ];
         $response = $this->app->getClient()->postJson('wxa/business/getuserphonenumber', $data);
         $res = $response->toArray(false);
-        if (isset($res['phone_info'])) {
-            return $res['phone_info'];
-        } else {
-            return $res['errmsg'];
-        }
+        return $res['phone_info'] ?? $res['errmsg'];
     }
 
     /**

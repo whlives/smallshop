@@ -80,6 +80,9 @@ class PayController extends BaseController
                 api_error($pay_data);
             }
         } else {
+            $pay_data['payment_id'] = 0;
+            $pay_data['payment_no'] = '';
+            $pay_data['pay_total'] = 0;
             $pay_data['is_pay'] = 0;
         }
         $pay_data['trade_no'] = $pay_info['trade_no'];

@@ -55,6 +55,7 @@ return [
     'auth_data_error' => '20014|第三方数据错误',
     'user_mobile_is_bind' => '20015|手机号已经绑定其他账号',
     'user_mobile_bind_fail' => '20016|手机号绑定失败',
+    'user_mobile_get_fail' => '20017|手机号获取失败',
 
     //订单30000
     //支付
@@ -101,26 +102,24 @@ return [
     'express_company_error' => '70023|物流公司信息错误',
 
     //商品40000
+    'search_key_and_category_error' => '40000|关键字和分类不能都为空',
+    'search_goods_max_page' => '40001|商品搜索分页最大100页',
     //购物车商品商品40100
     'tip_goods_no_shelves' => '商品已下架',//购物车错误提示不需要编码
     'tip_goods_stock_no_enough' => '库存不足',//购物车错误提示不需要编码
     'tip_goods_min_buy_qty_error' => '最少需要订购',//购物车错误提示不需要编码
     'tip_goods_max_buy_qty_error' => '最多只能订购',//购物车错误提示不需要编码
     'delivery_can_not' => '不在配送范围内',//购物车错误提示不需要编码
-    'goods_error' => '80001|商品不存在',
-    'goods_shelves_status_error' => '80002|商品已下架',
-    'goods_sku_error' => '80003|SKU商品不存在',
-    'goods_sku_status_error' => '80004|商品已失效',
-    'goods_min_buy_qty_error' => '80005|商品购买件数少于最少购买数量',
-    'goods_max_buy_qty_error' => '80006|商品购买件数大于最多购买数量',
-    'goods_stock_no_enough' => '80007|商品库存不足',
-    'cart_goods_error' => '80008|购物车商品不存在',
-    'goods_not_join_cart' => '80009|该商品不支持加入购物车',
-    'buy_qty_error' => '80010|商品购买数量错误',
-
-
-    'search_key_and_category_error' => '80008|关键字和分类不能都为空',
-    'search_goods_max_page' => '10021|商品搜索分页最大100页',
+    'goods_error' => '40100|商品不存在',
+    'goods_shelves_status_error' => '40101|商品已下架',
+    'goods_sku_error' => '40102|SKU商品不存在',
+    'goods_sku_status_error' => '40103|商品已失效',
+    'goods_min_buy_qty_error' => '40104|商品购买件数少于最少购买数量',
+    'goods_max_buy_qty_error' => '40105|商品购买件数大于最多购买数量',
+    'goods_stock_no_enough' => '40106|商品库存不足',
+    'cart_goods_error' => '40107|购物车商品不存在',
+    'goods_not_join_cart' => '40108|该商品不支持加入购物车',
+    'buy_qty_error' => '40109|商品购买数量错误',
 
     //促销50000
     //优惠券50000

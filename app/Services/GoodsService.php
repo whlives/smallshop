@@ -732,12 +732,12 @@ class GoodsService
 
     /**
      * 验证发票信息
-     * @param $seller_goods
-     * @param $invoice
+     * @param array $seller_goods
+     * @param array $invoice
      * @return mixed
      * @throws \App\Exceptions\ApiError
      */
-    public static function checkInvoice($seller_goods, $invoice)
+    public static function checkInvoice(array $seller_goods, array $invoice)
     {
         foreach ($seller_goods as $value) {
             $seller_id = $value['seller']['id'];

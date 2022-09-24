@@ -107,13 +107,14 @@
                 common.open_edit('添加', 'add', {coupons_id: coupons_id});
             },
             delete: function (data = {}, obj) {
-                console.log(obj)
                 let post_data;
                 if (data) post_data = {coupons_id: coupons_id, id: data.id}
                 layer.confirm('确定删除吗', function (index) {
-                    if (obj && common.action_ajax('delete', post_data, false)) {
-                        obj.del();
-                        layer.close(index);
+                    if (obj) {
+                        common.action_ajax('delete', post_data, function () {
+                            obj.del();
+                            layer.close(index);
+                        });
                     } else {
                         common.action_ajax('delete');
                     }

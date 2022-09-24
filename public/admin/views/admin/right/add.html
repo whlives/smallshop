@@ -74,10 +74,10 @@
                 routes = [];
 
             //获取路由
-            let result = common.ajax(model_url + '/routes');
-            if (result) {
+            common.ajax(model_url + '/routes', {}, function (result) {
                 routes = result.data;
-            }
+                set_route();//设置默认的路由
+            });
 
             //设置选择的路由
             function set_route(controller, default_id) {
@@ -97,20 +97,17 @@
                 form.render('select');
             }
 
-            set_route();//设置默认的路由
-
             //获取下级菜单
             function get_menu(type, parent_id = 0, default_id = 0) {
                 if (!parent_id) parent_id = 0;
                 if (!default_id) default_id = 0;
-                let result = common.ajax('/system/menu/select', {parent_id: parent_id});
-                if (result) {
+                common.ajax('/system/menu/select', {parent_id: parent_id}, function (result) {
                     let data = {data: result.data, default_id: default_id};
                     laytpl($('#menu_tpl').html()).render(data, function (html) {
                         $('#' + type).html(html);
                     });
                     form.render('select');
-                }
+                });
             }
 
             get_menu('menu_top', 0, params.menu_top);

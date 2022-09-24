@@ -33,19 +33,19 @@ class RefundLog extends BaseModel
     const ACTION_AGREE = 2;//同意
     const ACTION_REFUSED = 3;//拒绝
     const ACTION_MEMBER_SEND = 4;//退货
-    const ACTION_SELEER_SEND = 5;//商家发货
+    const ACTION_SELLER_SEND = 5;//商家发货
     const ACTION_COMPLETE = 6;//完成
     const ACTION_CANCEL = 7;//取消
-    const ACTION_UPDATE = 8;//修改
+    const ACTION_EDIT = 8;//修改
     const ACTION_DESC = [
         self::ACTION_APPLY => '申请',
         self::ACTION_AGREE => '同意',
         self::ACTION_REFUSED => '拒绝',
         self::ACTION_MEMBER_SEND => '退货',
-        self::ACTION_SELEER_SEND => '商家发货',
+        self::ACTION_SELLER_SEND => '商家发货',
         self::ACTION_COMPLETE => '完成',
         self::ACTION_CANCEL => '取消',
-        self::ACTION_UPDATE => '修改',
+        self::ACTION_EDIT => '修改',
     ];
 
     protected $table = 'refund_log';

@@ -62,9 +62,24 @@ class SignService
     public static function buildSign(array $filter_data): string
     {
         //把数组所有元素拼接成url格式
-        $url_str = http_build_query($filter_data);
+        $url_str = self::createLinkString($filter_data);
         $url_str = $url_str . '&key=' . get_api_key();//拼接key
         $md5_str = md5($url_str);
         return strtoupper($md5_str);
+    }
+
+    /**
+     * 把数组所有元素，按照“参数=参数值”的模式用“&”字符拼接成字符串(注意不要使用http_build_query，会自动转码有异常)
+     * @param array $filter_data
+     * @return string
+     */
+    public static function createLinkString(array $filter_data): string
+    {
+        $str = "";
+        foreach ($filter_data as $key => $val) {
+            $str .= $key . "=" . $val . "&";
+        }
+        //去掉最后一个&字符
+        return trim($str, '&');
     }
 }

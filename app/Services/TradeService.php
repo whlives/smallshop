@@ -94,7 +94,7 @@ class TradeService
             api_error(__('api.order_error'));
         }
         //开始验证订单
-        $order_list = Order::select('status', 'subtotal')->whereIn('order_no', $order_no)->get();
+        $order_list = Order::select('status', 'subtotal')->where('m_id', $m_id)->whereIn('order_no', $order_no)->get();
         if ($order_list->isEmpty()) {
             api_error(__('api.order_error'));
         }
@@ -123,7 +123,7 @@ class TradeService
     public static function checkRechargeInfo(int $m_id, string $order_no)
     {
         //开始验证订单
-        $recharge = BalanceRecharge::where('recharge_no', $order_no)->first();
+        $recharge = BalanceRecharge::where(['m_id' => $m_id, 'recharge_no' => $order_no])->first();
         if (!$recharge) {
             api_error(__('api.recharge_error'));
         } elseif ($recharge['status'] != BalanceRecharge::STATUS_OFF) {
@@ -132,7 +132,7 @@ class TradeService
         return [
             'title' => '充值',
             'order_no' => $order_no,
-            'subtotal' => $recharge['subtotal'],
+            'subtotal' => $recharge['amount'],
         ];
     }
 

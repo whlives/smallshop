@@ -135,8 +135,7 @@
                 } else if (rule_type == 2) {
                     $('.use_price').addClass('layui-hide').find('input').val('0');
                 }
-                let result = common.ajax(model_url + '/get_type', {rule_type: rule_type});
-                if (result) {
+                common.ajax(model_url + '/get_type', {rule_type: rule_type}, function (result) {
                     let html = '<option value="">请选择</option>';
                     $.each(result.data, function (index, item) {
                         let selected = '';
@@ -149,8 +148,9 @@
                     $('[name="type"]').html(html);
                     $('.type_value').addClass('layui-hide').find('[name="type_value"]').val(type_value);
                     $('.type_value_prompt,.coupons').addClass('layui-hide');
+                    if (params.id) select_type(params.type);
                     form.render('select');
-                }
+                });
             }
 
             //监听活动类型选择
@@ -195,16 +195,14 @@
             //根据店铺刷新优惠券
             function get_coupons(seller_id, default_id) {
                 if (!default_id) default_id = 0;
-                let result = common.ajax('/market/coupons/select', {seller_id: seller_id});
-                if (result) {
+                common.ajax('/market/coupons/select', {seller_id: seller_id}, function (result) {
                     common.set_select_option('coupons_id', result.data, default_id);
-                }
+                });
             }
 
             if (params.id) {
                 set_type(params.rule_type, params);
                 user_group_select();
-                select_type(params.type);
                 if (params.type == 4 || params.type == 51) {
                     get_coupons(params.seller_id, params.coupons_id);
                 }

@@ -61,7 +61,7 @@ class OrderController extends BaseController
         $payment_no = $request->input('payment_no');
         $delivery = (int)$request->input('delivery');
         if ($order_no) $where[] = ['order_no', $order_no];
-        if ($full_name) $where[] = ['order_no', $full_name];
+        if ($full_name) $where[] = ['full_name', $full_name];
         if ($username) {
             $member_id = Member::where('username', $username)->value('id');
             if ($member_id) {

@@ -76,10 +76,9 @@ layui.define(['plupload', 'goods_sku'], function (exports) {
     //根据店铺刷新配送方式
     function get_delivery(seller_id, default_id) {
         if (!default_id) default_id = 0;
-        let result = common.ajax(model_url + '/delivery', {seller_id: seller_id});
-        if (result) {
+        common.ajax(model_url + '/delivery', {seller_id: seller_id}, function (result) {
             common.set_select_option('delivery_id', result.data, default_id);
-        }
+        });
     }
 
     //根据店铺刷新优惠券
@@ -88,30 +87,27 @@ layui.define(['plupload', 'goods_sku'], function (exports) {
             return false;
         }
         if (!default_id) default_id = 0;
-        let result = common.ajax(model_url + '/coupons', {seller_id: seller_id});
-        if (result) {
+        common.ajax(model_url + '/coupons', {seller_id: seller_id}, function (result) {
             common.set_select_option('coupons_id', result.data, default_id);
             $('[name="coupons_id"]').parent().parent().removeClass('layui-hide');
-        }
+        });
     }
 
     //加载属性
     function get_attribute(goods_id) {
         if (!goods_id) goods_id = 0;
-        let result = common.ajax(model_url + '/get_attribute', {category_id: params.category_id, goods_id: goods_id});
-        if (result) {
+        common.ajax(model_url + '/get_attribute', {category_id: params.category_id, goods_id: goods_id}, function (result) {
             laytpl($('#attribute_tpl').html()).render(result.data, function (html) {
                 $('#attribute').append(html).removeClass('layui-hide');
             })
             form.render();
-        }
+        });
     }
 
     //加载规格
     function get_spec(goods_id) {
         if (!goods_id) goods_id = 0;
-        let result = common.ajax(model_url + '/get_spec', {category_id: params.category_id, goods_id: goods_id});
-        if (result) {
+        common.ajax(model_url + '/get_spec', {category_id: params.category_id, goods_id: goods_id}, function (result) {
             laytpl($('#spec_tpl').html()).render(result.data.spec, function (html) {
                 $('.goods_spec').append(html).removeClass('layui-hide');
             })
@@ -122,7 +118,7 @@ layui.define(['plupload', 'goods_sku'], function (exports) {
             }
             plupload.init();//初始化图片上传
             form.render();
-        }
+        });
     }
 
     let obj = {

@@ -56,14 +56,14 @@ class RefundCancel extends Command
             ['updated_at', '<', get_date(time() - $refund_cancel_time)]
         ];
         $page = 1;
-        $pagesize = 10;
+        $limit = 10;
         while (true) {
-            $offset = ($page - 1) * $pagesize;
+            $offset = ($page - 1) * $limit;
             $res_list = Refund::select('id', 'order_goods_id', 'status')
                 ->where($where)
                 ->whereIn('status', [Refund::STATUS_REFUSED_APPROVE, Refund::STATUS_WAIT_DELIVERY, Refund::STATUS_REFUSED_RECEIVED])
                 ->offset($offset)
-                ->limit($pagesize)
+                ->limit($limit)
                 ->orderBy('id', 'asc')
                 ->get();
             if ($res_list->isEmpty()) {

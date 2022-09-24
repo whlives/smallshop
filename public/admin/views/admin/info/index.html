@@ -73,19 +73,17 @@
             model_url = '/admin/admin';
 
         //回填数据
-        let result = common.ajax(model_url + '/info');
-        if (result) {
+        common.ajax(model_url + '/info', {}, function (result) {
             form.val('form', result.data);
-        }
+        });
 
         //监听提交
         form.on('submit(form-submit)', function (data) {
-            let result = common.ajax(model_url + '/info_update', data.field);
-            if (result) {
+            common.ajax(model_url + '/info_update', data.field, function (result) {
                 layer.msg('保存成功', {time: 1000}, function () {
                     location.reload();
                 });
-            }
+            });
         });
     });
 </script>

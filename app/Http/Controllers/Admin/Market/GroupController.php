@@ -84,6 +84,7 @@ class GroupController extends BaseController
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
+        $data['goods'] = Goods::select('id', 'title')->where('id', $data['goods_id'])->first();
         return $this->success($data);
     }
 
@@ -125,7 +126,7 @@ class GroupController extends BaseController
         }
         $seller_id = (int)$request->input('seller_id');
         $goods_id = (int)$request->input('goods_id');
-        $detail = '';
+        $detail = [];
         if ($id) {
             //只有不是原来的商品的时候才需要验证商品
             $detail = PromoGroup::find($id);
@@ -157,7 +158,7 @@ class GroupController extends BaseController
                 return true;
             });
             Goods::syncRedisStock($save_data['goods_id']);//同步redis库存
-            if ($detail['goods_id'] != $save_data['goods_id']) {
+            if ($detail && $detail['goods_id'] != $save_data['goods_id']) {
                 Goods::delGoodsCache($detail['goods_id']);//删除商品缓存
             }
         } catch (\Exception $e) {
@@ -233,7 +234,9 @@ class GroupController extends BaseController
         $where = [
             ['seller_id', $seller_id],
         ];
-        $res_list = Goods::select('id', 'title')
+        $title = $request->input('title');
+        if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
+        $res_list = Goods::select('id as value', 'title as name')
             ->where($where)
             ->whereIn('promo_type', [Goods::PROMO_TYPE_DEFAULT, Goods::PROMO_TYPE_GROUP])
             ->orderBy('id', 'desc')

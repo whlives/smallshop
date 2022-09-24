@@ -127,8 +127,7 @@
         plupload.init();//初始化上传
 
         //回填数据
-        let result = common.ajax(model_url + '/info');
-        if (result) {
+        common.ajax(model_url + '/info', {}, function (result) {
             if (result.data.image) {
                 $('[name="image"]').parent().parent('.layui-form-item').find('img').attr('src', result.data.image).removeClass('layui-hide');
                 $('[name="image"]').parent().parent('.layui-form-item').find('a').attr('href', result.data.image);
@@ -144,16 +143,15 @@
             form.on('select(city_id)', function (data) {
                 common.get_area('area_id', data.value);
             });
-        }
+        });
 
         //监听提交
         form.on('submit(form-submit)', function (data) {
-            let result = common.ajax(model_url + '/info_update', data.field);
-            if (result) {
+            common.ajax(model_url + '/info_update', data.field, function () {
                 layer.msg('保存成功', {time: 1000}, function () {
                     location.reload();
                 });
-            }
+            });
         });
     });
 </script>

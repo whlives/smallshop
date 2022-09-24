@@ -70,10 +70,9 @@ layui.define(['plupload', 'goods_sku'], function (exports) {
     //根据店铺刷新配送方式
     function get_delivery(default_id) {
         if (!default_id) default_id = 0;
-        let result = common.ajax(model_url + '/delivery');
-        if (result) {
+        common.ajax(model_url + '/delivery', {}, function (result) {
             common.set_select_option('delivery_id', result.data, default_id);
-        }
+        });
     }
 
 
@@ -83,32 +82,29 @@ layui.define(['plupload', 'goods_sku'], function (exports) {
             return false;
         }
         if (!default_id) default_id = 0;
-        let result = common.ajax(model_url + '/coupons');
-        if (result) {
+        common.ajax(model_url + '/coupons', {}, function (result) {
             common.set_select_option('coupons_id', result.data, default_id);
             $('[name="coupons_id"]').parent().parent().removeClass('layui-hide');
-        }
+        });
     }
 
 
     //加载属性
     function get_attribute(goods_id) {
         if (!goods_id) goods_id = 0;
-        let result = common.ajax(model_url + '/get_attribute', {category_id: params.category_id, goods_id: goods_id});
-        if (result) {
+        common.ajax(model_url + '/get_attribute', {category_id: params.category_id, goods_id: goods_id}, function (result) {
             laytpl($('#attribute_tpl').html()).render(result.data, function (html) {
                 $('#attribute').append(html).removeClass('layui-hide');
             })
             form.render();
-        }
+        });
     }
 
 
     //加载规格
     function get_spec(goods_id) {
         if (!goods_id) goods_id = 0;
-        let result = common.ajax(model_url + '/get_spec', {category_id: params.category_id, goods_id: goods_id});
-        if (result) {
+        common.ajax(model_url + '/get_spec', {category_id: params.category_id, goods_id: goods_id}, function (result) {
             laytpl($('#spec_tpl').html()).render(result.data.spec, function (html) {
                 $('.goods_spec').append(html).removeClass('layui-hide');
             })
@@ -119,7 +115,7 @@ layui.define(['plupload', 'goods_sku'], function (exports) {
             }
             plupload.init();//初始化图片上传
             form.render();
-        }
+        });
     }
 
 
@@ -130,15 +126,16 @@ layui.define(['plupload', 'goods_sku'], function (exports) {
             name: 'seller_category',
             data: []
         })
-        let seller_category_select_all = common.ajax('/seller/category/select_all');
-        if (seller_category_select_all) {
-            seller_category.update({
-                data: seller_category_select_all.data
-            })
-        }
-        if (params.seller_category) {
-            seller_category.setValue(params.seller_category)
-        }
+        common.ajax('/seller/category/select_all', {}, function (result) {
+            if (result) {
+                seller_category.update({
+                    data: result.data
+                })
+            }
+            if (params.seller_category) {
+                seller_category.setValue(params.seller_category)
+            }
+        });
     }
 
     let obj = {
