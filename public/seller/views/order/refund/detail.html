@@ -192,14 +192,18 @@
             form.on('submit(original_road_pay)', function (data) {
                 let form_data = data.field;
                 form_data['type'] = 'original_road_pay';
-                form_submit('pay', form_data);
+                layer.confirm('确定原路退回吗', function (index) {
+                    form_submit('pay', form_data);
+                });
                 return false;
             });
             //监听线下打款
             form.on('submit(offline_pay)', function (data) {
                 let form_data = data.field;
                 form_data['type'] = 'offline_pay';
-                form_submit('pay', form_data);
+                layer.confirm('确定线下打款吗', function (index) {
+                    form_submit('pay', form_data);
+                });
                 return false;
             });
 

@@ -129,18 +129,20 @@ class TradeController extends BaseController
         } elseif ($trade['status'] != Trade::STATUS_ON) {
             api_error(__('admin.trade_status_error'));
         }
-        $res = Trade::where('id', $id)->update(['status' => Trade::STATUS_REFUND]);
-        if ($res) {
+        //查询是否已经有退款单，有的话不能再这里退款
+        $trade_refund = TradeRefund::where(['trade_no' => $trade['trade_no'], 'status' => TradeRefund::STATUS_ON])->count();
+        if ($trade_refund) {
+            api_error(__('admin.trade_is_refund'));
+        } else {
             $res_refund = TradeService::tradeRefund($trade['id'], $trade['trade_no'], $trade['pay_total'], TradeRefund::TYPE_TRADE);
             if ($res_refund === true) {
+                Trade::where('id', $id)->update(['status' => Trade::STATUS_REFUND]);
                 return $this->success();
             } else {
                 //退款失败的话需要还原状态
                 Trade::where('id', $id)->update(['status' => $trade['status']]);
                 api_error($res_refund);
             }
-        } else {
-            api_error(__('admin.fail'));
         }
     }
 

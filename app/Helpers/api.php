@@ -18,6 +18,9 @@ if (!function_exists('get_device')) {
             $device = request()->input('device');
             if (!$device) {
                 $device = request()->header('device');
+                if (!$device) {
+                    $device = md5(request()->userAgent());
+                }
             }
         }
         return $device;

@@ -100,9 +100,13 @@ layui.define(function (exports) {
                         } catch (e) {
                         }
                     } else if (result.msg) {
-                        try {
-                            error(result);
-                        } catch (e) {
+                        if (error.length > 0) {
+                            try {
+                                error(result);
+                            } catch (e) {
+                                layer.msg(result.msg);
+                            }
+                        } else {
                             layer.msg(result.msg);
                         }
                     } else {

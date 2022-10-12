@@ -96,6 +96,7 @@ return [
     //交易单60000
     'trade_error' => '60000|交易单错误',
     'trade_status_error' => '60001|交易单状态错误',
+    'trade_is_refund' => '60002|交易单存在已经退款情况，不允许直接退款',
     //资金60100
     'balance_event_error' => '60100|资金类型错误',
     'balance_insufficient' => '60101|余额不足',
