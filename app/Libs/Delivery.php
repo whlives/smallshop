@@ -27,7 +27,7 @@ class Delivery
         $this->key = $custom_config['kuaidi_100_key'];//客户授权key
         $this->secret = $custom_config['kuaidi_100_secret'];//客户授权secret
         $this->salt = $custom_config['kuaidi_100_salt'];
-        $this->callback_url = url('/v1/out_push/delivery_traces');
+        $this->callback_url = url('/v1/out_push/delivery_notify');
     }
 
     /**

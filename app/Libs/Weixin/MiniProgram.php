@@ -52,7 +52,7 @@ class MiniProgram
                     $session_data = $result;
                     Cache::put($cache_key, $session_data, $this->custom_config['cache_time']);
                 } else {
-                    return false;
+                    return '';
                 }
             }
             return $session_data;
