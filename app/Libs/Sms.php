@@ -136,7 +136,7 @@ class Sms
         $redis_key = 'captcha_error:' . $mobile;
         $error_num = Redis::get($redis_key);
         if ($error_num >= 5) {
-            return __('api.error_num_max');
+            return __('api.sms_error_num_max');
         }
         return true;
     }

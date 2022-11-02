@@ -28,11 +28,15 @@ class Adv extends BaseModel
     const TARGET_TYPE_ARTICLE = 2;
     const TARGET_TYPE_THEME = 3;
     const TARGET_TYPE_GOODS = 4;
+    const TARGET_TYPE_MINI_PROGRAM_PATH = 5;
+    const TARGET_TYPE_OTHER_MINI_PROGRAM_PATH = 6;
     const TARGET_TYPE_DESC = [
         self::TARGET_TYPE_URL => '链接',
         self::TARGET_TYPE_ARTICLE => '文章',
         self::TARGET_TYPE_THEME => '专题',
-        self::TARGET_TYPE_GOODS => '商品'
+        self::TARGET_TYPE_GOODS => '商品',
+        self::TARGET_TYPE_MINI_PROGRAM_PATH => '小程序地址',
+        self::TARGET_TYPE_OTHER_MINI_PROGRAM_PATH => '外部小程序地址',
     ];
 
     protected $table = 'adv';
@@ -60,7 +64,7 @@ class Adv extends BaseModel
             ['start_at', '<=', get_date()],
             ['end_at', '>=', get_date()]
         ];
-        $res_list = Adv::select('title', 'image', 'target_type', 'target_value')
+        $res_list = Adv::select('title', 'image', 'target_type', 'target_value', 'app_id')
             ->where($adv_where)
             ->orderBy('position', 'asc')
             ->orderBy('id', 'desc')

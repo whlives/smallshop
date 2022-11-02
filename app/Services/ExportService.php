@@ -62,7 +62,7 @@ class ExportService
             'subtotal' => '金额',
             'order_no' => '订单号',
         ];
-        $query = Order::select('order.id as order_id', 'order_no', 'full_name', 'tel', 'prov', 'city', 'area', 'address', 'subtotal', 'goods.goods_title', 'goods.buy_qty');
+        $query = Order::select('order.id as order_id', 'order.order_no', 'order.full_name', 'order.tel', 'order.prov', 'order.city', 'order.area', 'order.address', 'order.subtotal', 'goods.goods_title', 'goods.buy_qty');
         if (isset($where['where']) && $where['where']) {
             $query->where($where['where']);
         }

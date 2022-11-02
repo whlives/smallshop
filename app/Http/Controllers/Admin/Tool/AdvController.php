@@ -108,8 +108,11 @@ class AdvController extends BaseController
             api_error(current($error));
         }
         $save_data = [];
-        foreach ($request->only(['title', 'group_id', 'image', 'target_type', 'target_value', 'position', 'start_at', 'end_at']) as $key => $value) {
+        foreach ($request->only(['title', 'group_id', 'image', 'target_type', 'target_value', 'position', 'start_at', 'end_at', 'app_id']) as $key => $value) {
             $save_data[$key] = $value;
+        }
+        if ($save_data['target_type'] == Adv::TARGET_TYPE_OTHER_MINI_PROGRAM_PATH && !$save_data['app_id']) {
+            api_error(__('admin.adv_app_id_not_empty'));
         }
         if ($id) {
             $res = Adv::where('id', $id)->update($save_data);

@@ -79,6 +79,9 @@ class MiniProgram
         ];
         $response = $this->app->getClient()->postJson('wxa/business/getuserphonenumber', $data);
         $res = $response->toArray(false);
+        if (isset($res['errcode']) && $res['errcode'] == 40001) {
+            $this->app->getAccessToken()->refresh();//刷新access_token
+        }
         return $res['phone_info'] ?? $res['errmsg'];
     }
 
@@ -130,6 +133,14 @@ class MiniProgram
                 'width' => $width,
                 'check_path' => !config('app.debug'),//测试环境不校验page
             ]);
+            if ($response->isFailed()) {
+                //判断是否是access_token异常并刷新
+                $error = $response->toArray(false);
+                if ($error['errcode'] == 40001) {
+                    $this->app->getAccessToken()->refresh();
+                }
+                return false;
+            }
             $upload = new Upload();
             $dir = $upload->getQrcodeDir($scene);//获取存储地址
             $url = $dir . md5($scene) . '.jpg';

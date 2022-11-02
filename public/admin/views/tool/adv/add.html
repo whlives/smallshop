@@ -31,7 +31,7 @@
         <div class="layui-input-block">
             <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/tool/adv/target_type" lay-done="layui.form.render();">
                 {{# layui.each(d.data, function(index, item){ }}
-                <input type="radio" name="target_type" value="{{ index }}" title="{{ item }}" {{# if(index== d.params.target_type){ }}checked{{# } }} lay-verify="required">
+                <input type="radio" name="target_type" lay-filter="target_type" value="{{ index }}" title="{{ item }}" {{# if(index== d.params.target_type){ }}checked{{# } }} lay-verify="required">
                 {{# }); }}
             </script>
         </div>
@@ -42,7 +42,12 @@
             <input type="text" name="target_value" lay-verify="required" lay-reqText="url或id不能为空" autocomplete="off" class="layui-input">
         </div>
     </div>
-
+    <div class="layui-form-item layui-hide" id="item_app_id">
+        <label class="layui-form-label label-required-next">小程序app_id</label>
+        <div class="layui-input-block">
+            <input type="text" name="app_id" autocomplete="off" class="layui-input">
+        </div>
+    </div>
     <div class="layui-form-item">
         <label class="layui-form-label">排序</label>
         <div class="layui-input-block">
@@ -71,19 +76,39 @@
 </form>
 <script src="../../../../layuiadmin/lib/plupload/plupload.full.min.js"></script>
 <script src="../../../../layuiadmin/lib/plupload/i18n/zh_CN.js"></script>
+<script type="text/html" template lay-done="layui.data.sendParams(d.params);"></script>
 <script>
-    layui.use(['plupload'], function () {
-        let $ = layui.$,
-            plupload = layui.plupload,
-            laydate = layui.laydate;
+    layui.data.sendParams = function (params) {
+        layui.use(['plupload'], function () {
+            let $ = layui.$,
+                plupload = layui.plupload,
+                form = layui.form,
+                laydate = layui.laydate;
 
-        plupload.init();//初始化上传
+            plupload.init();//初始化上传
 
-        //日期
-        laydate.render({
-            elem: '#select_at',
-            type: 'datetime',
-            range: ['#start_at', '#end_at']
+            //日期
+            laydate.render({
+                elem: '#select_at',
+                type: 'datetime',
+                range: ['#start_at', '#end_at']
+            });
+
+            form.on('radio(target_type)', function (data) {
+                select_target_type(data.value);
+            });
+
+            if (params.target_type) {
+                select_target_type(params.target_type);
+            }
+
+            function select_target_type(target_type) {
+                if (target_type == 6) {
+                    $('#item_app_id').removeClass('layui-hide');
+                } else {
+                    $('#item_app_id').addClass('layui-hide').find('input').val('');
+                }
+            }
         });
-    });
+    }
 </script>

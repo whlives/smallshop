@@ -320,11 +320,16 @@ class RefundController extends BaseController
         $id = (int)$request->input('id');
         $type = $request->input('type');
         $note = $request->input('note');
-        if (!$id || !$type) {
+        if (!$id || !in_array($type, ['original_road_pay', 'offline_pay'])) {
             api_error(__('admin.missing_params'));
         }
         $refund = self::checkRefund($id);
-        $res = RefundService::sellerPay($refund, $this->user_data, RefundLog::USER_TYPE_ADMIN, $note, $type);
+        if ($type == 'original_road_pay') {
+            $original_road = true;
+        } elseif ($type == 'offline_pay') {
+            $original_road = false;
+        }
+        $res = RefundService::sellerPay($refund, $this->user_data, RefundLog::USER_TYPE_ADMIN, $note, $original_road);
         if ($res === true) {
             return $this->success();
         } elseif ($res === false) {

@@ -36,6 +36,7 @@ return [
     'sms_frequent' => '10025|短信发送太频繁',
     'sms_send_fail' => '10026|短信发送失败',
     'sms_error_num_max' => '10027|错误次数已达上限，请五分钟后再试',
+    'adv_app_id_not_empty' => '10028|跳转第三方的小程序appid不能为空',
 
     //管理员10500
     'admin_user_error' => '10500|用户名错误',
