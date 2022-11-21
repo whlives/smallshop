@@ -27,7 +27,7 @@
                             <div class="layui-inline">
                                 <label class="layui-form-label">用户ID：</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="m_id" placeholder="请输入" autocomplete="off" class="layui-input">
+                                    <input type="text" name="id" placeholder="请输入" autocomplete="off" class="layui-input">
                                 </div>
                             </div>
                             <div class="layui-inline">
@@ -92,13 +92,13 @@
                 common.open_edit('批量充值', 'batch_recharge', {}, '', {save_url: '/batch_recharge'});
             },
             recharge: function (data) {
-                common.open_edit('充值', 'update', {m_id: data.m_id, type: 'recharge'}, '', {save_url: '/update'});
+                common.open_edit('充值', 'update', {id: data.id, type: 'recharge'}, '', {save_url: '/update'});
             },
             deduct: function (data) {
-                common.open_edit('扣除', 'update', {m_id: data.m_id, type: 'deduct'}, '', {save_url: '/update'});
+                common.open_edit('扣除', 'update', {id: data.id, type: 'deduct'}, '', {save_url: '/update'});
             },
             detail: function (data) {
-                common.open_iframe('资金明细', '../balance/detail.html?id=' + data.m_id);
+                common.open_iframe('资金明细', '../balance/detail.html?id=' + data.id);
             }
         }
         table_common.set_callback_obj(table_callback);

@@ -29,18 +29,11 @@ class PointController extends BaseController
         [$limit, $offset] = get_page_params();
         //搜索
         $where = [];
+        $id = (int)$request->input('id');
         $username = $request->input('username');
-        $m_id = (int)$request->input('m_id');
-        if ($username) {
-            $m_id = Member::where('username', $username)->value('id');
-            if ($m_id) {
-                $where[] = ['m_id', $m_id];
-            } else {
-                api_error(__('admin.content_is_empty'));
-            }
-        }
-        if ($m_id) $where[] = ['m_id', $m_id];
-        $query = Point::select('id', 'm_id', 'amount', 'updated_at')
+        if ($id) $where[] = ['id', $id];
+        if ($username) $where[] = ['username', $username];
+        $query = Member::select('id', 'username', 'updated_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -50,14 +43,16 @@ class PointController extends BaseController
         if ($res_list->isEmpty()) {
             api_error(__('admin.content_is_empty'));
         }
-        $m_ids = array_column($res_list->toArray(), 'm_id');
+        $m_ids = array_column($res_list->toArray(), 'id');
         if ($m_ids) {
-            $member_data = Member::whereIn('id', array_unique($m_ids))->pluck('username', 'id');
+            $point_data = Point::select('m_id', 'amount', 'updated_at')->whereIn('m_id', array_unique($m_ids))->get();
+            if (!$point_data->isEmpty()) $point_data = array_column($point_data->toArray(), null, 'm_id');
         }
         $data_list = [];
         foreach ($res_list as $value) {
             $_item = $value;
-            $_item['username'] = $member_data[$value['m_id']] ?? '';
+            $_item['amount'] = $point_data[$value['id']]['amount'] ?? '0.00';
+            $_item['updated_at'] = $point_data[$value['id']]['updated_at'] ?? $value['updated_at'];
             $data_list[] = $_item;
         }
         $return = [
@@ -135,13 +130,13 @@ class PointController extends BaseController
     {
         //验证规则
         $validator = Validator::make($request->all(), [
-            'm_id' => 'required|numeric',
+            'id' => 'required|numeric',
             'type' => 'required',
             'amount' => 'required|price',
             'note' => 'required'
         ], [
-            'm_id.required' => '用户id错误',
-            'm_id.numeric' => '用户id错误',
+            'id.required' => '用户id错误',
+            'id.numeric' => '用户id错误',
             'type.required' => '类型错误',
             'amount.required' => '金额不能为空',
             'amount.price' => '金额格式错误',
@@ -151,12 +146,12 @@ class PointController extends BaseController
         if ($error) {
             api_error(current($error));
         }
-        $m_id = (int)$request->input('m_id');
+        $id = (int)$request->input('id');
         $type = $request->input('type');
         $amount = $request->input('amount');
         $note = $request->input('note');
         //验证用户
-        if (!Member::where('id', $m_id)->exists()) {
+        if (!Member::where('id', $id)->exists()) {
             api_error(__('admin.invalid_params'));
         }
         $event = '';
@@ -166,7 +161,7 @@ class PointController extends BaseController
             $event = PointDetail::EVENT_SYSTEM_DEDUCT;
             $amount = -$amount;
         }
-        $res = Point::updateAmount($m_id, $amount, $event, '', $note);
+        $res = Point::updateAmount($id, $amount, $event, '', $note);
         if ($res['status']) {
             return $this->success();
         } else {
