@@ -190,8 +190,8 @@ class RefundService
         }
         //获取订单信息
         $order = Order::where('id', $order_goods['order_id'])->first();
-        //只有订单是已付款、待收货、已经确认和已经完成的并且订单商品是没有售后或者售后关闭的才可以申请
-        if (!in_array($order['status'], [Order::STATUS_PAID, Order::STATUS_SHIPMENT, Order::STATUS_PART_SHIPMENT, Order::STATUS_DONE, Order::STATUS_COMPLETE])) {
+        //只有订单是已付款、待收货、已经确认的并且订单商品是没有售后或者售后关闭的才可以申请
+        if (!in_array($order['status'], [Order::STATUS_PAID, Order::STATUS_SHIPMENT, Order::STATUS_PART_SHIPMENT, Order::STATUS_DONE])) {
             api_error(__('api.refund_time_out'));
         }
         //查询是否已经申请
