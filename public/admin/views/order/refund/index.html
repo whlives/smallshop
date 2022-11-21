@@ -46,7 +46,7 @@
                                     <label class="layui-form-label">状态</label>
                                     <div class="layui-input-inline">
                                         <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/order/refund/get_status" lay-done="layui.form.render();">
-                                            <select name="brand_id" lay-search="">
+                                            <select name="status" lay-search="">
                                                 <option value=""></option>
                                                 {{# layui.each(d.data, function(index, item){ }}
                                                 <option value="{{ index }}">{{ item }}</option>
