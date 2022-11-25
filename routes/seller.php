@@ -97,7 +97,7 @@ Route::group(['middleware' => SellerToken::class], function () {
             Route::post('type', 'type');
             Route::post('get_attribute', 'getAttribute');
             Route::post('get_spec', 'getSpec');
-            Route::post('coupons', 'coupons');
+            Route::post('object', 'object');
             Route::post('delivery', 'delivery');
             Route::post('qrcode', 'qrcode');
         });

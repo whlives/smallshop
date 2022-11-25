@@ -2,15 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Models\Goods\Goods;
-use App\Models\Goods\GoodsCoupons;
-use App\Models\Market\CouponsDetail;
 use App\Models\Market\Promotion;
 use App\Models\Order\Order;
-use App\Models\Order\OrderGoods;
-use App\Models\Order\OrderLog;
-use App\Models\System\ExpressCompany;
-use App\Services\OrderService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

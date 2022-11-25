@@ -59,11 +59,13 @@ class Goods extends BaseModel
     const TYPE_COUPONS = 2;
     const TYPE_POINT = 3;
     const TYPE_TICKET = 4;
+    const TYPE_PACKAGE = 5;
     const TYPE_DESC = [
         self::TYPE_GOODS => '普通',
         self::TYPE_COUPONS => '优惠券',
         self::TYPE_POINT => '积分',
         self::TYPE_TICKET => '电子券',
+        self::TYPE_PACKAGE => '套餐包',
     ];
 
     //活动类型
@@ -263,7 +265,7 @@ class Goods extends BaseModel
         $spec_alias = $request->input('spec_alias');
         $content = remove_xss($request->input('content'));
         $seller_category = $request->input('seller_category');
-        $coupons_id = (int)$request->input('coupons_id');
+        $object_id = (int)$request->input('object_id');
         //主商品信息
         $goods = [
             'image' => current($image),
@@ -343,32 +345,42 @@ class Goods extends BaseModel
         } else {
             $seller_category = [];
         }
-        //优惠券商品需要验证
-        if ($goods['type'] == Goods::TYPE_COUPONS) {
-            if (!$coupons_id) {
+        //优惠券、套餐包商品需要验证
+        if ($goods['type'] == Goods::TYPE_COUPONS || $goods['type'] == Goods::TYPE_PACKAGE) {
+            if (!$object_id) {
                 return __('api.coupons_not_exists');
             }
-            //验证优惠券
-            $coupons = Coupons::where(['seller_id' => $goods['seller_id'], 'id' => $coupons_id, 'status' => Coupons::STATUS_ON])->first();
-            if (!$coupons) {
-                return __('admin.coupons_not_exists');
-            } elseif ($coupons['end_at'] < get_date() && !$coupons['day_num']) {
-                return __('admin.coupons_overdue');
-            } elseif ($coupons['status'] != Coupons::STATUS_ON) {
-                return __('admin.coupons_status_error');
+            if ($goods['type'] == Goods::TYPE_COUPONS) {
+                //验证优惠券
+                $coupons = Coupons::where(['seller_id' => $goods['seller_id'], 'id' => $object_id, 'status' => Coupons::STATUS_ON])->first();
+                if (!$coupons) {
+                    return __('admin.coupons_not_exists');
+                } elseif ($coupons['end_at'] < get_date() && !$coupons['day_num']) {
+                    return __('admin.coupons_overdue');
+                } elseif ($coupons['status'] != Coupons::STATUS_ON) {
+                    return __('admin.coupons_status_error');
+                }
+            } elseif ($goods['type'] == Goods::TYPE_PACKAGE) {
+                //验证套餐包
+                $package = GoodsPackage::where(['seller_id' => $goods['seller_id'], 'id' => $object_id, 'status' => Coupons::STATUS_ON])->first();
+                if (!$package) {
+                    return __('admin.package_not_exists');
+                } elseif ($package['status'] != GoodsPackage::STATUS_ON) {
+                    return __('admin.package_status_error');
+                }
             }
         } else {
-            $coupons_id = 0;
+            $object_id = 0;
         }
         try {
-            $res = DB::transaction(function () use ($id, $seller_id, $goods, $content, $image, $goods_sku, $goods_attribute, $seller_category, $coupons_id) {
+            $res = DB::transaction(function () use ($id, $seller_id, $goods, $content, $image, $goods_sku, $goods_attribute, $seller_category, $object_id) {
                 //修改主商品
                 if ($id) {
                     self::where(['id' => $id, 'seller_id' => $goods['seller_id']])->update($goods);
                     GoodsContent::where('goods_id', $id)->update(['content' => $content]);
                     GoodsImage::where('goods_id', $id)->delete();
                     GoodsAttribute::where('goods_id', $id)->delete();
-                    GoodsCoupons::where(['goods_id' => $id])->delete();
+                    GoodsObject::where('goods_id', $id)->delete();
                     GoodsSku::where('goods_id', $id)->update(['status' => GoodsSku::STATUS_DEL]);
                 } else {
                     $result = self::create($goods);
@@ -426,9 +438,9 @@ class Goods extends BaseModel
                     }
                     GoodsSellerCategory::insert($seller_category_data);
                 }
-                //优惠券商品
-                if ($coupons_id && $goods['type'] == Goods::TYPE_COUPONS) {
-                    GoodsCoupons::create(['goods_id' => $id, 'coupons_id' => $coupons_id]);
+                //优惠券、套餐包商品
+                if ($object_id && ($goods['type'] == Goods::TYPE_COUPONS || $goods['type'] == Goods::TYPE_PACKAGE)) {
+                    GoodsObject::create(['goods_id' => $id, 'object_id' => $object_id, 'type' => $goods['type']]);
                 }
                 return $id;
             });
@@ -595,7 +607,7 @@ class Goods extends BaseModel
                 self::whereIn('id', $ids)->forceDelete();
                 GoodsAttribute::whereIn('goods_id', $ids)->delete();
                 GoodsContent::whereIn('goods_id', $ids)->delete();
-                GoodsCoupons::whereIn('goods_id', $ids)->delete();
+                GoodsObject::whereIn('goods_id', $ids)->delete();
                 GoodsImage::whereIn('goods_id', $ids)->delete();
                 GoodsNum::whereIn('goods_id', $ids)->delete();
                 GoodsSellerCategory::whereIn('goods_id', $ids)->delete();
@@ -762,7 +774,7 @@ class Goods extends BaseModel
         if ($goods['promo_type'] == self::PROMO_TYPE_SECKILL) {
             $end_at = PromoSeckill::where('goods_id', $goods_id)->value('end_at');
         } elseif ($goods['type'] == self::TYPE_COUPONS) {
-            $coupons_id = GoodsCoupons::where('goods_id', $goods_id)->value('coupons_id');
+            $coupons_id = GoodsObject::where('goods_id', $goods_id)->value('object_id');
             $end_at = Coupons::where('id', $coupons_id)->value('end_at');
         }
         if (!$end_at) return false;

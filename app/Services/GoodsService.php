@@ -9,7 +9,7 @@
 namespace App\Services;
 
 use App\Models\Goods\Goods;
-use App\Models\Goods\GoodsCoupons;
+use App\Models\Goods\GoodsObject;
 use App\Models\Goods\GoodsSku;
 use App\Models\Market\PromoGroup;
 use App\Models\Market\PromoSeckill;
@@ -648,7 +648,7 @@ class GoodsService
             Goods::getRedisSkuStock($cart, $is_submit);//验证和扣减秒杀库存
             if ($goods['type'] == Goods::TYPE_COUPONS) {
                 //查询已经领取的优惠券数量
-                GoodsCoupons::getCoupons($cart, $this->m_id);
+                GoodsObject::getCoupons($cart, $this->m_id);
             }
         } elseif ($goods['promo_type'] == Goods::PROMO_TYPE_GROUP) {
             $group_order_id = (int)request()->input('group_order_id');

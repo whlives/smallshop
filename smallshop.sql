@@ -1,13 +1,13 @@
 # ************************************************************
 # Sequel Ace SQL dump
-# 版本号： 20035
+# 版本号： 20042
 #
 # https://sequel-ace.com/
 # https://github.com/Sequel-Ace/Sequel-Ace
 #
 # 主机: localhost (MySQL 5.7.34)
-# 数据库: smallshop3
-# 生成时间: 2022-08-23 08:13:40 +0000
+# 数据库: smallshop_old
+# 生成时间: 2022-11-25 08:02:12 +0000
 # ************************************************************
 
 
@@ -375,6 +375,7 @@ CREATE TABLE `sm_adv` (
   `image` varchar(255) DEFAULT '' COMMENT '图片',
   `target_type` varchar(50) NOT NULL DEFAULT '' COMMENT '跳转类型',
   `target_value` varchar(255) NOT NULL DEFAULT '' COMMENT '跳转url或id',
+  `app_id` varchar(50) DEFAULT '' COMMENT '小程序appid',
   `position` smallint(5) unsigned NOT NULL DEFAULT '999' COMMENT '排序',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '状态0锁定1审核',
   `start_at` timestamp NULL DEFAULT NULL COMMENT '开始时间',
@@ -5013,20 +5014,6 @@ CREATE TABLE `sm_goods_content` (
 
 
 
-# 转储表 sm_goods_coupons
-# ------------------------------------------------------------
-
-DROP TABLE IF EXISTS `sm_goods_coupons`;
-
-CREATE TABLE `sm_goods_coupons` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `goods_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '商品ID',
-  `coupons_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '优惠券ID',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='优惠券商品关联id';
-
-
-
 # 转储表 sm_goods_image
 # ------------------------------------------------------------
 
@@ -5053,6 +5040,42 @@ CREATE TABLE `sm_goods_num` (
   `sale` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '销量',
   PRIMARY KEY (`goods_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品计数相关';
+
+
+
+# 转储表 sm_goods_object
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `sm_goods_object`;
+
+CREATE TABLE `sm_goods_object` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `goods_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '商品ID',
+  `object_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '对象ID',
+  `type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '对象类型',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='优惠券商品关联id';
+
+
+
+# 转储表 sm_goods_package
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `sm_goods_package`;
+
+CREATE TABLE `sm_goods_package` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `seller_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '商家',
+  `title` varchar(50) NOT NULL COMMENT '标题',
+  `image` varchar(255) DEFAULT '' COMMENT '图片',
+  `price` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '价格',
+  `goods_data` varchar(1000) DEFAULT '' COMMENT '商品信息',
+  `status` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '状态0锁定1审核',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='套餐包商品';
 
 
 

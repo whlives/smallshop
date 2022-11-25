@@ -9,14 +9,7 @@ class Kernel extends ConsoleKernel
 {
 
     protected $commands = [
-        Commands\AdminLoginStatus::class,
-        Commands\OrderCancel::class,
-        Commands\OrderConfirm::class,
-        Commands\OrderComplete::class,
-        Commands\OrderComment::class,
-        Commands\RefundCancel::class,
-        Commands\DelOutTimeInfo::class,
-
+        
     ];
 
     /**

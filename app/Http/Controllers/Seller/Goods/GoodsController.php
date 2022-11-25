@@ -12,7 +12,8 @@ use App\Http\Controllers\Seller\BaseController;
 use App\Models\Goods\Category;
 use App\Models\Goods\Delivery;
 use App\Models\Goods\Goods;
-use App\Models\Goods\GoodsCoupons;
+use App\Models\Goods\GoodsObject;
+use App\Models\Goods\GoodsPackage;
 use App\Models\Market\Coupons;
 use Illuminate\Http\Request;
 
@@ -102,7 +103,7 @@ class GoodsController extends BaseController
         $data['content'] = $data->content()->value('content');
         $data['type_title'] = Goods::TYPE_DESC[$data['type']];
         $data['category_title'] = Category::where('id', $data['category_id'])->value('title');
-        $data['coupons_id'] = GoodsCoupons::where('goods_id', $id)->value('coupons_id');
+        $data['object_id'] = GoodsObject::where('goods_id', $id)->value('object_id');
         $data['seller_category'] = $data->sellerCategory()->pluck('category_id')->toArray();//商家分类
         return $this->success($data);
     }
@@ -255,22 +256,37 @@ class GoodsController extends BaseController
     }
 
     /**
-     * 获取优惠券列表
+     * 获取对象列表（优惠券、套餐包）
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      * @throws \App\Exceptions\ApiError
      */
-    public function coupons(Request $request)
+    public function object(Request $request)
     {
-        $where = [
-            ['status', Coupons::STATUS_ON],
-            ['is_buy', Coupons::IS_BUY_ON],
-            ['seller_id', $this->seller_id],
-            ['end_at', '>', get_date()]
-        ];
-        $res_list = Coupons::select('id', 'title')->where($where)
-            ->orderBy('id', 'desc')
-            ->get();
+        $type = (int)$request->input('type');
+        if (!$type) {
+            api_error(__('admin.missing_params'));
+        }
+        $res_list = [];
+        if ($type == Goods::TYPE_COUPONS) {
+            $where = [
+                ['status', Coupons::STATUS_ON],
+                ['is_buy', Coupons::IS_BUY_ON],
+                ['seller_id', $this->seller_id],
+                ['end_at', '>', get_date()]
+            ];
+            $res_list = Coupons::select('id', 'title')->where($where)
+                ->orderBy('id', 'desc')
+                ->get();
+        } elseif ($type == Goods::TYPE_PACKAGE) {
+            $where = [
+                ['status', GoodsPackage::STATUS_ON],
+                ['seller_id', $this->seller_id],
+            ];
+            $res_list = GoodsPackage::select('id', 'title')->where($where)
+                ->orderBy('id', 'desc')
+                ->get();
+        }
         return $this->success($res_list);
     }
 

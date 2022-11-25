@@ -15,10 +15,10 @@ use App\Models\Market\CouponsDetail;
 /**
  * 优惠券商品
  */
-class GoodsCoupons extends BaseModel
+class GoodsObject extends BaseModel
 {
 
-    protected $table = 'goods_coupons';
+    protected $table = 'goods_object';
     protected $guarded = ['id'];
 
     public $timestamps = false;
@@ -33,7 +33,7 @@ class GoodsCoupons extends BaseModel
     public static function getCoupons(array $cart, int $m_id)
     {
         //查询优惠券
-        $coupon_id = self::where('goods_id', $cart['goods_id'])->value('coupon_id');
+        $coupon_id = self::where(['goods_id' => $cart['goods_id'], 'type' => Goods::TYPE_COUPONS])->value('coupon_id');
         if (!$coupon_id) {
             api_error(__('api.coupons_not_exists'));
         }

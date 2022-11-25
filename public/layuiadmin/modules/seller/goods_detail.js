@@ -75,19 +75,24 @@ layui.define(['plupload', 'goods_sku'], function (exports) {
         });
     }
 
-
-    //根据店铺刷新优惠券
-    function get_coupons(default_id) {
-        if (params.type != 2) {
+    //根据店铺刷新对象（优惠券或套餐包）
+    function get_object(default_id) {
+        if (params.type == 2 || params.type == 5) {
+            let label_title = '';
+            if (params.type == 2) {
+                label_title = '优惠券';
+            } else if (params.type == 5) {
+                label_title = '套餐包';
+            }
+            if (!default_id) default_id = 0;
+            common.ajax(model_url + '/object', {type: params.type}, function (result) {
+                common.set_select_option('object_id', result.data, default_id);
+                $('[name="object_id"]').parent().parent().removeClass('layui-hide').find('label').text(label_title);
+            });
+        } else {
             return false;
         }
-        if (!default_id) default_id = 0;
-        common.ajax(model_url + '/coupons', {}, function (result) {
-            common.set_select_option('coupons_id', result.data, default_id);
-            $('[name="coupons_id"]').parent().parent().removeClass('layui-hide');
-        });
     }
-
 
     //加载属性
     function get_attribute(goods_id) {
@@ -146,7 +151,7 @@ layui.define(['plupload', 'goods_sku'], function (exports) {
         set_params: function (data) {
             params = data;
             get_delivery(params.delivery_id);
-            get_coupons(params.coupons_id);
+            get_object(params.object_id);
             get_attribute(params.id);
             get_spec(params.id);
             seller_category();

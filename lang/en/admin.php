@@ -91,6 +91,9 @@ return [
     'promotion_coupons_id_error' => '50103|优惠券id不能为空',
 
     //秒杀活动50200
+    //套餐包50300
+    'package_not_exists' => '50300|优惠券不存在',
+    'package_status_error' => '50301|优惠券状态错误',
 
 
     //财务60000

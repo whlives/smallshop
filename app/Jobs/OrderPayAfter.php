@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Goods\Goods;
-use App\Models\Goods\GoodsCoupons;
+use App\Models\Goods\GoodsObject;
 use App\Models\Market\CouponsDetail;
 use App\Models\Market\PromoGroupOrder;
 use App\Models\Order\Order;
@@ -82,7 +82,7 @@ class OrderPayAfter implements ShouldQueue
             return false;
         }
         //查询优惠券
-        $coupon_id = GoodsCoupons::where('goods_id', $goods_data['goods_id'])->value('coupons_id');
+        $coupon_id = GoodsObject::where(['goods_id' => $goods_data['goods_id'], 'type' => Goods::TYPE_COUPONS])->value('object_id');
         if (!$coupon_id) {
             return false;
         }
