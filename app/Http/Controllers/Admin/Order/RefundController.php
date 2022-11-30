@@ -142,7 +142,7 @@ class RefundController extends BaseController
         $refund['status_text'] = Refund::STATUS_DESC[$refund['status']];
         $refund['refund_type_text'] = Refund::REFUND_TYPE_DESC[$refund['refund_type']];
         $log = RefundLog::getLog($refund);
-        $order = Order::select('order_no', 'subtotal', 'status')->find($refund['order_id']);
+        $order = Order::select('order_no', 'subtotal', 'status', 'note')->find($refund['order_id']);
         $order['status_text'] = Order::STATUS_DESC[$order['status']];
         $order_goods = OrderGoods::getGoodsForId([$refund['order_goods_id']], true);
         $address = [];

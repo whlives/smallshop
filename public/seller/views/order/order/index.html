@@ -120,17 +120,20 @@
                         <script type="text/html" id="action_button">
                             <a class="layui-btn layui-btn-xs layui-hide" lay-event="detail">订单详情</a>
                             {{# if(d.status != 0 && d.status != 10 && d.status != 11){ }}
-                            <br><a class="layui-btn layui-btn-xs layui-btn-normal layui-hide" lay-event="print_goods">发货单</a>
+                            <a class="layui-btn layui-btn-xs layui-btn-normal layui-hide" lay-event="print_goods">发货单</a>
                             <br><a class="layui-btn layui-btn-xs layui-hide" lay-event="print_delivery">快递单</a>
                             {{# } }}
                             {{# if(d.status == 1){ }}
-                            <br><a class="layui-btn layui-btn-xs layui-btn-normal layui-hide" lay-event="delivery">电子面单</a>
-                            {{# } }}
-                            {{# if(d.status == 0){ }}
-                            <br><a class="layui-btn layui-btn-xs layui-btn-danger layui-hide" lay-event="update_price">改价</a>
+                            <a class="layui-btn layui-btn-xs layui-btn-normal layui-hide" lay-event="delivery">电子面单</a>
                             {{# } }}
                             {{# if(d.status == 0 || d.status == 1){ }}
                             <br><a class="layui-btn layui-btn-xs layui-btn-warm layui-hide" lay-event="update_address">修改地址</a>
+                            {{# } }}
+                            {{# if(d.status == 1){ }}
+                            <a class="layui-btn layui-btn-xs layui-btn-normal layui-hide" lay-event="use_time">修改时间</a>
+                            {{# } }}
+                            {{# if(d.status == 0){ }}
+                            <br><a class="layui-btn layui-btn-xs layui-btn-danger layui-hide" lay-event="update_price">改价</a>
                             {{# } }}
                         </script>
                         <script type="text/html" id="goods_tmp">

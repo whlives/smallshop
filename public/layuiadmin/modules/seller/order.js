@@ -28,7 +28,7 @@ layui.define(['table_common'], function (exports) {
             {field: 'subtotal', title: '支付金额', width: 100, style: 'background-color: #FFFFFF;'},
             {field: 'full_name', title: '收货人', width: 100, style: 'background-color: #FFFFFF;'},
             {field: 'status_text', title: '状态', width: 80, align: 'center', style: 'background-color: #FFFFFF;'},
-            {title: '操作', width: 100, toolbar: '#action_button', style: 'background-color: #FFFFFF;'},
+            {title: '操作', width: 150, toolbar: '#action_button', style: 'background-color: #FFFFFF;'},
             {field: 'payment', title: '支付方式', width: 100, style: 'background-color: #FFFFFF;'},
             {field: 'username', title: '用户名', width: 120, style: 'background-color: #FFFFFF;'},
         ]],

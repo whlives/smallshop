@@ -23,6 +23,10 @@
                 <td>￥{{ d.refund.amount }}（含运费￥{{ d.refund.delivery_price }}）</td>
             </tr>
             <tr>
+                <td>订单备注：</td>
+                <td colspan="5" class="layui-font-red">{{ d.order.note }}</td>
+            </tr>
+            <tr>
                 <td class="td_col_width_80">售后单号：</td>
                 <td>{{ d.refund.refund_no }}</td>
                 <td class="td_col_width_80">售后类型：</td>

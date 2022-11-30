@@ -234,6 +234,7 @@ class SeckillController extends BaseController
             ->whereIn('promo_type', [Goods::PROMO_TYPE_DEFAULT, Goods::PROMO_TYPE_SECKILL])
             ->orderBy('id', 'desc')
             ->orderBy('shelves_status', 'desc')
+            ->limit(100)
             ->get();
         return $this->success($res_list);
     }
