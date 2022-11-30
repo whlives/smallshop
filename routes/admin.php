@@ -279,6 +279,21 @@ Route::group(['middleware' => AdminToken::class], function () {
             Route::post('restore', 'restore');
             Route::post('delete', 'delete');
         });
+        //套餐包
+        Route::prefix('package')->controller('PackageController')->group(function () {
+            Route::post('/', 'index');
+            Route::post('detail', 'detail');
+            Route::post('save', 'save');
+            Route::post('delete', 'delete');
+            Route::post('status', 'status');
+        });
+        //套餐包商品
+        Route::prefix('package_goods')->controller('PackageGoodsController')->group(function () {
+            Route::post('/', 'index');
+            Route::post('save', 'save');
+            Route::post('delete', 'delete');
+            Route::post('search', 'search');
+        });
     });
     /**
      ***************订单模块*******************

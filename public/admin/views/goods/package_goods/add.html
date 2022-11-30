@@ -1,0 +1,53 @@
+<form class="layui-form" lay-filter="form" id="form">
+    <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">商品</label>
+        <div class="layui-input-block" id="goods_id">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">数量</label>
+        <div class="layui-input-block">
+            <input type="text" name="num" lay-verify="number" lay-reqText="数量只能是数字" autocomplete="off" class="layui-input" value="">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="hidden" name="package_id" value="">
+            <input type="button" lay-submit lay-filter="form-submit" value="确认" class="layui-btn">
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+<script type="text/html" template lay-done="layui.data.sendParams(d.params);"></script>
+<script src="../../../../layuiadmin/lib/xm-select.js"></script>
+<script>
+    layui.data.sendParams = function (params) {
+        layui.use(function () {
+            let common = layui.common,
+                model_url = '/goods/package_goods';
+
+            //商品选择
+            let goods_id = xmSelect.render({
+                el: '#goods_id',
+                name: 'goods_id',
+                radio: true,
+                autoRow: true,
+                filterable: true,
+                remoteSearch: true,
+                remoteMethod: function (val, cb) {
+                    common.ajax(model_url + '/search', {package_id: params.package_id, title: val}, function (result) {
+                        return cb(result.data)
+                    }, function () {
+                        return cb([]);
+                    });
+                }
+            });
+            if (params.goods_id) {
+                goods_id.setValue([
+                    {name: params.goods_title, value: params.goods_id},
+                ]);
+            }
+        });
+    }
+</script>
