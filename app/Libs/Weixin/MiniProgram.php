@@ -27,6 +27,9 @@ class MiniProgram
             'secret' => $this->custom_config['mini_secret'],
         ];
         $this->app = new Application($config);
+        //使用自定义的access_token
+        $access_token = new AccessToken($this->config);
+        $this->app->setAccessToken($access_token);
     }
 
     /**
@@ -80,7 +83,7 @@ class MiniProgram
         $response = $this->app->getClient()->postJson('wxa/business/getuserphonenumber', $data);
         $res = $response->toArray(false);
         if (isset($res['errcode']) && $res['errcode'] == 40001) {
-            $this->app->getAccessToken()->refresh();//刷新access_token
+            AccessToken::refreshAccessToken($this->config);//刷新access_token
         }
         return $res['phone_info'] ?? $res['errmsg'];
     }
