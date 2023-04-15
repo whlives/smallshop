@@ -20,9 +20,11 @@
                         </legend>
                         <div class="layui-field-box" id="select_{{ child.id }}">
                             {{# layui.each(child.right, function(index3, right){ }}
-                            <input type="checkbox" name="right[{{ top.id }}][{{ child.id }}][]" lay-filter="right" title="{{ right.title }}" value="{{ right.id }}" data-top="{{ top.id }}" data-child="{{ child.id }}" {{# if(d.params.right && d.params.right[top.id]){ }}{{#
-                                   if(layui.jquery.inArray(right.id, d.params.right[top.id][child.id])>=
-                            0){ }}checked{{# } }}{{# } }}>
+                            <div class="layui-input-inline">
+                                <input type="checkbox" name="right[{{ top.id }}][{{ child.id }}][]" lay-filter="right" title="{{ right.title }}" value="{{ right.id }}" data-top="{{ top.id }}" data-child="{{ child.id }}" {{# if(d.params.right && d.params.right[top.id]){ }}{{#
+                                       if(layui.jquery.inArray(right.id, d.params.right[top.id][child.id])>=
+                                0){ }}checked{{# } }}{{# } }}>
+                            </div>
                             {{# }); }}
                         </div>
                     </fieldset>
