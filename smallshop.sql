@@ -84,10 +84,10 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `sm_admin_log`;
 
 CREATE TABLE `sm_admin_log` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `admin_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `admin_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
   `username` varchar(100) NOT NULL DEFAULT '' COMMENT '用户名',
-  `ip` varchar(20) DEFAULT '' COMMENT 'ip',
+  `ip` varchar(20) NOT NULL COMMENT 'ip',
   `url` varchar(255) NOT NULL DEFAULT '' COMMENT '操作地址',
   `content` text NOT NULL COMMENT '保存内容',
   `created_at` timestamp NULL DEFAULT NULL COMMENT '操作时间',
@@ -108,7 +108,7 @@ CREATE TABLE `sm_admin_login_log` (
   `m_id` int(11) unsigned NOT NULL COMMENT '用户id',
   `token` varchar(100) NOT NULL DEFAULT '' COMMENT 'token名称',
   `user_agent` varchar(500) NOT NULL DEFAULT '' COMMENT '用户信息',
-  `ip` varchar(15) NOT NULL DEFAULT '' COMMENT 'ip',
+  `ip` varchar(20) NOT NULL COMMENT 'ip',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '登陆状态0下线1在线',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -418,7 +418,7 @@ CREATE TABLE `sm_areas` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `pinyin` varchar(50) NOT NULL DEFAULT '' COMMENT '拼音',
   `parent_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '上级id',
-  `area_code` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '地区code',
+  `area_code` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '地区code',
   `name` varchar(50) NOT NULL DEFAULT '' COMMENT '名称',
   `merger_name` varchar(100) NOT NULL DEFAULT '' COMMENT '合并的省市区名称',
   `short_name` varchar(50) NOT NULL DEFAULT '' COMMENT '短名称',
@@ -4898,15 +4898,15 @@ DROP TABLE IF EXISTS `sm_failed_jobs`;
 
 CREATE TABLE `sm_failed_jobs` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `uuid` varchar(255) NOT NULL,
+  `connection` text NOT NULL,
+  `queue` text NOT NULL,
+  `payload` longtext NOT NULL,
+  `exception` longtext NOT NULL,
   `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `sm_failed_jobs_uuid_unique` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 
@@ -5189,7 +5189,7 @@ CREATE TABLE `sm_member_login_log` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `token` varchar(100) NOT NULL COMMENT 'token名称',
   `m_id` int(11) unsigned NOT NULL COMMENT '用户id',
-  `ip` varchar(20) NOT NULL COMMENT 'IP',
+  `ip` varchar(20) NOT NULL COMMENT 'ip',
   `platform` varchar(20) NOT NULL COMMENT '平台',
   `version` varchar(50) NOT NULL DEFAULT '0' COMMENT '客户端版本',
   `system` varchar(100) NOT NULL DEFAULT '0' COMMENT '系统版本号',
@@ -5457,7 +5457,7 @@ DROP TABLE IF EXISTS `sm_order_goods`;
 
 CREATE TABLE `sm_order_goods` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(10) unsigned NOT NULL,
+  `m_id` int(11) unsigned NOT NULL,
   `order_id` int(11) unsigned NOT NULL COMMENT '订单id',
   `goods_id` int(11) unsigned NOT NULL COMMENT '商品id',
   `goods_title` varchar(100) NOT NULL DEFAULT '' COMMENT '商品名称',
@@ -5609,7 +5609,7 @@ CREATE TABLE `sm_promo_group` (
   `seller_id` int(11) NOT NULL DEFAULT '0' COMMENT '商家id',
   `goods_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '商品id',
   `group_num` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '成团人数',
-  `hour` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '成团时间单位小时',
+  `hour` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '成团时间单位小时',
   `start_at` timestamp NULL DEFAULT NULL COMMENT '开始时间',
   `end_at` timestamp NULL DEFAULT NULL COMMENT '结束时间',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '状态0锁定1正常',

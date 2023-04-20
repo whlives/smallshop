@@ -150,6 +150,7 @@ layui.define(function (exports) {
                 area: [width, height],
                 id: new Date().getTime(),
                 success: function (layero, index) {
+                    default_data.layer_id = index;
                     view(this.id).render(view_url, default_data).done(function () {
 
                     });
@@ -305,8 +306,9 @@ layui.define(function (exports) {
          * @param select_id 下拉框id
          * @param parent_id 上级id
          * @param default_id 默认值
+         * @param prefix 前缀，多个地区选择时需要
          */
-        get_area: function (select_id, parent_id, default_id) {
+        get_area: function (select_id, parent_id, default_id, prefix = '') {
             if (!default_id) default_id = 0;
             if (!parent_id) parent_id = 0;
             if (!select_id) select_id = 'prov_id';
@@ -324,15 +326,15 @@ layui.define(function (exports) {
                             }
                             html += '<option value="' + item.id + '" ' + selected + '>' + item.name + '</option>';
                         })
-                        $('#' + select_id).html(html);
+                        $('#' + prefix + select_id).html(html);
                         //选择省份时清空地区
                         if (select_id == 'prov_id') {
-                            $('#city_id').html('<option value="0">请选择</option>');
-                            $('#area_id').html('<option value="0">请选择</option>');
+                            $('#' + prefix + 'city_id').html('<option value="0">请选择</option>');
+                            $('#' + prefix + 'area_id').html('<option value="0">请选择</option>');
                         }
                         //选择城市时清空地区
                         if (select_id == 'city_id') {
-                            $('#area_id').html('<option value="0">请选择</option>');
+                            $('#' + prefix + 'area_id').html('<option value="0">请选择</option>');
                         }
                         form.render('select');
                     }
@@ -347,8 +349,9 @@ layui.define(function (exports) {
          * @param prov_id 省份id
          * @param city_id 城市id
          * @param area_id 地区id
+         * @param prefix 前缀，多个地区选择时需要
          */
-        set_default_area: function (prov_id, city_id, area_id) {
+        set_default_area: function (prov_id, city_id, area_id, prefix = '') {
             this.get_area('prov_id', 0, prov_id);
             if (prov_id && city_id) {
                 this.get_area('city_id', prov_id, city_id);

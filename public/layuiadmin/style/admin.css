@@ -1428,12 +1428,28 @@ html {
     width: 100px;
 }
 
+.td_col_width_150 {
+    width: 150px;
+}
+
+.td_col_width_170 {
+    width: 170px;
+}
+
 .td_col_width_200 {
     width: 200px;
 }
 
 .td_col_width_210 {
     width: 210px;
+}
+
+.td_col_min_width_150 {
+    min-width: 150px;
+}
+
+.td_col_min_width_200 {
+    min-width: 200px;
 }
 
 .td_center {

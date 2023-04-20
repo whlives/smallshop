@@ -208,30 +208,34 @@ layui.define(['common'], function (exports) {
          * @param search_data 条件
          */
         export: function (url, search_data) {
-            let request = layui.setter.request;
-            //创建临时form表单
-            let form = document.createElement("form");
-            form.style.display = "none";
-            form.action = url;
-            form.method = "post";
-            form.target = "_blank";
-            document.body.appendChild(form);
-            form.appendChild(parameterAssembly('export', 1));
-            form.appendChild(parameterAssembly(request.tokenName, layui.data(layui.setter.tableName)[request.tokenName] || ''));//token
-            //表头
-            table.eachCols('table_list', function (index, item) {
-                if (!item.hide && typeof (item.field) !== 'undefined' && item.field) {
-                    let input = parameterAssembly('cols[' + item.field + ']', item.title);
+            layer.msg('导出过程比较耗时，请耐心等待，不要重复提交导出请求', {
+                time: 2000 //2秒关闭（如果不配置，默认是3秒）
+            }, function () {
+                let request = layui.setter.request;
+                //创建临时form表单
+                let form = document.createElement("form");
+                form.style.display = "none";
+                form.action = url;
+                form.method = "post";
+                form.target = "_blank";
+                document.body.appendChild(form);
+                form.appendChild(parameterAssembly('export', 1));
+                form.appendChild(parameterAssembly(request.tokenName, layui.data(layui.setter.tableName)[request.tokenName] || ''));//token
+                //表头
+                table.eachCols('table_list', function (index, item) {
+                    if (!item.hide && typeof (item.field) !== 'undefined' && item.field) {
+                        let input = parameterAssembly('cols[' + item.field + ']', item.title);
+                        form.appendChild(input);
+                    }
+                });
+                //搜索条件
+                $.each(search_data, function (index, item) {
+                    let input = parameterAssembly(index, item);
                     form.appendChild(input);
-                }
+                })
+                form.submit();
+                form.remove();
             });
-            //搜索条件
-            $.each(search_data, function (index, item) {
-                let input = parameterAssembly(index, item);
-                form.appendChild(input);
-            })
-            form.submit();
-            form.remove();
         },
         /**
          * 设置表格回调函数
