@@ -16,17 +16,18 @@ use Illuminate\Support\Facades\Storage;
 
 class MiniProgram
 {
-    private $app;
+    private Application $app;
     public array $custom_config;
+    private array $config;
 
     function __construct()
     {
         $this->custom_config = get_custom_config_all();
-        $config = [
+        $this->config = [
             'app_id' => $this->custom_config['mini_appid'],
             'secret' => $this->custom_config['mini_secret'],
         ];
-        $this->app = new Application($config);
+        $this->app = new Application($this->config);
         //使用自定义的access_token
         $access_token = new AccessToken($this->config);
         $this->app->setAccessToken($access_token);

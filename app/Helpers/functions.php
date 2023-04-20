@@ -259,9 +259,9 @@ if (!function_exists('resize_images')) {
      * @param string|null $image_url 图片地址
      * @param int $w 宽度
      * @param int $h 高度
-     * @return string
+     * @return string|null
      */
-    function resize_images(string $image_url, int $w = 0, int $h = 0): string
+    function resize_images(string|null $image_url, int $w = 0, int $h = 0): string|null
     {
         if (!$image_url) return $image_url;
         if (!str_starts_with($image_url, 'http')) {
