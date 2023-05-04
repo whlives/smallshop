@@ -39,22 +39,22 @@
         <fieldset class="layui-elem-field layui-field-title">
             <legend>售后日志</legend>
         </fieldset>
-        <table lay-filter="log">
+        <table class="layui-table">
             <thead>
             <tr>
-                <th lay-data="{field:'created_at', width:170, align: 'center'}">时间</th>
-                <th lay-data="{field:'user_type', width:80, align: 'center'}">角色</th>
-                <th lay-data="{field:'username', width:150}">操作用户</th>
-                <th lay-data="{field:'action', width:100, align: 'center'}">操作类型</th>
-                <th lay-data="{field:'note', minWidth:150}">备注</th>
+                <th class="td_col_width_170 td_center" >时间</th>
+                <th class="td_col_width_80 td_center">角色</th>
+                <th class="td_col_width_150">操作用户</th>
+                <th class="td_col_width_100 td_center">操作类型</th>
+                <th class="td_col_min_width_150">备注</th>
             </tr>
             </thead>
             {{# layui.each(d.log, function(index, item){ }}
             <tr>
-                <td>{{ item.created_at }}</td>
-                <td>{{ item.user_type }}</td>
+                <td class="td_center">{{ item.created_at }}</td>
+                <td class="td_center">{{ item.user_type }}</td>
                 <td>{{ item.username }}</td>
-                <td>{{ item.action }}</td>
+                <td class="td_center">{{ item.action }}</td>
                 <td>
                     {{# if(item.note){ }}
                     {{# layui.each(item.note, function(i, v){ }}
@@ -150,10 +150,6 @@
                 common.ajax(model_url + '/detail', {id: params.id}, function (result) {
                     laytpl($('#detail_tpl').html()).render(result.data, function (html) {
                         $('#detail').html(html);
-                        //转化静态表格
-                        table.init('log', {
-                            escape: false,
-                        });
                         form.render();
                         common.set_button(model_url);//设置按钮权限
                     })

@@ -138,23 +138,23 @@
         </script>
         <div class="layui-tab-item" id="delivery"></div>
         <script id="delivery_tpl" type="text/html">
-            <table lay-filter="detail_delivery">
+            <table class="layui-table">
                 <thead>
                 <tr>
-                    <th lay-data="{field:'created_at', width:170, align: 'center'}">时间</th>
-                    <th lay-data="{field:'company_name', width:100}">物流公司</th>
-                    <th lay-data="{field:'code', width:150}">物流单号</th>
-                    <th lay-data="{field:'guiji', width:80, align: 'center'}">轨迹</th>
-                    <th lay-data="{field:'goods_title', minWidth:200}">商品</th>
-                    <th lay-data="{field:'note', width:100}">备注</th>
+                    <th class="td_col_width_170 td_center">时间</th>
+                    <th class="td_col_width_100">物流公司</th>
+                    <th class="td_col_width_150">物流单号</th>
+                    <th class="td_col_width_80 td_center">轨迹</th>
+                    <th class="td_col_min_width_200">商品</th>
+                    <th class="td_col_width_100">备注</th>
                 </tr>
                 </thead>
                 {{# layui.each(d, function(index, item){ }}
                 <tr>
-                    <td>{{ item.created_at }}</td>
+                    <td class="td_center">{{ item.created_at }}</td>
                     <td>{{ item.company_name }}</td>
                     <td>{{ item.code }}</td>
-                    <td>
+                    <td class="td_center">
                         <a href="https://www.kuaidi100.com/chaxun?com={{ item.company_code }}&nu={{ item.code }}" target="_blank">
                             <span class="layui-badge layui-bg-green">轨迹</span>
                         </a>
@@ -171,20 +171,20 @@
         </script>
         <div class="layui-tab-item" id="log"></div>
         <script id="log_tpl" type="text/html">
-            <table lay-filter="detail_log">
+            <table class="layui-table">
                 <thead>
                 <tr>
-                    <th lay-data="{field:'created_at', width:170, align: 'center'}">时间</th>
-                    <th lay-data="{field:'username', width:150}">操作用户</th>
-                    <th lay-data="{field:'action', width:100, align: 'center'}">操作动作</th>
-                    <th lay-data="{field:'note', minWidth:200}">备注</th>
+                    <th class="td_col_width_170 td_center">时间</th>
+                    <th class="td_col_width_150">操作用户</th>
+                    <th class="td_col_width_100 td_center">操作动作</th>
+                    <th class="td_col_min_width_200">备注</th>
                 </tr>
                 </thead>
                 {{# layui.each(d, function(index, item){ }}
                 <tr>
-                    <td>{{ item.created_at }}</td>
+                    <td class="td_center">{{ item.created_at }}</td>
                     <td>{{ item.username }}</td>
-                    <td>{{ item.action }}</td>
+                    <td class="td_center">{{ item.action }}</td>
                     <td>{{ item.note }}</td>
                 </tr>
                 {{# }); }}
@@ -192,29 +192,29 @@
         </script>
         <div class="layui-tab-item" id="refund"></div>
         <script id="refund_tpl" type="text/html">
-            <table lay-filter="detail_refund">
+            <table class="layui-table">
                 <thead>
                 <tr>
-                    <th lay-data="{field:'image', width:40, align: 'center'}">图片</th>
-                    <th lay-data="{field:'goods_title', minWidth:200}">商品</th>
-                    <th lay-data="{field:'refund_no', width:200}">退款单号</th>
-                    <th lay-data="{field:'amount', width:80}">退款金额</th>
-                    <th lay-data="{field:'refund_type', width:80, align: 'center'}">售后类型</th>
-                    <th lay-data="{field:'status', width:80, align: 'center'}">状态</th>
-                    <th lay-data="{field:'created_at', width:170, align: 'center'}">时间</th>
+                    <th class="td_col_width_50 td_center">图片</th>
+                    <th class="td_col_min_width_200">商品</th>
+                    <th class="td_col_width_200">退款单号</th>
+                    <th class="td_col_width_80">退款金额</th>
+                    <th class="td_col_width_80 td_center">售后类型</th>
+                    <th class="td_col_width_80 td_center">状态</th>
+                    <th class="td_col_width_170 td_center">时间</th>
                 </tr>
                 </thead>
                 {{# layui.each(d, function(index, item){ }}
                 <tr>
-                    <td>
+                    <td class="td_center">
                         <img src="{{ layui.common.image_resize(item.goods.image, 30, 30) }}" width="30" height="30">
                     </td>
                     <td>{{ item.goods.goods_title }}{{# if(item.goods.spec_value){ }}<span class="layui-font-gray">({{ item.goods.spec_value }})</span>{{# } }}</td>
                     <td>{{ item.refund_no }}</td>
                     <td>{{ item.amount }}</td>
-                    <td>{{ item.refund_type_text }}</td>
-                    <td>{{ item.status_text }}</td>
-                    <td>{{ item.created_at }}</td>
+                    <td class="td_center">{{ item.refund_type_text }}</td>
+                    <td class="td_center">{{ item.status_text }}</td>
+                    <td class="td_center">{{ item.created_at }}</td>
                 </tr>
                 {{# }); }}
             </table>

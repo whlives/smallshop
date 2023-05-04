@@ -47,10 +47,8 @@ layui.define(function (exports) {
         common.ajax(model_url + '/get_' + type, {order_id: params.id}, function (result) {
             laytpl($('#' + type + '_tpl').html()).render(result.data, function (html) {
                 $('#' + type).html(html);
-                //转化静态表格
-                table.init('detail_' + type, {
-                    escape: false,
-                });
+                form.render();
+                common.set_button(model_url);//设置按钮权限
             })
         });
     }
