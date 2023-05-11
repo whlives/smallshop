@@ -126,9 +126,9 @@ class LoginService
      * @return array
      * @throws \App\Exceptions\ApiError
      */
-    public static function bindMobile(string $mobile, array $param = [])
+    public static function bindMobile(string $mobile = '', array $param = [])
     {
-        if (!check_mobile($mobile)) {
+        if ($mobile && !check_mobile($mobile)) {
             api_error(__('api.missing_params'));
         }
         //获取第三方信息
@@ -137,6 +137,9 @@ class LoginService
         if (!$auth_data) {
             api_error(__('api.auth_data_error'));
         }
+        $platform = get_platform();
+        //没有手机号的时候是小程序直接注册
+        if (!$mobile) $mobile = $platform . '_' . $auth_data['openid'];
         $member_data = Member::where('username', $mobile)->first();
         if ($member_data) {
             //手机号已经注册，查询是否绑定了第三方

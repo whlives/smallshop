@@ -133,6 +133,11 @@ class LoginController extends BaseController
                 'headimg' => ''
             ];
             $res = LoginService::authCheck($user_data);
+            $skip_bind_mobile = get_custom_config('skip_bind_mobile');
+            if (!$res['id'] && $skip_bind_mobile) {
+                //没有注册时跳过手机号绑定
+                $res = LoginService::bindMobile();
+            }
             return $this->success($res);
         } else {
             api_error(__('api.fail'));
