@@ -19,7 +19,7 @@ layui.define(function (exports) {
         let chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';
         let maxPos = chars.length;
         let str = '';
-        for (i = 0; i < len; i++) {
+        for (let i = 0; i < len; i++) {
             str += chars.charAt(Math.floor(Math.random() * maxPos));
         }
         return str;

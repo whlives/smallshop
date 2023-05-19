@@ -22,3 +22,5 @@ smallshop是一套基于php+mysql开发的B2B2C商城。
 4.在目录下运行 php artisan key:generate 生成应用密钥
 
 5.在目录下运行 composer intall 安装
+
+6.运行php artisan storage:link 创建本地文件链接
