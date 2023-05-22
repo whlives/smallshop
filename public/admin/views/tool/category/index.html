@@ -22,59 +22,48 @@
                 </div>
                 <div class="layui-card-body">
                     <div class="layui-form">
-                        <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/tool/category" lay-done="layui.data.done(d);">
-                            <table class="layui-table menu" lay-filter="system-menu-index">
-                                <colgroup>
-                                    <col class="td_col_width_50">
-                                    <col>
-                                    <col class="td_col_width_80">
-                                    <col class="td_col_width_100">
-                                    <col class="td_col_width_210">
-                                </colgroup>
-                                <tr>
-                                    <th class="td_center">ID</th>
-                                    <th>分类名称</th>
-                                    <th class="td_center">排序</th>
-                                    <th class="td_center">状态</th>
-                                    <th>操作</th>
-                                </tr>
-                                {{# layui.each(d.data, function(index, item){ }}
-                                <tr class="menu_id" data-id="{{ item.id }}" id="row_menu_id_{{ item.id }}">
-                                    <td>{{ item.id }}</td>
-                                    <td>
-                                        <i class="sm_iconfont {{# if(item.children){ }}children icon-jianhaoshouqi{{# }else{ }}icon-jurassic_form-blank{{# } }}" data-id="{{ item.id }}"></i>
-                                        {{ item.title }}
-                                    </td>
-                                    <td class="td_center">{{ item.position }}</td>
-                                    <td class="td_center">
-                                        <input type="checkbox" name="status" value="{{ item.id }}" lay-skin="switch" lay-text="锁定|正常" lay-filter="status_btn" {{# if(item.status== 1){ }}checked{{# } }}>
-                                    </td>
-                                    <td>
-                                        <a class="layui-btn layui-btn-xs layui-hide" lay-event="edit" data-id="{{ item.id }}">编辑</a>
-                                        <a class="layui-btn layui-btn-danger layui-btn-xs layui-hide" lay-event="delete" data-id="{{ item.id }}">删除</a>
-                                        <a class="layui-btn layui-btn-xs layui-btn-normal layui-hide" lay-event="add_menu" data-id="{{ item.id }}">添加子菜单</a>
-                                    </td>
-                                </tr>
-                                {{# layui.each(item.children, function(index1, item1){ }}
-                                <tr class="menu_id_{{ item.id }}" data-id="{{ item1.id }}" id="row_menu_id_{{ item1.id }}">
-                                    <td>{{ item1.id }}</td>
-                                    <td>
-                                        <i class="sm_iconfont xuxian icon-xuxian11"></i>
-                                        <i class="sm_iconfont {{# if(item1.children){ }}children icon-jianhaoshouqi{{# }else{ }}icon-jurassic_form-blank{{# } }}" data-id="{{ item1.id }}"></i>
-                                        {{ item1.title }}
-                                    </td>
-                                    <td class="td_center">{{ item1.position }}</td>
-                                    <td class="td_center">
-                                        <input type="checkbox" name="status" value="{{ item1.id }}" lay-skin="switch" lay-text="锁定|正常" lay-filter="status_btn" {{# if(item1.status== 1){ }}checked{{# } }}>
-                                    </td>
-                                    <td>
-                                        <a class="layui-btn layui-btn-xs layui-hide" lay-event="edit" data-id="{{ item1.id }}">编辑</a>
-                                        <a class="layui-btn layui-btn-danger layui-btn-xs layui-hide" lay-event="delete" data-id="{{ item1.id }}">删除</a>
-                                    </td>
-                                </tr>
-                                {{# }); }}
-                                {{# }); }}
-                            </table>
+                        <table class="layui-table menu" lay-filter="system-menu-index">
+                            <colgroup>
+                                <col class="td_col_width_50">
+                                <col>
+                                <col class="td_col_width_80">
+                                <col class="td_col_width_100">
+                                <col class="td_col_width_210">
+                            </colgroup>
+                            <tr>
+                                <th class="td_center">ID</th>
+                                <th>分类名称</th>
+                                <th class="td_center">排序</th>
+                                <th class="td_center">状态</th>
+                                <th>操作</th>
+                            </tr>
+                            <tbody id="menu_list"></tbody>
+                        </table>
+                        <script id="menu_list_tpl" type="text/html">
+                            <tr class="menu_id{{# if(d.hierarchy>0){ }}_{{ d.parent_id }}{{# } }}" data-id="{{ d.id }}" id="row_menu_id_{{ d.id }}">
+                                <td>{{ d.id }}</td>
+                                <td>
+                                    {{# for (var i = 1; i <= d.hierarchy; i++) { }}
+                                    <i class="sm_iconfont xuxian icon-xuxian11"></i>
+                                    {{# } }}
+                                    <i class="sm_iconfont {{# if(d.children){ }}children icon-jianhaoshouqi{{# }else{ }}icon-jurassic_form-blank{{# } }}" data-id="{{ d.id }}"></i>
+                                    {{ d.title }}
+                                    {{# if(d.image){ }}
+                                    <a href="{{ d.image }}" target="_blank"><img src="{{ layui.common.image_resize(d.image, 30, 30) }}" width="30" height="30"></a>
+                                    {{# } }}
+                                </td>
+                                <td class="td_center">{{ d.position }}</td>
+                                <td class="td_center">
+                                    <input type="checkbox" name="status" value="{{ d.id }}" lay-skin="switch" lay-text="锁定|正常" lay-filter="status_btn" {{# if(d.status== 1){ }}checked{{# } }}>
+                                </td>
+                                <td>
+                                    <a class="layui-btn layui-btn-xs layui-hide" lay-event="edit" data-id="{{ d.id }}">编辑</a>
+                                    <a class="layui-btn layui-btn-danger layui-btn-xs layui-hide" lay-event="delete" data-id="{{ d.id }}">删除</a>
+                                    {{# if(d.is_child==1){ }}
+                                    <a class="layui-btn layui-btn-xs layui-btn-normal layui-hide" lay-event="add_menu" data-id="{{ d.id }}">添加子分类</a>
+                                    {{# } }}
+                                </td>
+                            </tr>
                         </script>
                     </div>
                 </div>
@@ -94,7 +83,7 @@
         let menu = layui.menu,
             model_url = '/tool/category';
 
-        menu.set_model_url(model_url);//设置默认模块地址
+        menu.init(model_url);
     });
 </script>
 </body>

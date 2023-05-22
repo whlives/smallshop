@@ -21,8 +21,9 @@ class SellerCategory extends BaseModel
     const STATUS_DESC = [
         self::STATUS_OFF => '锁定',
         self::STATUS_ON => '正常',
-
     ];
+
+    const MAX_HIERARCHY = 2;//最大层级
 
     protected $table = 'seller_category';
     protected $guarded = ['id'];
@@ -31,15 +32,16 @@ class SellerCategory extends BaseModel
      * 获取指定上级id下的所有菜单，按上下级排列（后台管理）
      * @param int $seller_id 商家id
      * @param int $parent_id 上级id
+     * @param int $hierarchy 层级 默认1
      * @return array
      */
-    public static function getAll(int $seller_id, int $parent_id = 0): array
+    public static function getAll(int $seller_id, int $parent_id = 0, int $hierarchy = 1): array
     {
         $where = [
             'seller_id' => $seller_id,
             'parent_id' => $parent_id,
         ];
-        $result = self::select('id', 'title', 'image', 'position', 'status')
+        $result = self::select('id', 'title', 'parent_id', 'image', 'position', 'status')
             ->where($where)
             ->orderBy('position', 'asc')
             ->orderBy('id', 'asc')
@@ -48,11 +50,13 @@ class SellerCategory extends BaseModel
         if (!$result->isEmpty()) {
             foreach ($result->toArray() as $value) {
                 $_item = $value;
-                $child = self::getAll($seller_id, $value['id']);
-                if ($child) {
-                    $_item['children'] = $child;
+                $_item['is_child'] = $hierarchy < self::MAX_HIERARCHY ? 1 : 0;
+                if ($hierarchy < self::MAX_HIERARCHY) {
+                    $child = self::getAll($seller_id, $value['id'], ($hierarchy + 1));
+                    if ($child) {
+                        $_item['children'] = $child;
+                    }
                 }
-
                 $return_list[] = $_item;
             }
         }
