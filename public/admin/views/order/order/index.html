@@ -68,10 +68,7 @@
                                     <div class="layui-input-inline">
                                         <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/seller/seller/select" lay-done="layui.form.render();">
                                             <select name="seller_id" lay-filter="seller_id" lay-search="">
-                                                <option value=""></option>
-                                                {{# layui.each(d.data, function(index, item){ }}
-                                                <option value="{{ item.id }}">{{ item.title }}</option>
-                                                {{# }); }}
+                                                {{- layui.common.set_select_option(d.data) }}
                                             </select>
                                         </script>
                                     </div>

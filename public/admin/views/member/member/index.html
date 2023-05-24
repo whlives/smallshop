@@ -47,10 +47,7 @@
                                 <div class="layui-input-inline">
                                     <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/member/group/select" lay-done="layui.form.render();">
                                         <select name="group_id">
-                                            <option value=""></option>
-                                            {{# layui.each(d.data, function(index, item){ }}
-                                            <option value="{{ item.id }}">{{ item.title }}</option>
-                                            {{# }); }}
+                                            {{- layui.common.set_select_option(d.data) }}
                                         </select>
                                     </script>
                                 </div>

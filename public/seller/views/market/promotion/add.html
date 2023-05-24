@@ -180,7 +180,7 @@
             function get_coupons(default_id) {
                 if (!default_id) default_id = 0;
                 common.ajax('/market/coupons/select', {}, function (result) {
-                    common.set_select_option('coupons_id', result.data, default_id);
+                    common.set_select_option(result.data, default_id, 'coupons_id');
                 });
             }
 

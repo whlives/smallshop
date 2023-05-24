@@ -19,20 +19,7 @@
         <div class="layui-input-block">
             <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/goods/category/select_all" lay-done="layui.form.render();">
                 <select name="category_id" lay-search="" lay-verify="required" lay-reqText="请选择分类">
-                    <option value=""></option>
-                    {{# layui.each(d.data, function(index, item){ }}
-                    <option value="{{ item.id }}" {{# if(item.children){ }}disabled{{# } }}{{# if(item.id== d.params.category_id){ }}selected{{# } }}>{{ item.title }}</option>
-                    {{# if(item.children){ }}
-                    {{# layui.each(item.children, function(index1, item1){ }}
-                    <option value="{{ item1.id }}" {{# if(item1.children){ }}disabled{{# } }}{{# if(item1.id== d.params.category_id){ }}selected{{# } }}>|--{{ item1.title }}</option>
-                    {{# if(item1.children){ }}
-                    {{# layui.each(item1.children, function(index2, item2){ }}
-                    <option value="{{ item2.id }}" {{# if(item2.id== d.params.category_id){ }}selected{{# } }}>|--|--{{ item2.title }}</option>
-                    {{# }); }}
-                    {{# } }}
-                    {{# }); }}
-                    {{# } }}
-                    {{# }); }}
+                    {{- layui.common.set_select_option(d.data, d.params.category_id) }}
                 </select>
             </script>
         </div>

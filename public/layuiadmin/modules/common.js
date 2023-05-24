@@ -352,32 +352,60 @@ layui.define(function (exports) {
          * @param prefix 前缀，多个地区选择时需要
          */
         set_default_area: function (prov_id, city_id, area_id, prefix = '') {
-            this.get_area('prov_id', 0, prov_id);
+            this.get_area('prov_id', 0, prov_id, prefix);
             if (prov_id && city_id) {
-                this.get_area('city_id', prov_id, city_id);
+                this.get_area('city_id', prov_id, city_id, prefix);
                 if (city_id && area_id) {
-                    this.get_area('area_id', city_id, area_id);
+                    this.get_area('area_id', city_id, area_id, prefix);
                 }
             }
         },
         /**
          * 生成下拉框内容
-         * @param name 下拉框名称
          * @param data 下拉框数据
          * @param default_id 默认id
+         * @param name 下拉框名称
          */
-        set_select_option: function (name, data, default_id = 0) {
+        set_select_option: function (data, default_id = 0, name = '') {
             let html = '<option value=""></option>';
-            $.each(data, function (index, item) {
-                let selected = '';
-                if (item.id == default_id) {
-                    selected = 'selected';
-                }
-                html += '<option value="' + item.id + '" ' + selected + '>' + item.title + '</option>';
-            })
-            $('[name="' + name + '"]').html(html);
-            form.render('select');
+            html += select_option_recursion(data, default_id);
+            if (name) {
+                $('[name="' + name + '"]').html(html);
+                form.render('select');
+            } else {
+                return html;
+            }
         },
+    }
+
+    /**
+     * 多级下拉菜单递归调用
+     * @param data 数据
+     * @param default_id 默认id
+     * @param hierarchy 层级
+     * @returns {string}
+     */
+    function select_option_recursion(data, default_id, hierarchy = 0) {
+        let html = '';
+        $.each(data, function (index, item) {
+            let selected = '';
+            let disabled = '';
+            if (item.id == default_id) {
+                selected = 'selected';
+            }
+            if (item.children) {
+                disabled = 'disabled';
+            }
+            let hierarchy_prefix = '';
+            for (let i = 1; i <= hierarchy; i++) {
+                hierarchy_prefix += '|--';
+            }
+            html += '<option value="' + item.id + '" ' + selected + disabled + '>' + hierarchy_prefix + item.title + '</option>';
+            if (item.children) {
+                html += select_option_recursion(item.children, default_id, (hierarchy + 1));
+            }
+        })
+        return html;
     }
 
     //对外暴露的接口

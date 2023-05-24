@@ -8,10 +8,7 @@
         <div class="layui-input-inline">
             <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/member/group/select" lay-done="layui.form.render();">
                 <select name="group_id" lay-verify="required" lay-reqText="请选择用户组">
-                    <option value=""></option>
-                    {{# layui.each(d.data, function(index, item){ }}
-                    <option value="{{ item.id }}" {{# if(item.id== d.params.group_id){ }}selected{{# } }}>{{ item.title }}</option>
-                    {{# }); }}
+                    {{- layui.common.set_select_option(d.data, d.params.group_id) }}
                 </select>
             </script>
         </div>
