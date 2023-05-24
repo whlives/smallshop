@@ -141,7 +141,8 @@ class MenuController extends BaseController
      */
     public function selectAll(Request $request)
     {
-        $data = Menu::getSelect(0, true);
+        $parent_id = (int)$request->input('parent_id', 0);
+        $data = Menu::getSelect($parent_id, true);
         return $this->success($data);
     }
 
@@ -152,7 +153,7 @@ class MenuController extends BaseController
      */
     public function select(Request $request)
     {
-        $parent_id = $request->input('parent_id', 0);
+        $parent_id = (int)$request->input('parent_id', 0);
         $data = Menu::getSelect($parent_id);
         return $this->success($data);
     }

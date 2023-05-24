@@ -138,7 +138,8 @@ class CategoryController extends BaseController
      */
     public function selectAll(Request $request)
     {
-        $data = Category::getSelect(0, true);
+        $parent_id = (int)$request->input('parent_id', 0);
+        $data = Category::getSelect($parent_id, true);
         return $this->success($data);
     }
 }
