@@ -36,10 +36,10 @@ layui.define(['common'], function (exports) {
         }
     });
 
-    //这里判断token过期时间,还剩15分钟的时候刷新token
+    //这里判断token过期时间,还剩30分钟的时候刷新token
     let now_time = new Date().getTime() / 1000;
     let expire = Number(layui.data(layui.setter.tableName)['expire']);
-    if ((expire - 900) < now_time) {
+    if ((expire - 1800) < now_time) {
         common.ajax('/refresh_token', {}, function (result) {
             let expire = new Date().getTime() / 1000;
             layui.data(layui.setter.tableName, {
