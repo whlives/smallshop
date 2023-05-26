@@ -241,21 +241,23 @@ layui.define(function (exports) {
                                 FilesAdded: function (up, files) {
                                     let file_type = getFileType();
                                     let max_file_size = getMaxFileSize();
+                                    let error_tips = '';
                                     plupload.each(files, function (file) {
                                         if ($.inArray(file.type, mime_types[file_type]['mime_type']) < 0) {
                                             uploader.removeFile(file);
-                                            layer.msg('不允许的文件格式');
+                                            error_tips = '不允许的文件格式';
                                         } else if (file.size > (max_file_size * 1024 * 1024)) {
                                             uploader.removeFile(file);
-                                            layer.msg('文件不能超过' + (max_file_size) + 'MB');
+                                            error_tips = '文件不能超过' + (max_file_size) + 'MB';
                                         } else {
                                             uploadLoading();//弹出正在上传的提示
                                         }
                                     });
                                     let next = getCallBack({id_name: plupload_btn_id, url: '', file_num: files.length});//自定义回调
-                                    if (next) {
+                                    if (next && !error_tips) {
                                         uploader.start();
                                     } else {
+                                        if (error_tips) layer.msg(error_tips);
                                         //清空上传队列
                                         $.each(files, function (index, item) {
                                             uploader.removeFile(item);
