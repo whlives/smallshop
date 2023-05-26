@@ -242,6 +242,7 @@ class TradeService
             'refund_no' => $refund_no,
             'pay_total' => $trade['pay_total'],
             'amount' => $amount,
+            'trade_amount' => $trade['pay_total'],
             'note' => $note
         ];
         TradeRefund::create($trade_refund);

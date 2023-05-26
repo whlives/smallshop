@@ -126,7 +126,9 @@ class Wechat
             'out_trade_no' => $refund_info['trade_no'],
             'out_refund_no' => $refund_info['refund_no'],
             'amount' => [
-                'refund' => intval($refund_info['amount'] * 100)
+                'refund' => intval($refund_info['amount'] * 100),
+                'total' => intval($refund_info['trade_amount'] * 100),
+                'currency' => 'CNY'
             ]
         ];
         $response = $this->app->getClient()->postJson('v3/refund/domestic/refunds', $post_data);
