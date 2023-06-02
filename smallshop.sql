@@ -1,13 +1,13 @@
 # ************************************************************
 # Sequel Ace SQL dump
-# 版本号： 20042
+# 版本号： 20046
 #
 # https://sequel-ace.com/
 # https://github.com/Sequel-Ace/Sequel-Ace
 #
-# 主机: localhost (MySQL 5.7.34)
-# 数据库: smallshop_old
-# 生成时间: 2022-11-25 08:02:12 +0000
+# 主机: localhost (MySQL 5.7.39)
+# 数据库: smallshop3
+# 生成时间: 2023-06-02 03:17:55 +0000
 # ************************************************************
 
 
@@ -26,15 +26,15 @@ SET NAMES utf8mb4;
 DROP TABLE IF EXISTS `sm_address`;
 
 CREATE TABLE `sm_address` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(11) unsigned NOT NULL COMMENT '用户id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `m_id` int(10) unsigned NOT NULL COMMENT '用户id',
   `full_name` varchar(100) NOT NULL DEFAULT '' COMMENT '姓名',
   `tel` varchar(20) NOT NULL DEFAULT '' COMMENT '电话',
-  `prov_id` int(11) unsigned NOT NULL COMMENT '省份id',
+  `prov_id` int(10) unsigned NOT NULL COMMENT '省份id',
   `prov_name` varchar(50) NOT NULL DEFAULT '' COMMENT '省份名称',
-  `city_id` int(11) unsigned NOT NULL COMMENT '城市id',
+  `city_id` int(10) unsigned NOT NULL COMMENT '城市id',
   `city_name` varchar(50) NOT NULL DEFAULT '' COMMENT '城市名称',
-  `area_id` int(11) unsigned DEFAULT '0' COMMENT '地区id',
+  `area_id` int(10) unsigned DEFAULT '0' COMMENT '地区id',
   `area_name` varchar(50) DEFAULT '' COMMENT '地区名称',
   `address` varchar(100) DEFAULT '' COMMENT '详细地址',
   `default` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '是否默认地址0否1是',
@@ -52,7 +52,7 @@ CREATE TABLE `sm_address` (
 DROP TABLE IF EXISTS `sm_admin`;
 
 CREATE TABLE `sm_admin` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(100) NOT NULL DEFAULT '' COMMENT '用户名',
   `password` char(60) NOT NULL DEFAULT '' COMMENT '密码',
   `role_id` varchar(50) NOT NULL DEFAULT '' COMMENT '角色组',
@@ -84,8 +84,8 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `sm_admin_log`;
 
 CREATE TABLE `sm_admin_log` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `admin_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `admin_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
   `username` varchar(100) NOT NULL DEFAULT '' COMMENT '用户名',
   `ip` varchar(20) NOT NULL COMMENT 'ip',
   `url` varchar(255) NOT NULL DEFAULT '' COMMENT '操作地址',
@@ -104,8 +104,8 @@ CREATE TABLE `sm_admin_log` (
 DROP TABLE IF EXISTS `sm_admin_login_log`;
 
 CREATE TABLE `sm_admin_login_log` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(11) unsigned NOT NULL COMMENT '用户id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `m_id` int(10) unsigned NOT NULL COMMENT '用户id',
   `token` varchar(100) NOT NULL DEFAULT '' COMMENT 'token名称',
   `user_agent` varchar(500) NOT NULL DEFAULT '' COMMENT '用户信息',
   `ip` varchar(20) NOT NULL COMMENT 'ip',
@@ -125,9 +125,9 @@ CREATE TABLE `sm_admin_login_log` (
 DROP TABLE IF EXISTS `sm_admin_right`;
 
 CREATE TABLE `sm_admin_right` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `menu_top` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '顶级菜单栏目',
-  `menu_child` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '二级菜单栏目',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `menu_top` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '顶级菜单栏目',
+  `menu_child` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '二级菜单栏目',
   `title` varchar(100) NOT NULL DEFAULT '' COMMENT '权限名称',
   `right` text NOT NULL COMMENT '权限码',
   `button` text COMMENT '按钮',
@@ -343,7 +343,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `sm_admin_role`;
 
 CREATE TABLE `sm_admin_role` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL DEFAULT '' COMMENT '角色名称',
   `right` text COMMENT '角色权限',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '0锁定1正常',
@@ -369,9 +369,9 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `sm_adv`;
 
 CREATE TABLE `sm_adv` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(200) NOT NULL DEFAULT '' COMMENT '标题',
-  `group_id` int(11) unsigned NOT NULL COMMENT '广告组',
+  `group_id` int(10) unsigned NOT NULL COMMENT '广告组',
   `image` varchar(255) DEFAULT '' COMMENT '图片',
   `target_type` varchar(50) NOT NULL DEFAULT '' COMMENT '跳转类型',
   `target_value` varchar(255) NOT NULL DEFAULT '' COMMENT '跳转url或id',
@@ -394,7 +394,7 @@ CREATE TABLE `sm_adv` (
 DROP TABLE IF EXISTS `sm_adv_group`;
 
 CREATE TABLE `sm_adv_group` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL DEFAULT '' COMMENT '标题',
   `code` smallint(5) unsigned NOT NULL COMMENT '广告位编号',
   `width` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '图片宽度',
@@ -415,10 +415,10 @@ CREATE TABLE `sm_adv_group` (
 DROP TABLE IF EXISTS `sm_areas`;
 
 CREATE TABLE `sm_areas` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `pinyin` varchar(50) NOT NULL DEFAULT '' COMMENT '拼音',
-  `parent_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '上级id',
-  `area_code` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '地区code',
+  `parent_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '上级id',
+  `area_code` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '地区code',
   `name` varchar(50) NOT NULL DEFAULT '' COMMENT '名称',
   `merger_name` varchar(100) NOT NULL DEFAULT '' COMMENT '合并的省市区名称',
   `short_name` varchar(50) NOT NULL DEFAULT '' COMMENT '短名称',
@@ -4392,9 +4392,9 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `sm_article`;
 
 CREATE TABLE `sm_article` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL DEFAULT '' COMMENT '文章标题',
-  `category_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '文章分类',
+  `category_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '文章分类',
   `image` varchar(255) DEFAULT '' COMMENT '图片',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '状态0锁定1正常',
   `position` smallint(5) unsigned NOT NULL DEFAULT '999' COMMENT '排序',
@@ -4412,9 +4412,9 @@ CREATE TABLE `sm_article` (
 DROP TABLE IF EXISTS `sm_article_category`;
 
 CREATE TABLE `sm_article_category` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL DEFAULT '' COMMENT '分类名称',
-  `parent_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '上级id',
+  `parent_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '上级id',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '状态0待审1正常',
   `position` smallint(5) unsigned NOT NULL DEFAULT '999' COMMENT '排序',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -4430,7 +4430,7 @@ CREATE TABLE `sm_article_category` (
 DROP TABLE IF EXISTS `sm_article_content`;
 
 CREATE TABLE `sm_article_content` (
-  `article_id` int(11) unsigned NOT NULL COMMENT '文章id',
+  `article_id` int(10) unsigned NOT NULL COMMENT '文章id',
   `content` text COMMENT '文章内容',
   PRIMARY KEY (`article_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='文章详情';
@@ -4443,10 +4443,10 @@ CREATE TABLE `sm_article_content` (
 DROP TABLE IF EXISTS `sm_attribute`;
 
 CREATE TABLE `sm_attribute` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(50) NOT NULL DEFAULT '' COMMENT '属性名称',
   `input_type` varchar(20) NOT NULL DEFAULT 'select' COMMENT '类型select下拉框，checkbox多选，radio单选，text文本框',
-  `category_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '分类id',
+  `category_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '分类id',
   `note` varchar(255) DEFAULT '' COMMENT '备注说明',
   `position` smallint(5) unsigned NOT NULL DEFAULT '999' COMMENT '排序',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -4464,8 +4464,8 @@ CREATE TABLE `sm_attribute` (
 DROP TABLE IF EXISTS `sm_attribute_value`;
 
 CREATE TABLE `sm_attribute_value` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `attribute_id` int(11) unsigned NOT NULL COMMENT '属性id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `attribute_id` int(10) unsigned NOT NULL COMMENT '属性id',
   `value` varchar(200) NOT NULL DEFAULT '' COMMENT '属性值',
   `position` smallint(5) unsigned NOT NULL DEFAULT '999' COMMENT '排序',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -4483,8 +4483,8 @@ CREATE TABLE `sm_attribute_value` (
 DROP TABLE IF EXISTS `sm_balance`;
 
 CREATE TABLE `sm_balance` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '用户id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `m_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户id',
   `amount` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '账户余额',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -4501,8 +4501,8 @@ CREATE TABLE `sm_balance` (
 DROP TABLE IF EXISTS `sm_balance_detail`;
 
 CREATE TABLE `sm_balance_detail` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(11) unsigned NOT NULL COMMENT '用户id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `m_id` int(10) unsigned NOT NULL COMMENT '用户id',
   `type` tinyint(2) unsigned NOT NULL COMMENT '类型1增加2减少',
   `event` tinyint(2) unsigned NOT NULL COMMENT '类型具体见model',
   `detail_no` varchar(50) DEFAULT '' COMMENT '单号',
@@ -4525,11 +4525,11 @@ CREATE TABLE `sm_balance_detail` (
 DROP TABLE IF EXISTS `sm_balance_recharge`;
 
 CREATE TABLE `sm_balance_recharge` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(11) unsigned NOT NULL COMMENT '用户id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `m_id` int(10) unsigned NOT NULL COMMENT '用户id',
   `recharge_no` varchar(20) NOT NULL COMMENT '充值单号',
-  `trade_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '交易单id',
-  `payment_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '支付方式',
+  `trade_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '交易单id',
+  `payment_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '支付方式',
   `payment_no` varchar(100) DEFAULT '' COMMENT '第三方支付单号',
   `amount` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '充值金额',
   `flag` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '风险标示0正常1风险',
@@ -4550,7 +4550,7 @@ CREATE TABLE `sm_balance_recharge` (
 DROP TABLE IF EXISTS `sm_brand`;
 
 CREATE TABLE `sm_brand` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL DEFAULT '' COMMENT '品牌名称',
   `image` varchar(255) DEFAULT '' COMMENT '品牌logo',
   `content` varchar(255) DEFAULT '' COMMENT '简介',
@@ -4570,12 +4570,12 @@ CREATE TABLE `sm_brand` (
 DROP TABLE IF EXISTS `sm_cart`;
 
 CREATE TABLE `sm_cart` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(11) unsigned NOT NULL COMMENT '用户id',
-  `seller_id` int(11) unsigned NOT NULL COMMENT '商家id',
-  `goods_id` int(11) unsigned NOT NULL COMMENT '商品id',
-  `sku_id` int(11) unsigned NOT NULL COMMENT '子商品id',
-  `buy_qty` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '购买数量',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `m_id` int(10) unsigned NOT NULL COMMENT '用户id',
+  `seller_id` int(10) unsigned NOT NULL COMMENT '商家id',
+  `goods_id` int(10) unsigned NOT NULL COMMENT '商品id',
+  `sku_id` int(10) unsigned NOT NULL COMMENT '子商品id',
+  `buy_qty` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '购买数量',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -4590,10 +4590,10 @@ CREATE TABLE `sm_cart` (
 DROP TABLE IF EXISTS `sm_category`;
 
 CREATE TABLE `sm_category` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL DEFAULT '' COMMENT '分类名称',
   `image` varchar(255) DEFAULT '' COMMENT '图标',
-  `parent_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '上级id',
+  `parent_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '上级id',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '状态0待审1正常',
   `position` smallint(5) unsigned NOT NULL DEFAULT '999' COMMENT '排序',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -4610,10 +4610,10 @@ CREATE TABLE `sm_category` (
 DROP TABLE IF EXISTS `sm_comment`;
 
 CREATE TABLE `sm_comment` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(11) unsigned NOT NULL COMMENT '用户id',
-  `goods_id` int(11) unsigned NOT NULL COMMENT '商品id',
-  `sku_id` int(11) unsigned NOT NULL COMMENT '子商品id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `m_id` int(10) unsigned NOT NULL COMMENT '用户id',
+  `goods_id` int(10) unsigned NOT NULL COMMENT '商品id',
+  `sku_id` int(10) unsigned NOT NULL COMMENT '子商品id',
   `spec_value` varchar(1000) NOT NULL COMMENT '商品规格',
   `level` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '评价等级1-5',
   `content` varchar(500) DEFAULT '' COMMENT '评价内容',
@@ -4635,8 +4635,8 @@ CREATE TABLE `sm_comment` (
 DROP TABLE IF EXISTS `sm_comment_url`;
 
 CREATE TABLE `sm_comment_url` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `comment_id` int(11) unsigned NOT NULL COMMENT '评价id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `comment_id` int(10) unsigned NOT NULL COMMENT '评价id',
   `type` tinyint(2) NOT NULL DEFAULT '0' COMMENT '类型1图片2视频',
   `url` varchar(255) NOT NULL COMMENT '地址',
   PRIMARY KEY (`id`),
@@ -4651,7 +4651,7 @@ CREATE TABLE `sm_comment_url` (
 DROP TABLE IF EXISTS `sm_config`;
 
 CREATE TABLE `sm_config` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL DEFAULT '' COMMENT '名称',
   `key_name` varchar(100) NOT NULL DEFAULT '' COMMENT '参数名称',
   `value` text COMMENT '参数值',
@@ -4725,7 +4725,7 @@ VALUES
 	(53,'后台登录短信通知','admin_login_sms_notice','0','radio','否,是','短信设置',999,'2022-06-11 14:58:36','2022-06-26 16:49:47'),
 	(54,'自动生成小程序码','auto_create_mini_program_qrcode','0','radio','否,是','微信设置',999,'2022-06-13 15:11:34','2022-06-26 16:49:47'),
 	(55,'商家登录短信验证码','seller_login_sms_captcha','0','radio','否,是','短信设置',999,'2022-06-11 14:57:15','2022-06-26 16:49:47'),
-    (56, '跳过手机绑定', 'skip_bind_mobile', '0', 'radio', '否,是', '其他设置', 999, '2023-05-03 20:37:20', '2023-05-03 20:37:27');
+	(56,'跳过手机绑定','skip_bind_mobile','0','radio','否,是','其他设置',999,'2023-05-03 20:37:20','2023-05-03 20:37:27');
 
 /*!40000 ALTER TABLE `sm_config` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -4737,7 +4737,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `sm_coupons`;
 
 CREATE TABLE `sm_coupons` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL DEFAULT '' COMMENT '名称',
   `type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '类型1满减2打折',
   `is_buy` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '可否购买0否1是',
@@ -4746,7 +4746,7 @@ CREATE TABLE `sm_coupons` (
   `amount` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '满减金额或折扣百分比',
   `use_price` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '起用金额',
   `limit` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '每人领取张数0为不限制',
-  `seller_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '商家id',
+  `seller_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '商家id',
   `note` varchar(500) DEFAULT '' COMMENT '简介',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '状态0待审1正常',
   `start_at` timestamp NULL DEFAULT NULL COMMENT '开始时间',
@@ -4767,9 +4767,9 @@ CREATE TABLE `sm_coupons` (
 DROP TABLE IF EXISTS `sm_coupons_detail`;
 
 CREATE TABLE `sm_coupons_detail` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `coupons_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '代金券id',
-  `m_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '用户id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `coupons_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '代金券id',
+  `m_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户id',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '状态0待审1正常',
   `is_use` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '0未使用1已使用',
   `start_at` timestamp NULL DEFAULT NULL COMMENT '开始时间',
@@ -4788,11 +4788,11 @@ CREATE TABLE `sm_coupons_detail` (
 DROP TABLE IF EXISTS `sm_coupons_rule`;
 
 CREATE TABLE `sm_coupons_rule` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `coupons_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '优惠券id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `coupons_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '优惠券id',
   `type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '类型1商品2品牌3分类',
   `in_type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '条件类型1包含2排除',
-  `obj_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '对象id，商品、品牌、分类',
+  `obj_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '对象id，商品、品牌、分类',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -4807,21 +4807,21 @@ CREATE TABLE `sm_coupons_rule` (
 DROP TABLE IF EXISTS `sm_delivery`;
 
 CREATE TABLE `sm_delivery` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) DEFAULT '' COMMENT '快递名称',
   `content` varchar(100) DEFAULT '' COMMENT '快递描述',
   `type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '计算方式0按重量1按件',
   `first_price` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '首重价格',
-  `first_weight` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '首重重量(克)/件数',
+  `first_weight` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '首重重量(克)/件数',
   `second_price` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '续重价格',
-  `second_weight` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '续重重量(克)/件数',
+  `second_weight` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '续重重量(克)/件数',
   `free_type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '满包邮类型：0按金额1件数',
   `free_price` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '满包邮金额/件数 0代表不包邮',
   `group_area_id` text COMMENT '配送区域id',
   `group_json` text COMMENT '计算方式0按重量1按件',
   `price_type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '费用类型 0统一设置 1指定地区费用',
   `open_default` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '启用默认费用 1启用 0 不启用',
-  `seller_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '店铺id1为系统',
+  `seller_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '店铺id1为系统',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '开启状态0锁定1开启',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -4838,7 +4838,7 @@ CREATE TABLE `sm_delivery` (
 DROP TABLE IF EXISTS `sm_delivery_traces`;
 
 CREATE TABLE `sm_delivery_traces` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `company_code` varchar(20) NOT NULL COMMENT '快递编号',
   `code` varchar(50) NOT NULL COMMENT '快递单号',
   `accept_time` varchar(50) NOT NULL COMMENT '时间',
@@ -4858,7 +4858,7 @@ CREATE TABLE `sm_delivery_traces` (
 DROP TABLE IF EXISTS `sm_express_company`;
 
 CREATE TABLE `sm_express_company` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(50) NOT NULL DEFAULT '' COMMENT '快递编码',
   `title` varchar(50) NOT NULL DEFAULT '' COMMENT '货运公司名称',
   `param` varchar(500) DEFAULT '' COMMENT '快递参数',
@@ -4917,9 +4917,9 @@ CREATE TABLE `sm_failed_jobs` (
 DROP TABLE IF EXISTS `sm_favorite`;
 
 CREATE TABLE `sm_favorite` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(11) unsigned NOT NULL COMMENT '用户id',
-  `object_id` int(11) unsigned NOT NULL COMMENT '收藏对象id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `m_id` int(10) unsigned NOT NULL COMMENT '用户id',
+  `object_id` int(10) unsigned NOT NULL COMMENT '收藏对象id',
   `type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '类型1商品2商家3文章',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -4935,7 +4935,7 @@ CREATE TABLE `sm_favorite` (
 DROP TABLE IF EXISTS `sm_file_log`;
 
 CREATE TABLE `sm_file_log` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(60) DEFAULT '' COMMENT '名称',
   `url` varchar(255) NOT NULL DEFAULT '' COMMENT '地址',
   `md5` varchar(60) NOT NULL DEFAULT '' COMMENT 'md5',
@@ -4953,7 +4953,7 @@ CREATE TABLE `sm_file_log` (
 DROP TABLE IF EXISTS `sm_goods`;
 
 CREATE TABLE `sm_goods` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL DEFAULT '' COMMENT '主标题',
   `subtitle` varchar(100) DEFAULT '' COMMENT '副标题',
   `image` varchar(255) NOT NULL DEFAULT '' COMMENT '主图',
@@ -4963,10 +4963,10 @@ CREATE TABLE `sm_goods` (
   `market_price` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '市场价',
   `sku_code` varchar(50) NOT NULL DEFAULT '' COMMENT 'sku编码',
   `is_rem` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '是否推荐0否1是',
-  `category_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '分类id',
-  `delivery_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '配送方式',
-  `brand_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '品牌id',
-  `seller_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '商家id',
+  `category_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '分类id',
+  `delivery_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '配送方式',
+  `brand_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '品牌id',
+  `seller_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '商家id',
   `type` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '商品类型1普通2优惠券3积分4电子券',
   `promo_type` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '促销类型1普通2秒杀3拼团',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '状态0待审核1已审核3上线4下线',
@@ -4992,9 +4992,9 @@ CREATE TABLE `sm_goods` (
 DROP TABLE IF EXISTS `sm_goods_attribute`;
 
 CREATE TABLE `sm_goods_attribute` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `goods_id` int(11) unsigned NOT NULL COMMENT '商品id',
-  `attribute_id` int(11) unsigned NOT NULL COMMENT '属性id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `goods_id` int(10) unsigned NOT NULL COMMENT '商品id',
+  `attribute_id` int(10) unsigned NOT NULL COMMENT '属性id',
   `value` varchar(255) DEFAULT '' COMMENT '自定义内容',
   PRIMARY KEY (`id`),
   KEY `idx_goodsid` (`goods_id`)
@@ -5008,7 +5008,7 @@ CREATE TABLE `sm_goods_attribute` (
 DROP TABLE IF EXISTS `sm_goods_content`;
 
 CREATE TABLE `sm_goods_content` (
-  `goods_id` int(11) unsigned NOT NULL,
+  `goods_id` int(10) unsigned NOT NULL,
   `content` text COMMENT '商品介绍',
   PRIMARY KEY (`goods_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品详情';
@@ -5021,8 +5021,8 @@ CREATE TABLE `sm_goods_content` (
 DROP TABLE IF EXISTS `sm_goods_image`;
 
 CREATE TABLE `sm_goods_image` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `goods_id` int(11) unsigned NOT NULL COMMENT '商品id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `goods_id` int(10) unsigned NOT NULL COMMENT '商品id',
   `url` varchar(255) NOT NULL COMMENT '图片地址',
   PRIMARY KEY (`id`),
   KEY `idx_goodsid` (`goods_id`)
@@ -5036,9 +5036,9 @@ CREATE TABLE `sm_goods_image` (
 DROP TABLE IF EXISTS `sm_goods_num`;
 
 CREATE TABLE `sm_goods_num` (
-  `goods_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `favorite` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '收藏量',
-  `sale` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '销量',
+  `goods_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `favorite` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '收藏量',
+  `sale` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '销量',
   PRIMARY KEY (`goods_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品计数相关';
 
@@ -5050,9 +5050,9 @@ CREATE TABLE `sm_goods_num` (
 DROP TABLE IF EXISTS `sm_goods_object`;
 
 CREATE TABLE `sm_goods_object` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `goods_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '商品ID',
-  `object_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '对象ID',
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `goods_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '商品ID',
+  `object_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '对象ID',
   `type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '对象类型',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='优惠券商品关联id';
@@ -5065,8 +5065,8 @@ CREATE TABLE `sm_goods_object` (
 DROP TABLE IF EXISTS `sm_goods_package`;
 
 CREATE TABLE `sm_goods_package` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `seller_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '商家',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `seller_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '商家',
   `title` varchar(50) NOT NULL COMMENT '标题',
   `image` varchar(255) DEFAULT '' COMMENT '图片',
   `price` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '价格',
@@ -5086,9 +5086,9 @@ CREATE TABLE `sm_goods_package` (
 DROP TABLE IF EXISTS `sm_goods_seller_category`;
 
 CREATE TABLE `sm_goods_seller_category` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `goods_id` int(11) unsigned NOT NULL COMMENT '商品id',
-  `category_id` int(11) unsigned NOT NULL COMMENT '分类id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `goods_id` int(10) unsigned NOT NULL COMMENT '商品id',
+  `category_id` int(10) unsigned NOT NULL COMMENT '分类id',
   PRIMARY KEY (`id`),
   KEY `idx_categoryid` (`category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品商家分类';
@@ -5101,16 +5101,16 @@ CREATE TABLE `sm_goods_seller_category` (
 DROP TABLE IF EXISTS `sm_goods_sku`;
 
 CREATE TABLE `sm_goods_sku` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `goods_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '商品id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `goods_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '商品id',
   `image` varchar(255) NOT NULL DEFAULT '' COMMENT '商品图片',
   `sku_code` varchar(50) NOT NULL DEFAULT '' COMMENT 'sku编码',
   `spec_value` varchar(1000) DEFAULT '' COMMENT '规格',
-  `stock` int(11) NOT NULL DEFAULT '0' COMMENT '库存',
+  `stock` int(10) NOT NULL DEFAULT '0' COMMENT '库存',
   `sell_price` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '销售价',
   `market_price` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '市场价',
   `point` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '所需积分',
-  `weight` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '重量单位克',
+  `weight` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '重量单位克',
   `min_buy` smallint(5) unsigned NOT NULL DEFAULT '1' COMMENT '最小购买数量',
   `max_buy` smallint(5) unsigned NOT NULL DEFAULT '1' COMMENT '最大购买数量',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '状态1正常99删除',
@@ -5126,15 +5126,15 @@ CREATE TABLE `sm_goods_sku` (
 DROP TABLE IF EXISTS `sm_member`;
 
 CREATE TABLE `sm_member` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(100) NOT NULL DEFAULT '' COMMENT '用户名',
   `password` varchar(100) NOT NULL COMMENT '密码',
   `pay_password` varchar(100) DEFAULT '' COMMENT '支付密码',
   `nickname` varchar(100) NOT NULL DEFAULT '' COMMENT '昵称',
   `headimg` varchar(255) DEFAULT '' COMMENT '头像',
   `full_name` varchar(100) DEFAULT '' COMMENT '真实姓名',
-  `group_id` int(11) unsigned NOT NULL DEFAULT '1' COMMENT '分组id',
-  `parent_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '推荐人id',
+  `group_id` int(10) unsigned NOT NULL DEFAULT '1' COMMENT '分组id',
+  `parent_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '推荐人id',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '0锁定1正常',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -5151,8 +5151,8 @@ CREATE TABLE `sm_member` (
 DROP TABLE IF EXISTS `sm_member_auth`;
 
 CREATE TABLE `sm_member_auth` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(11) unsigned NOT NULL COMMENT '用户id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `m_id` int(10) unsigned NOT NULL COMMENT '用户id',
   `union_id` varchar(200) NOT NULL DEFAULT '' COMMENT '第三方唯一id',
   `type` tinyint(2) unsigned NOT NULL COMMENT '类型1微信2微博3qq',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -5169,7 +5169,7 @@ CREATE TABLE `sm_member_auth` (
 DROP TABLE IF EXISTS `sm_member_group`;
 
 CREATE TABLE `sm_member_group` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL DEFAULT '' COMMENT '组名',
   `pct` tinyint(5) unsigned NOT NULL DEFAULT '100' COMMENT '折扣比例',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '0锁定1审核',
@@ -5187,9 +5187,9 @@ CREATE TABLE `sm_member_group` (
 DROP TABLE IF EXISTS `sm_member_login_log`;
 
 CREATE TABLE `sm_member_login_log` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `token` varchar(100) NOT NULL COMMENT 'token名称',
-  `m_id` int(11) unsigned NOT NULL COMMENT '用户id',
+  `m_id` int(10) unsigned NOT NULL COMMENT '用户id',
   `ip` varchar(20) NOT NULL COMMENT 'ip',
   `platform` varchar(20) NOT NULL COMMENT '平台',
   `version` varchar(50) NOT NULL DEFAULT '0' COMMENT '客户端版本',
@@ -5211,12 +5211,12 @@ CREATE TABLE `sm_member_login_log` (
 DROP TABLE IF EXISTS `sm_member_profile`;
 
 CREATE TABLE `sm_member_profile` (
-  `member_id` int(11) unsigned NOT NULL,
+  `member_id` int(10) unsigned NOT NULL,
   `email` varchar(100) DEFAULT '' COMMENT '邮箱',
   `sex` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '性别0保密1男2女',
-  `prov_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '省份id',
-  `city_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '城市id',
-  `area_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '地区id',
+  `prov_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '省份id',
+  `city_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '城市id',
+  `area_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '地区id',
   PRIMARY KEY (`member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='会员资料表';
 
@@ -5228,10 +5228,10 @@ CREATE TABLE `sm_member_profile` (
 DROP TABLE IF EXISTS `sm_menu`;
 
 CREATE TABLE `sm_menu` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL DEFAULT '' COMMENT '菜单名称',
   `icon` varchar(50) DEFAULT '' COMMENT 'icon图标',
-  `parent_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '上级菜单',
+  `parent_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '上级菜单',
   `url` varchar(200) DEFAULT '' COMMENT '链接地址',
   `parameter` varchar(200) DEFAULT '' COMMENT '参数',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '0锁定1正常',
@@ -5310,10 +5310,10 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `sm_menu_seller`;
 
 CREATE TABLE `sm_menu_seller` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL DEFAULT '' COMMENT '菜单名称',
   `icon` varchar(50) DEFAULT '' COMMENT 'icon图标',
-  `parent_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '上级菜单',
+  `parent_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '上级菜单',
   `url` varchar(200) DEFAULT '' COMMENT '链接地址',
   `parameter` varchar(200) DEFAULT '' COMMENT '参数',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '0锁定1正常',
@@ -5356,18 +5356,18 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `sm_order`;
 
 CREATE TABLE `sm_order` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(11) unsigned NOT NULL COMMENT '用户id',
-  `seller_id` int(11) unsigned NOT NULL COMMENT '商家id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `m_id` int(10) unsigned NOT NULL COMMENT '用户id',
+  `seller_id` int(10) unsigned NOT NULL COMMENT '商家id',
   `order_no` varchar(20) NOT NULL DEFAULT '' COMMENT '订单号',
-  `trade_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '交易单id',
+  `trade_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '交易单id',
   `promo_type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '活动类型1普通2秒杀3拼团',
   `goods_type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '商品类型1普通2优惠券3积分4电子券',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '订单状态 0待支付1已支付2已发货7部分发货3确认收货5订单完成6全部退款8待成团10取消订单11作废订单',
-  `payment_id` tinyint(11) unsigned NOT NULL DEFAULT '0' COMMENT '支付方式',
+  `payment_id` tinyint(10) unsigned NOT NULL DEFAULT '0' COMMENT '支付方式',
   `payment_no` varchar(100) DEFAULT '' COMMENT '第三方支付单号',
   `flag` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '风险标示0正常1风险',
-  `product_num` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '商品件数',
+  `product_num` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '商品件数',
   `sell_price_total` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '销售总价',
   `market_price_total` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '市场总价',
   `delivery_type` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '配送方式1快递2门店自提',
@@ -5378,7 +5378,7 @@ CREATE TABLE `sm_order` (
   `promotion_price` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '优惠金额',
   `promotion_text` varchar(500) DEFAULT '' COMMENT '优惠说明',
   `subtotal` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '订单总金额',
-  `coupons_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '优惠券id',
+  `coupons_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '优惠券id',
   `platform` varchar(50) DEFAULT '' COMMENT '来源平台',
   `full_name` varchar(50) NOT NULL DEFAULT '' COMMENT '姓名',
   `tel` varchar(20) NOT NULL DEFAULT '' COMMENT '电话',
@@ -5390,8 +5390,8 @@ CREATE TABLE `sm_order` (
   `admin_note` varchar(255) DEFAULT '' COMMENT '管理员备注',
   `is_delete` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '用户是否删除',
   `is_settlement` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否给商家结算0否1是',
-  `level_one_m_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '顶级推荐人id',
-  `level_two_m_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '二级推荐人id',
+  `level_one_m_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '顶级推荐人id',
+  `level_two_m_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '二级推荐人id',
   `pay_at` timestamp NULL DEFAULT NULL COMMENT '支付时间',
   `send_at` timestamp NULL DEFAULT NULL COMMENT '发货时间',
   `close_at` timestamp NULL DEFAULT NULL COMMENT '关闭时间',
@@ -5415,8 +5415,8 @@ CREATE TABLE `sm_order` (
 DROP TABLE IF EXISTS `sm_order_delivery`;
 
 CREATE TABLE `sm_order_delivery` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `order_id` int(11) unsigned NOT NULL COMMENT '订单号',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `order_id` int(10) unsigned NOT NULL COMMENT '订单号',
   `order_goods_id` varchar(1000) NOT NULL DEFAULT '' COMMENT '订单商品id',
   `company_code` varchar(20) NOT NULL DEFAULT '' COMMENT '快递公司code',
   `company_name` varchar(50) NOT NULL DEFAULT '' COMMENT '快递公司名称',
@@ -5436,10 +5436,10 @@ CREATE TABLE `sm_order_delivery` (
 DROP TABLE IF EXISTS `sm_order_delivery_template`;
 
 CREATE TABLE `sm_order_delivery_template` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `order_id` int(11) unsigned NOT NULL COMMENT '订单id',
-  `order_delivery_id` int(11) unsigned NOT NULL COMMENT '发货单id',
-  `seller_id` int(11) unsigned NOT NULL COMMENT '商家id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `order_id` int(10) unsigned NOT NULL COMMENT '订单id',
+  `order_delivery_id` int(10) unsigned NOT NULL COMMENT '发货单id',
+  `seller_id` int(10) unsigned NOT NULL COMMENT '商家id',
   `print` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '打印次数',
   `url` varchar(255) DEFAULT '' COMMENT '远程地址',
   `content` text NOT NULL COMMENT '打印内容',
@@ -5457,23 +5457,23 @@ CREATE TABLE `sm_order_delivery_template` (
 DROP TABLE IF EXISTS `sm_order_goods`;
 
 CREATE TABLE `sm_order_goods` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(11) unsigned NOT NULL,
-  `order_id` int(11) unsigned NOT NULL COMMENT '订单id',
-  `goods_id` int(11) unsigned NOT NULL COMMENT '商品id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `m_id` int(10) unsigned NOT NULL,
+  `order_id` int(10) unsigned NOT NULL COMMENT '订单id',
+  `goods_id` int(10) unsigned NOT NULL COMMENT '商品id',
   `goods_title` varchar(100) NOT NULL DEFAULT '' COMMENT '商品名称',
-  `sku_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'sku商品id',
+  `sku_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'sku商品id',
   `sku_code` varchar(50) NOT NULL DEFAULT '' COMMENT '商品sku编码',
   `image` varchar(255) NOT NULL DEFAULT '' COMMENT '商品图片',
   `sell_price` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '销售价',
   `market_price` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '市场价',
   `promotion_price` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '优惠金额',
-  `buy_qty` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '购买数量',
-  `weight` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '重量单位克',
+  `buy_qty` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '购买数量',
+  `weight` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '重量单位克',
   `spec_value` varchar(1000) NOT NULL DEFAULT '' COMMENT '规格',
   `delivery` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '是否发货0否1是',
   `refund` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '售后状态0没有售后1申请售后2售后中3售后完成4售后关闭',
-  `seller_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '商家id',
+  `seller_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '商家id',
   `level_one_pct` smallint(3) unsigned NOT NULL DEFAULT '0' COMMENT '一级分成比例',
   `level_two_pct` smallint(3) unsigned NOT NULL DEFAULT '0' COMMENT '二级分成比例',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -5490,8 +5490,8 @@ CREATE TABLE `sm_order_goods` (
 DROP TABLE IF EXISTS `sm_order_invoice`;
 
 CREATE TABLE `sm_order_invoice` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `order_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '订单id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `order_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '订单id',
   `type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '类型1个人2企业',
   `title` varchar(50) NOT NULL COMMENT '抬头',
   `tax_no` varchar(50) DEFAULT '' COMMENT '纳税号',
@@ -5507,10 +5507,10 @@ CREATE TABLE `sm_order_invoice` (
 DROP TABLE IF EXISTS `sm_order_log`;
 
 CREATE TABLE `sm_order_log` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `order_id` int(11) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `order_id` int(10) unsigned NOT NULL,
   `user_type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '用户类型0用户1系统2管理员3商家',
-  `user_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '操作用户id',
+  `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '操作用户id',
   `username` varchar(50) NOT NULL DEFAULT '' COMMENT '操作用户',
   `action` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '操作动作',
   `note` varchar(255) DEFAULT '' COMMENT '备注',
@@ -5529,7 +5529,7 @@ CREATE TABLE `sm_order_log` (
 DROP TABLE IF EXISTS `sm_payment`;
 
 CREATE TABLE `sm_payment` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(50) NOT NULL DEFAULT '' COMMENT '支付名称',
   `image` varchar(255) NOT NULL DEFAULT '' COMMENT 'logo',
   `type` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '1线上 2线下',
@@ -5564,8 +5564,8 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `sm_point`;
 
 CREATE TABLE `sm_point` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '用户id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `m_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户id',
   `amount` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '积分余额',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -5582,8 +5582,8 @@ CREATE TABLE `sm_point` (
 DROP TABLE IF EXISTS `sm_point_detail`;
 
 CREATE TABLE `sm_point_detail` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(11) unsigned NOT NULL COMMENT '用户id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `m_id` int(10) unsigned NOT NULL COMMENT '用户id',
   `type` tinyint(2) unsigned NOT NULL COMMENT '类型1增加2减少',
   `event` tinyint(2) unsigned NOT NULL COMMENT '类型具体见model',
   `detail_no` varchar(50) DEFAULT '' COMMENT '单号',
@@ -5605,12 +5605,12 @@ CREATE TABLE `sm_point_detail` (
 DROP TABLE IF EXISTS `sm_promo_group`;
 
 CREATE TABLE `sm_promo_group` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(50) NOT NULL DEFAULT '' COMMENT '活动名称',
-  `seller_id` int(11) NOT NULL DEFAULT '0' COMMENT '商家id',
-  `goods_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '商品id',
-  `group_num` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '成团人数',
-  `hour` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '成团时间单位小时',
+  `seller_id` int(10) NOT NULL DEFAULT '0' COMMENT '商家id',
+  `goods_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '商品id',
+  `group_num` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '成团人数',
+  `hour` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '成团时间单位小时',
   `start_at` timestamp NULL DEFAULT NULL COMMENT '开始时间',
   `end_at` timestamp NULL DEFAULT NULL COMMENT '结束时间',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '状态0锁定1正常',
@@ -5630,11 +5630,11 @@ CREATE TABLE `sm_promo_group` (
 DROP TABLE IF EXISTS `sm_promo_group_order`;
 
 CREATE TABLE `sm_promo_group_order` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(11) unsigned NOT NULL COMMENT '用户id',
-  `group_id` int(11) unsigned NOT NULL COMMENT '团购id',
-  `group_order_id` int(11) unsigned NOT NULL COMMENT '开团订单id',
-  `order_id` int(11) unsigned NOT NULL COMMENT '订单id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `m_id` int(10) unsigned NOT NULL COMMENT '用户id',
+  `group_id` int(10) unsigned NOT NULL COMMENT '团购id',
+  `group_order_id` int(10) unsigned NOT NULL COMMENT '开团订单id',
+  `order_id` int(10) unsigned NOT NULL COMMENT '订单id',
   `is_head` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '是否团长',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '状态0待付款1待成团2已成团3已取消',
   `end_at` timestamp NULL DEFAULT NULL COMMENT '结束时间',
@@ -5652,10 +5652,10 @@ CREATE TABLE `sm_promo_group_order` (
 DROP TABLE IF EXISTS `sm_promo_seckill`;
 
 CREATE TABLE `sm_promo_seckill` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(50) DEFAULT '' COMMENT '活动名称',
-  `seller_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '商家id',
-  `goods_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '商品id',
+  `seller_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '商家id',
+  `goods_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '商品id',
   `start_at` timestamp NULL DEFAULT NULL,
   `end_at` timestamp NULL DEFAULT NULL,
   `status` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '状态0锁定1正常',
@@ -5675,15 +5675,15 @@ CREATE TABLE `sm_promo_seckill` (
 DROP TABLE IF EXISTS `sm_promotion`;
 
 CREATE TABLE `sm_promotion` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL DEFAULT '' COMMENT '名称',
   `rule_type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '规则类型',
   `use_price` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '起用金额',
   `user_group` varchar(255) DEFAULT '' COMMENT '用户组',
   `type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '规则类型',
-  `type_value` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '赠送值或者优惠券活动id',
+  `type_value` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '赠送值或者优惠券活动id',
   `content` varchar(255) DEFAULT '' COMMENT '简介',
-  `seller_id` int(11) unsigned NOT NULL COMMENT '商家id',
+  `seller_id` int(10) unsigned NOT NULL COMMENT '商家id',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '状态0锁定1正常',
   `start_at` timestamp NOT NULL COMMENT '开始时间',
   `end_at` timestamp NOT NULL COMMENT '结束时间',
@@ -5701,13 +5701,13 @@ CREATE TABLE `sm_promotion` (
 DROP TABLE IF EXISTS `sm_refund`;
 
 CREATE TABLE `sm_refund` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `refund_no` varchar(50) NOT NULL COMMENT '退款单号',
-  `order_id` int(11) unsigned NOT NULL COMMENT '订单id',
-  `order_goods_id` int(11) unsigned NOT NULL COMMENT '订单商品id(order_goods表id)',
-  `payment_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '支付方式',
-  `seller_id` int(11) unsigned NOT NULL COMMENT '商家id',
-  `m_id` int(11) unsigned NOT NULL COMMENT '用户id',
+  `order_id` int(10) unsigned NOT NULL COMMENT '订单id',
+  `order_goods_id` int(10) unsigned NOT NULL COMMENT '订单商品id(order_goods表id)',
+  `payment_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '支付方式',
+  `seller_id` int(10) unsigned NOT NULL COMMENT '商家id',
+  `m_id` int(10) unsigned NOT NULL COMMENT '用户id',
   `amount` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '退款金额',
   `max_amount` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '最大退款金额',
   `delivery_price` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '运费金额',
@@ -5738,8 +5738,8 @@ CREATE TABLE `sm_refund` (
 DROP TABLE IF EXISTS `sm_refund_delivery`;
 
 CREATE TABLE `sm_refund_delivery` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `refund_id` int(11) unsigned NOT NULL COMMENT '退款单id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `refund_id` int(10) unsigned NOT NULL COMMENT '退款单id',
   `type` tinyint(2) NOT NULL DEFAULT '0' COMMENT '发货类型1用户2商家',
   `company_code` varchar(20) NOT NULL DEFAULT '' COMMENT '快递公司code',
   `company_name` varchar(50) NOT NULL DEFAULT '' COMMENT '快递公司名称',
@@ -5758,8 +5758,8 @@ CREATE TABLE `sm_refund_delivery` (
 DROP TABLE IF EXISTS `sm_refund_image`;
 
 CREATE TABLE `sm_refund_image` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `log_id` int(11) unsigned NOT NULL COMMENT '退款日志id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `log_id` int(10) unsigned NOT NULL COMMENT '退款日志id',
   `image` varchar(255) NOT NULL DEFAULT '' COMMENT '图片地址',
   PRIMARY KEY (`id`),
   KEY `idx_logid` (`log_id`)
@@ -5773,10 +5773,10 @@ CREATE TABLE `sm_refund_image` (
 DROP TABLE IF EXISTS `sm_refund_log`;
 
 CREATE TABLE `sm_refund_log` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `refund_id` int(11) unsigned NOT NULL COMMENT '退款id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `refund_id` int(10) unsigned NOT NULL COMMENT '退款id',
   `user_type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '用户类型0用户1系统2管理员3商家',
-  `user_id` int(11) unsigned NOT NULL COMMENT '用户id',
+  `user_id` int(10) unsigned NOT NULL COMMENT '用户id',
   `username` varchar(50) NOT NULL COMMENT '用户名',
   `action` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '操作类型',
   `note` varchar(1000) DEFAULT '' COMMENT '说明',
@@ -5794,7 +5794,7 @@ CREATE TABLE `sm_refund_log` (
 DROP TABLE IF EXISTS `sm_seller`;
 
 CREATE TABLE `sm_seller` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(100) NOT NULL DEFAULT '' COMMENT '用户名',
   `password` char(60) NOT NULL DEFAULT '' COMMENT '密码',
   `title` varchar(100) NOT NULL DEFAULT '' COMMENT '商家名称',
@@ -5827,15 +5827,15 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `sm_seller_address`;
 
 CREATE TABLE `sm_seller_address` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `seller_id` int(11) unsigned NOT NULL COMMENT '商家id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `seller_id` int(10) unsigned NOT NULL COMMENT '商家id',
   `full_name` varchar(50) NOT NULL COMMENT '姓名',
   `tel` varchar(20) NOT NULL COMMENT '电话',
-  `prov_id` int(11) unsigned NOT NULL COMMENT '省份id',
+  `prov_id` int(10) unsigned NOT NULL COMMENT '省份id',
   `prov_name` varchar(50) NOT NULL,
-  `city_id` int(11) unsigned NOT NULL COMMENT '城市id',
+  `city_id` int(10) unsigned NOT NULL COMMENT '城市id',
   `city_name` varchar(50) NOT NULL,
-  `area_id` int(11) unsigned DEFAULT '0' COMMENT '地区id',
+  `area_id` int(10) unsigned DEFAULT '0' COMMENT '地区id',
   `area_name` varchar(50) DEFAULT '',
   `address` varchar(255) NOT NULL COMMENT '详细地址',
   `default` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '默认0否1是',
@@ -5853,8 +5853,8 @@ CREATE TABLE `sm_seller_address` (
 DROP TABLE IF EXISTS `sm_seller_balance`;
 
 CREATE TABLE `sm_seller_balance` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '用户id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `m_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户id',
   `amount` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '账户余额',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -5871,8 +5871,8 @@ CREATE TABLE `sm_seller_balance` (
 DROP TABLE IF EXISTS `sm_seller_balance_detail`;
 
 CREATE TABLE `sm_seller_balance_detail` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(11) unsigned NOT NULL COMMENT '用户id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `m_id` int(10) unsigned NOT NULL COMMENT '用户id',
   `type` tinyint(2) unsigned NOT NULL COMMENT '类型1增加2减少',
   `event` tinyint(2) unsigned NOT NULL COMMENT '类型具体见model',
   `detail_no` varchar(50) DEFAULT '' COMMENT '单号',
@@ -5895,11 +5895,11 @@ CREATE TABLE `sm_seller_balance_detail` (
 DROP TABLE IF EXISTS `sm_seller_category`;
 
 CREATE TABLE `sm_seller_category` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `seller_id` int(11) unsigned NOT NULL COMMENT '商家id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `seller_id` int(10) unsigned NOT NULL COMMENT '商家id',
   `title` varchar(100) NOT NULL DEFAULT '' COMMENT '分类名称',
   `image` varchar(255) DEFAULT '' COMMENT '图片',
-  `parent_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '上级id',
+  `parent_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '上级id',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '状态0待审1正常',
   `position` smallint(5) unsigned NOT NULL DEFAULT '999' COMMENT '排序',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -5917,8 +5917,8 @@ CREATE TABLE `sm_seller_category` (
 DROP TABLE IF EXISTS `sm_seller_login_log`;
 
 CREATE TABLE `sm_seller_login_log` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(11) unsigned NOT NULL COMMENT '用户id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `m_id` int(10) unsigned NOT NULL COMMENT '用户id',
   `token` varchar(100) NOT NULL DEFAULT '' COMMENT 'token名称',
   `user_agent` varchar(500) NOT NULL DEFAULT '' COMMENT '用户信息',
   `ip` varchar(15) NOT NULL DEFAULT '' COMMENT 'ip',
@@ -5938,13 +5938,13 @@ CREATE TABLE `sm_seller_login_log` (
 DROP TABLE IF EXISTS `sm_seller_profile`;
 
 CREATE TABLE `sm_seller_profile` (
-  `seller_id` int(11) unsigned NOT NULL,
+  `seller_id` int(10) unsigned NOT NULL,
   `business_license` varchar(255) DEFAULT '' COMMENT '营业执照',
   `tel` varchar(50) DEFAULT '' COMMENT '电话',
   `email` varchar(100) DEFAULT '' COMMENT '邮箱',
-  `prov_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '省份id',
-  `city_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '城市id',
-  `area_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '地区id',
+  `prov_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '省份id',
+  `city_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '城市id',
+  `area_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '地区id',
   `address` varchar(255) DEFAULT '' COMMENT '地址',
   `content` varchar(255) DEFAULT '' COMMENT '简介',
   PRIMARY KEY (`seller_id`)
@@ -5967,8 +5967,8 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `sm_seller_withdraw`;
 
 CREATE TABLE `sm_seller_withdraw` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(11) unsigned NOT NULL COMMENT '用户id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `m_id` int(10) unsigned NOT NULL COMMENT '用户id',
   `type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '提现类型1银行2支付宝3微信',
   `amount` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '提现金额',
   `name` varchar(100) NOT NULL DEFAULT '' COMMENT '姓名',
@@ -5991,7 +5991,7 @@ CREATE TABLE `sm_seller_withdraw` (
 DROP TABLE IF EXISTS `sm_sms_log`;
 
 CREATE TABLE `sm_sms_log` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `mobile` varchar(20) NOT NULL DEFAULT '' COMMENT '发送号码',
   `content` varchar(255) NOT NULL DEFAULT '' COMMENT '发送内容',
   `error_msg` varchar(255) DEFAULT '' COMMENT '成功或错误记录',
@@ -6009,7 +6009,7 @@ CREATE TABLE `sm_sms_log` (
 DROP TABLE IF EXISTS `sm_sms_template`;
 
 CREATE TABLE `sm_sms_template` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL DEFAULT '' COMMENT '标题',
   `type` varchar(100) NOT NULL DEFAULT '' COMMENT '模板类型',
   `content` varchar(255) NOT NULL DEFAULT '' COMMENT '模板内容',
@@ -6042,10 +6042,10 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `sm_spec`;
 
 CREATE TABLE `sm_spec` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(50) NOT NULL DEFAULT '' COMMENT '规格名称',
   `type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '是否可以上传图片0否1是',
-  `category_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '分类id',
+  `category_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '分类id',
   `note` varchar(255) DEFAULT '' COMMENT '备注说明',
   `position` smallint(5) unsigned NOT NULL DEFAULT '999' COMMENT '排序',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -6063,8 +6063,8 @@ CREATE TABLE `sm_spec` (
 DROP TABLE IF EXISTS `sm_spec_value`;
 
 CREATE TABLE `sm_spec_value` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `spec_id` int(11) unsigned NOT NULL COMMENT '规格id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `spec_id` int(10) unsigned NOT NULL COMMENT '规格id',
   `value` varchar(200) NOT NULL DEFAULT '' COMMENT '规格值',
   `position` smallint(5) unsigned NOT NULL DEFAULT '999' COMMENT '排序',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -6082,14 +6082,14 @@ CREATE TABLE `sm_spec_value` (
 DROP TABLE IF EXISTS `sm_trade`;
 
 CREATE TABLE `sm_trade` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(11) unsigned NOT NULL COMMENT '用户id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `m_id` int(10) unsigned NOT NULL COMMENT '用户id',
   `trade_no` varchar(20) NOT NULL COMMENT '交易单号',
   `order_no` varchar(2000) NOT NULL DEFAULT '' COMMENT '订单号或充值单号',
   `type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '订单类型1订单2充值',
   `subtotal` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '需要支付金额',
   `flag` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '风险标示0正常1风险',
-  `payment_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '支付方式',
+  `payment_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '支付方式',
   `payment_no` varchar(100) DEFAULT '' COMMENT '第三方支付单号',
   `pay_total` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '第三方支付金额',
   `platform` varchar(50) DEFAULT '' COMMENT '来源平台',
@@ -6111,14 +6111,14 @@ CREATE TABLE `sm_trade` (
 DROP TABLE IF EXISTS `sm_trade_refund`;
 
 CREATE TABLE `sm_trade_refund` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(11) unsigned NOT NULL COMMENT '用户id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `m_id` int(10) unsigned NOT NULL COMMENT '用户id',
   `refund_no` varchar(20) NOT NULL COMMENT '退款单号',
   `trade_no` varchar(20) NOT NULL COMMENT '对应交易单号',
   `order_no` varchar(20) NOT NULL COMMENT '退款订单单号',
   `type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '订单类型1订单2订单3售后4充值',
   `subtotal` decimal(10,2) unsigned DEFAULT '0.00' COMMENT '退款金额',
-  `payment_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '支付方式',
+  `payment_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '支付方式',
   `payment_no` varchar(100) DEFAULT '' COMMENT '第三方支付单号',
   `platform` varchar(50) DEFAULT '' COMMENT '来源平台',
   `status` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '0待支付1已支付2失败',
@@ -6141,8 +6141,8 @@ CREATE TABLE `sm_trade_refund` (
 DROP TABLE IF EXISTS `sm_withdraw`;
 
 CREATE TABLE `sm_withdraw` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `m_id` int(11) unsigned NOT NULL COMMENT '用户id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `m_id` int(10) unsigned NOT NULL COMMENT '用户id',
   `type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '提现类型1银行2支付宝3微信',
   `amount` decimal(10,2) unsigned NOT NULL DEFAULT '0.00' COMMENT '提现金额',
   `name` varchar(100) NOT NULL DEFAULT '' COMMENT '姓名',
