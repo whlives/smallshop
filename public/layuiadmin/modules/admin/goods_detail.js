@@ -31,7 +31,7 @@ layui.define(['plupload', 'goods_sku'], function (exports) {
             if (res.file_num) {
                 let goods_image_num = $("#goods_image_list > div").length;
                 if ((goods_image_num + res.file_num) > 5) {
-                    layer.msg('商品主图最大多不能超过5张')
+                    layer.msg('商品主图最多不能超过5张')
                     return false;
                 }
             }
