@@ -152,7 +152,8 @@ class Wechat
     {
         $server = $this->app->getServer();
         $server->handlePaid(function ($message) {
-            LogService::putLog('wechat_alipay', $message);//记录回调日志
+            $message = $message->toArray();
+            LogService::putLog('pay_wechat', $message);//记录回调日志
             $transaction_id = $message['transaction_id'];
             $post_data = [
                 'query' => [

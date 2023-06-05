@@ -23,7 +23,7 @@ class LogService
     {
         //日志类型pay_alipay支付宝支付，pay_wechat微信支付，delivery_subscribe物流订阅，delivery_notify物流推送，delivery_e_order电子面单
         $type_class = [
-            'crontab', 'pay_alipay', 'pay_wechat', 'delivery_subscribe', 'delivery_notify', 'delivery_e_order'
+            '500error', 'crontab', 'pay_alipay', 'pay_wechat', 'delivery_subscribe', 'delivery_notify', 'delivery_e_order'
         ];
         if (!in_array($type, $type_class)) {
             return false;
