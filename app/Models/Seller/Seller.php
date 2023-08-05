@@ -20,6 +20,11 @@ class Seller extends BaseModel
 {
     use SoftDeletes;
 
+    protected $table = 'seller';
+    protected $guarded = ['id'];
+    protected $hidden = ['password', 'deleted_at'];
+    protected $dates = ['deleted_at'];
+
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -39,12 +44,6 @@ class Seller extends BaseModel
         self::INVOICE_OFF => '否',
         self::INVOICE_ON => '是',
     ];
-
-    protected $table = 'seller';
-    protected $guarded = ['id'];
-    protected $hidden = ['password', 'deleted_at'];
-
-    protected $dates = ['deleted_at'];
 
     /**
      * 获取商家资料

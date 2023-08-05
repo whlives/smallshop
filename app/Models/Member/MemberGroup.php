@@ -18,6 +18,10 @@ class MemberGroup extends BaseModel
 {
     use SoftDeletes;
 
+    protected $table = 'member_group';
+    protected $guarded = ['id'];
+    protected $dates = ['deleted_at'];
+
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -26,8 +30,4 @@ class MemberGroup extends BaseModel
         self::STATUS_ON => '正常',
     ];
 
-    protected $table = 'member_group';
-    protected $guarded = ['id'];
-
-    protected $dates = ['deleted_at'];
 }

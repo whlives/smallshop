@@ -18,6 +18,10 @@ class SellerBalanceDetail extends BaseModel
 {
     use SoftDeletes;
 
+    protected $table = 'seller_balance_detail';
+    protected $guarded = ['id'];
+    protected $dates = ['deleted_at'];
+
     //类型
     const TYPE_INCR = 1;//增加
     const TYPE_RECR = 2;//减少
@@ -37,7 +41,4 @@ class SellerBalanceDetail extends BaseModel
         self::EVENT_WITHDRAW_REFUND => '提现退款',
     ];
 
-    protected $table = 'seller_balance_detail';
-    protected $guarded = ['id'];
-    
 }

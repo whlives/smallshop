@@ -15,6 +15,11 @@ use App\Models\BaseModel;
  */
 class CouponsDetail extends BaseModel
 {
+    protected $table = 'coupons_detail';
+    protected $guarded = ['id'];
+    
+    public $timestamps = false;
+
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -30,11 +35,6 @@ class CouponsDetail extends BaseModel
         self::USE_OFF => '未使用',
         self::USE_ON => '已使用',
     ];
-
-    protected $table = 'coupons_detail';
-    protected $guarded = ['id'];
-
-    public $timestamps = false;
 
     /**
      * 发放优惠券

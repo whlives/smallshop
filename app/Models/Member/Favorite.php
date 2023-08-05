@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Redis;
  */
 class Favorite extends BaseModel
 {
+    protected $table = 'favorite';
+    protected $guarded = ['id'];
 
     //类型
     const TYPE_GOODS = 1;
@@ -26,9 +28,6 @@ class Favorite extends BaseModel
         self::TYPE_SELLER => '商家',
         self::TYPE_ARTICLE => '文章'
     ];
-
-    protected $table = 'favorite';
-    protected $guarded = ['id'];
 
     /**
      * redis key

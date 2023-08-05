@@ -15,7 +15,7 @@ use App\Models\BaseModel;
  */
 class SmsLog extends BaseModel
 {
-
     protected $table = 'sms_log';
     protected $guarded = ['id'];
+
 }

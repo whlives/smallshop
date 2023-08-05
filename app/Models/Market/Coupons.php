@@ -18,6 +18,11 @@ class Coupons extends BaseModel
 {
     use SoftDeletes;
 
+    protected $table = 'coupons';
+    protected $guarded = ['id'];
+    protected $hidden = ['deleted_at'];
+    protected $dates = ['deleted_at'];
+
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -50,9 +55,4 @@ class Coupons extends BaseModel
         self::OPEN_ON => '是'
     ];
 
-    protected $table = 'coupons';
-    protected $guarded = ['id'];
-    protected $hidden = ['deleted_at'];
-
-    protected $dates = ['deleted_at'];
 }

@@ -15,6 +15,11 @@ use App\Models\BaseModel;
  */
 class MemberProfile extends BaseModel
 {
+    protected $table = 'member_profile';
+    protected $guarded = [];
+
+    public $timestamps = false;
+    
     //性别
     const SEX_UNKNOWN = 0;
     const SEX_BOY = 1;
@@ -25,8 +30,4 @@ class MemberProfile extends BaseModel
         self::SEX_GIRL => '女',
     ];
 
-    protected $table = 'member_profile';
-    protected $guarded = [];
-
-    public $timestamps = false;
 }

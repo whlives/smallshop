@@ -20,7 +20,6 @@ class SpecValue extends BaseModel
 
     protected $table = 'spec_value';
     protected $guarded = ['id'];
-
     protected $dates = ['deleted_at'];
 
 }

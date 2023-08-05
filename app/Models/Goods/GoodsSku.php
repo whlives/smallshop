@@ -16,6 +16,10 @@ use Illuminate\Support\Facades\Cache;
  */
 class GoodsSku extends BaseModel
 {
+    protected $table = 'goods_sku';
+    protected $guarded = ['id'];
+    
+    public $timestamps = false;
 
     //状态
     const STATUS_DEL = 99;
@@ -24,11 +28,6 @@ class GoodsSku extends BaseModel
         self::STATUS_DEL => '删除',
         self::STATUS_ON => '正常',
     ];
-
-    protected $table = 'goods_sku';
-    protected $guarded = ['id'];
-
-    public $timestamps = false;
 
     /**
      * 获取商品sku缓存信息

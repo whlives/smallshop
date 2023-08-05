@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\DB;
  */
 class BalanceRecharge extends BaseModel
 {
+    protected $table = 'balance_recharge';
+    protected $guarded = ['id'];
 
     //状态
     const STATUS_OFF = 0;
@@ -32,9 +34,6 @@ class BalanceRecharge extends BaseModel
         self::FLAG_NO => '正常',
         self::FLAG_YES => '风险'
     ];
-
-    protected $table = 'balance_recharge';
-    protected $guarded = ['id'];
 
     /**
      * 生成充值单号

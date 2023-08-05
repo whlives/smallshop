@@ -15,6 +15,8 @@ use App\Models\BaseModel;
  */
 class SellerWithdraw extends BaseModel
 {
+    protected $table = 'seller_withdraw';
+    protected $guarded = ['id'];
 
     //状态
     const STATUS_OFF = 0;
@@ -44,9 +46,6 @@ class SellerWithdraw extends BaseModel
         self::TYPE_ALIPAY => '支付宝',
         self::TYPE_WECHAR => '微信',
     ];
-
-    protected $table = 'seller_withdraw';
-    protected $guarded = ['id'];
 
     /**
      * 生成提现单号

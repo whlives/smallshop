@@ -16,7 +16,9 @@ use App\Models\Member\Member;
  */
 class RefundLog extends BaseModel
 {
-
+    protected $table = 'refund_log';
+    protected $guarded = ['id'];
+    
     //用户类型
     const USER_TYPE_MEMBER = 0;
     const USER_TYPE_SYSTEM = 1;
@@ -47,9 +49,6 @@ class RefundLog extends BaseModel
         self::ACTION_CANCEL => '取消',
         self::ACTION_EDIT => '修改',
     ];
-
-    protected $table = 'refund_log';
-    protected $guarded = ['id'];
 
     /**
      * 获取售后日志

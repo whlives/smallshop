@@ -18,6 +18,10 @@ class GoodsPackage extends BaseModel
 {
     use SoftDeletes;
 
+    protected $table = 'goods_package';
+    protected $guarded = ['id'];
+    protected $dates = ['deleted_at'];
+
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -25,10 +29,5 @@ class GoodsPackage extends BaseModel
         self::STATUS_OFF => '锁定',
         self::STATUS_ON => '正常',
     ];
-
-    protected $table = 'goods_package';
-    protected $guarded = ['id'];
-
-    protected $dates = ['deleted_at'];
 
 }

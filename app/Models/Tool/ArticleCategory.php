@@ -15,6 +15,9 @@ use App\Models\BaseModel;
  */
 class ArticleCategory extends BaseModel
 {
+    protected $table = 'article_category';
+    protected $guarded = ['id'];
+    
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -24,9 +27,6 @@ class ArticleCategory extends BaseModel
     ];
 
     const MAX_HIERARCHY = 2;//最大层级
-
-    protected $table = 'article_category';
-    protected $guarded = ['id'];
 
     /**
      * 获取指定上级id下的所有菜单，按上下级排列（后台管理）

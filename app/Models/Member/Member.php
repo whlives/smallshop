@@ -20,6 +20,11 @@ class Member extends BaseModel
 {
     use SoftDeletes;
 
+    protected $table = 'member';
+    protected $guarded = ['id'];
+    protected $hidden = ['password', 'pay_password', 'deleted_at'];
+    protected $dates = ['deleted_at'];
+
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -27,12 +32,6 @@ class Member extends BaseModel
         self::STATUS_OFF => '锁定',
         self::STATUS_ON => '正常',
     ];
-
-    protected $table = 'member';
-    protected $guarded = ['id'];
-    protected $hidden = ['password', 'pay_password', 'deleted_at'];
-
-    protected $dates = ['deleted_at'];
 
     /**
      * 获取会员资料

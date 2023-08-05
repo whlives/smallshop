@@ -15,6 +15,9 @@ use App\Models\BaseModel;
  */
 class MemberAuth extends BaseModel
 {
+    protected $table = 'member_auth';
+    protected $guarded = ['id'];
+    
     //类型
     const TYPE_WECHAT = 1;
     const TYPE_WEIBO = 2;
@@ -25,6 +28,4 @@ class MemberAuth extends BaseModel
         self::TYPE_QQ => 'qq',
     ];
 
-    protected $table = 'member_auth';
-    protected $guarded = ['id'];
 }

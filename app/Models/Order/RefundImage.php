@@ -15,7 +15,6 @@ use App\Models\BaseModel;
  */
 class RefundImage extends BaseModel
 {
-
     protected $table = 'refund_image';
     protected $guarded = ['id'];
 

@@ -15,7 +15,11 @@ use App\Models\BaseModel;
  */
 class OrderInvoice extends BaseModel
 {
+    protected $table = 'order_invoice';
+    protected $guarded = ['id'];
 
+    public $timestamps = false;
+    
     //类型
     const TYPE_PERSONAL = 1;
     const TYPE_ENTERPRISE = 2;
@@ -23,10 +27,5 @@ class OrderInvoice extends BaseModel
         self::TYPE_PERSONAL => '个人',
         self::TYPE_ENTERPRISE => '企业'
     ];
-
-    protected $table = 'order_invoice';
-    protected $guarded = ['id'];
-
-    public $timestamps = false;
 
 }

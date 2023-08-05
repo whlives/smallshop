@@ -15,6 +15,11 @@ use App\Models\BaseModel;
  */
 class SellerProfile extends BaseModel
 {
+    protected $table = 'seller_profile';
+    protected $guarded = [];
+
+    public $timestamps = false;
+    
     //性别
     const SEX_UNKNOWN = 0;
     const SEX_BOY = 1;
@@ -25,8 +30,4 @@ class SellerProfile extends BaseModel
         self::SEX_GIRL => '女',
     ];
 
-    protected $table = 'seller_profile';
-    protected $guarded = [];
-
-    public $timestamps = false;
 }

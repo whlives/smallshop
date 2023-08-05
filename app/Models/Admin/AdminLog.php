@@ -15,6 +15,9 @@ use App\Models\BaseModel;
  */
 class AdminLog extends BaseModel
 {
+    protected $table = 'admin_log';
+    protected $guarded = ['id'];
+    
     //保存方式
     const LOG_TYPE_MYSQL = 1;
     const LOG_TYPE_FILE = 2;
@@ -23,6 +26,4 @@ class AdminLog extends BaseModel
         self::LOG_TYPE_FILE => '文件',
     ];
 
-    protected $table = 'admin_log';
-    protected $guarded = ['id'];
 }

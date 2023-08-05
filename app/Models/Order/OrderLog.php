@@ -15,7 +15,9 @@ use App\Models\BaseModel;
  */
 class OrderLog extends BaseModel
 {
-
+    protected $table = 'order_log';
+    protected $guarded = ['id'];
+    
     //用户类型
     const USER_TYPE_MEMBER = 0;
     const USER_TYPE_SYSTEM = 1;
@@ -44,8 +46,5 @@ class OrderLog extends BaseModel
         self::ACTION_CANCEL => '取消',
         self::ACTION_EDIT => '修改',
     ];
-
-    protected $table = 'order_log';
-    protected $guarded = ['id'];
 
 }

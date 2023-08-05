@@ -15,7 +15,6 @@ use App\Models\BaseModel;
  */
 class OrderDelivery extends BaseModel
 {
-
     protected $table = 'order_delivery';
     protected $guarded = ['id'];
 

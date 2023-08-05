@@ -29,6 +29,11 @@ class Goods extends BaseModel
 {
     use SoftDeletes;
 
+    protected $table = 'goods';
+    protected $guarded = ['id'];
+    protected $hidden = ['deleted_at'];
+    protected $dates = ['deleted_at'];
+
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -77,12 +82,6 @@ class Goods extends BaseModel
         self::PROMO_TYPE_SECKILL => '秒杀',
         self::PROMO_TYPE_GROUP => '拼团',
     ];
-
-    protected $table = 'goods';
-    protected $guarded = ['id'];
-    protected $hidden = ['deleted_at'];
-
-    protected $dates = ['deleted_at'];
 
     /**
      * 获取详情

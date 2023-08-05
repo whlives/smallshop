@@ -15,6 +15,9 @@ use App\Models\BaseModel;
  */
 class ExpressCompany extends BaseModel
 {
+    protected $table = 'express_company';
+    protected $guarded = ['id'];
+    
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -24,7 +27,5 @@ class ExpressCompany extends BaseModel
     ];
 
     const NOT_DELIVERY = 1;//无需物流的快递id
-    protected $table = 'express_company';
-    protected $guarded = ['id'];
 
 }

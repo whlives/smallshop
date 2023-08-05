@@ -18,6 +18,10 @@ class PointDetail extends BaseModel
 {
     use SoftDeletes;
 
+    protected $table = 'point_detail';
+    protected $guarded = ['id'];
+    protected $dates = ['deleted_at'];
+
     //类型
     const TYPE_INCR = 1;//增加
     const TYPE_RECR = 2;//减少
@@ -49,7 +53,4 @@ class PointDetail extends BaseModel
         self::EVENT_GOODS_EXCHANGE => '兑换商品',
     ];
 
-    protected $table = 'point_detail';
-    protected $guarded = ['id'];
-    
 }

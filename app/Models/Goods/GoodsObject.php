@@ -17,7 +17,6 @@ use App\Models\Market\CouponsDetail;
  */
 class GoodsObject extends BaseModel
 {
-
     protected $table = 'goods_object';
     protected $guarded = ['id'];
 

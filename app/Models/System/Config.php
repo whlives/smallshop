@@ -17,4 +17,5 @@ class Config extends BaseModel
 {
     protected $table = 'config';
     protected $guarded = ['id'];
+    
 }

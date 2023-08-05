@@ -15,6 +15,9 @@ use App\Models\BaseModel;
  */
 class Refund extends BaseModel
 {
+    protected $table = 'refund';
+    protected $guarded = ['id'];
+
     //状态
     const STATUS_WAIT_APPROVE = 0;
     const STATUS_REFUSED_APPROVE = 1;
@@ -114,9 +117,6 @@ class Refund extends BaseModel
         self::IS_DELETE_NO => '否',
         self::IS_DELETE_YES => '是',
     ];
-
-    protected $table = 'refund';
-    protected $guarded = ['id'];
 
     /**
      * 获取订单信息

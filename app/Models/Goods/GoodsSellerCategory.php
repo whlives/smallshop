@@ -15,7 +15,6 @@ use App\Models\BaseModel;
  */
 class GoodsSellerCategory extends BaseModel
 {
-
     protected $table = 'goods_seller_category';
     protected $guarded = ['id'];
 

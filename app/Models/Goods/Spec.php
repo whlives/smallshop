@@ -18,17 +18,16 @@ class Spec extends BaseModel
 {
     use SoftDeletes;
 
+    protected $table = 'spec';
+    protected $guarded = ['id'];
+    protected $dates = ['deleted_at'];
+
     const TYPE_IMAGE_OFF = 0;
     const TYPE_IMAGE_ON = 1;
     const TYPE_IMAGE_DESC = [
         self::TYPE_IMAGE_OFF => '否',
         self::TYPE_IMAGE_ON => '是'
     ];
-
-    protected $table = 'spec';
-    protected $guarded = ['id'];
-
-    protected $dates = ['deleted_at'];
 
     /**
      * 获取规格值

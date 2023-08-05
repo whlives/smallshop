@@ -15,6 +15,9 @@ use App\Models\BaseModel;
  */
 class AdminRight extends BaseModel
 {
+    protected $table = 'admin_right';
+    protected $guarded = ['id'];
+    
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -23,6 +26,4 @@ class AdminRight extends BaseModel
         self::STATUS_ON => '正常',
     ];
 
-    protected $table = 'admin_right';
-    protected $guarded = ['id'];
 }

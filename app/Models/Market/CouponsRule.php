@@ -15,6 +15,9 @@ use App\Models\BaseModel;
  */
 class CouponsRule extends BaseModel
 {
+    protected $table = 'coupons_rule';
+    protected $guarded = ['id'];
+    
     //类型
     const TYPE_GOODS = 1;//商品
     const TYPE_BRAND = 2;//品牌
@@ -39,6 +42,4 @@ class CouponsRule extends BaseModel
         self::IN_TYPE_OUT => '排除',
     ];
 
-    protected $table = 'coupons_rule';
-    protected $guarded = ['id'];
 }

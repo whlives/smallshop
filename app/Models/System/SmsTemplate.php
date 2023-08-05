@@ -15,6 +15,9 @@ use App\Models\BaseModel;
  */
 class SmsTemplate extends BaseModel
 {
+    protected $table = 'sms_template';
+    protected $guarded = ['id'];
+    
     //短息类型
     const TYPE_LOGIN = 'login';
     const TYPE_REGISTER = 'register';
@@ -32,6 +35,5 @@ class SmsTemplate extends BaseModel
         self::TYPE_ADMIN_LOGIN_NOTICE => '管理员登录提醒',
         self::TYPE_SELLER_LOGIN => '商户登录'
     ];
-    protected $table = 'sms_template';
-    protected $guarded = ['id'];
+
 }

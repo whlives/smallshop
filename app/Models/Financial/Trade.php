@@ -18,6 +18,10 @@ class Trade extends BaseModel
 {
     use SoftDeletes;
 
+    protected $table = 'trade';
+    protected $guarded = ['id'];
+    protected $dates = ['deleted_at'];
+
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -45,8 +49,5 @@ class Trade extends BaseModel
         self::FLAG_NO => '正常',
         self::FLAG_YES => '风险'
     ];
-
-    protected $table = 'trade';
-    protected $guarded = ['id'];
 
 }

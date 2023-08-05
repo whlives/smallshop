@@ -15,6 +15,9 @@ use App\Models\BaseModel;
  */
 class FileLog extends BaseModel
 {
+    protected $table = 'file_log';
+    protected $guarded = ['id'];
+    
     //状态
     const TYPE_FILE = 0;
     const TYPE_ALIYUN = 1;
@@ -23,6 +26,4 @@ class FileLog extends BaseModel
         self::TYPE_ALIYUN => '阿里云',
     ];
 
-    protected $table = 'file_log';
-    protected $guarded = ['id'];
 }

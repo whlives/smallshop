@@ -20,6 +20,9 @@ class Order extends BaseModel
 {
     use SoftDeletes;
 
+    protected $table = 'order';
+    protected $guarded = ['id'];
+
     //状态
     const STATUS_WAIT_PAY = 0;
     const STATUS_PAID = 1;
@@ -90,9 +93,6 @@ class Order extends BaseModel
         self::IS_SETTLEMENT_NO => '否',
         self::IS_SETTLEMENT_YES => '是',
     ];
-
-    protected $table = 'order';
-    protected $guarded = ['id'];
 
     /**
      * 获取商品

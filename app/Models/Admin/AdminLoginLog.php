@@ -16,6 +16,9 @@ use App\Services\TokenService;
  */
 class AdminLoginLog extends BaseModel
 {
+    protected $table = 'admin_login_log';
+    protected $guarded = ['id'];
+    
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -23,9 +26,6 @@ class AdminLoginLog extends BaseModel
         self::STATUS_OFF => '下线',
         self::STATUS_ON => '在线',
     ];
-
-    protected $table = 'admin_login_log';
-    protected $guarded = ['id'];
 
     /**
      * 锁定用户的时候清除用户登录状态

@@ -15,7 +15,9 @@ use App\Models\BaseModel;
  */
 class Address extends BaseModel
 {
-
+    protected $table = 'address';
+    protected $guarded = ['id'];
+    
     //是否默认
     const DEFAULT_OFF = 0;
     const DEFAULT_ON = 1;
@@ -24,6 +26,4 @@ class Address extends BaseModel
         self::DEFAULT_ON => '是'
     ];
 
-    protected $table = 'address';
-    protected $guarded = ['id'];
 }

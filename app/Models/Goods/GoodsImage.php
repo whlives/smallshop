@@ -15,7 +15,6 @@ use App\Models\BaseModel;
  */
 class GoodsImage extends BaseModel
 {
-
     protected $table = 'goods_image';
     protected $guarded = ['id'];
 

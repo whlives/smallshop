@@ -19,6 +19,11 @@ class Payment extends BaseModel
 {
     use SoftDeletes;
 
+    protected $table = 'payment';
+    protected $guarded = ['id'];
+    protected $hidden = ['deleted_at'];
+    protected $dates = ['deleted_at'];
+
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -62,12 +67,6 @@ class Payment extends BaseModel
         self::PAYMENT_ALIPAY => '支付宝',
         self::PAYMENT_UNIONPAY => '银联',
     ];
-
-    protected $table = 'payment';
-    protected $guarded = ['id'];
-    protected $hidden = ['deleted_at'];
-
-    protected $dates = ['deleted_at'];
 
     /**
      * 获取支付方式

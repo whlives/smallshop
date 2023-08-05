@@ -15,7 +15,10 @@ use App\Models\BaseModel;
  */
 class CommentUrl extends BaseModel
 {
-
+    protected $table = 'comment_url';
+    protected $guarded = ['id'];
+    
+    public $timestamps = false;
     //状态
     const TYPE_IMAGE = 1;
     const TYPE_VIDEO = 2;
@@ -23,10 +26,5 @@ class CommentUrl extends BaseModel
         self::TYPE_IMAGE => '图片',
         self::TYPE_VIDEO => '视频',
     ];
-
-    protected $table = 'comment_url';
-    protected $guarded = ['id'];
-
-    public $timestamps = false;
 
 }

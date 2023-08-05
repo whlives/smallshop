@@ -15,6 +15,9 @@ use App\Models\BaseModel;
  */
 class AdvGroup extends BaseModel
 {
+    protected $table = 'adv_group';
+    protected $guarded = ['id'];
+    
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -22,8 +25,5 @@ class AdvGroup extends BaseModel
         self::STATUS_OFF => '锁定',
         self::STATUS_ON => '正常',
     ];
-
-    protected $table = 'adv_group';
-    protected $guarded = ['id'];
 
 }

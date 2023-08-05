@@ -15,7 +15,7 @@ use App\Models\BaseModel;
  */
 class DeliveryTraces extends BaseModel
 {
-
     protected $table = 'delivery_traces';
     protected $guarded = ['id'];
+
 }

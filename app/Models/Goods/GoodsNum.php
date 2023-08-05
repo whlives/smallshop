@@ -15,7 +15,6 @@ use App\Models\BaseModel;
  */
 class GoodsNum extends BaseModel
 {
-
     protected $table = 'goods_num';
     protected $guarded = ['id'];
 

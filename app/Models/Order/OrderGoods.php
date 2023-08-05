@@ -15,6 +15,8 @@ use App\Models\BaseModel;
  */
 class OrderGoods extends BaseModel
 {
+    protected $table = 'order_goods';
+    protected $guarded = ['id'];
 
     //售后状态
     const REFUND_NO = 0;//没有售后
@@ -37,9 +39,6 @@ class OrderGoods extends BaseModel
         self::DELIVERY_OFF => '待发货',
         self::DELIVERY_ON => '已发货'
     ];
-
-    protected $table = 'order_goods';
-    protected $guarded = ['id'];
 
     /**
      * 根据订单id获取订单商品信息

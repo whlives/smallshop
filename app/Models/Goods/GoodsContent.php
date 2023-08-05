@@ -15,7 +15,6 @@ use App\Models\BaseModel;
  */
 class GoodsContent extends BaseModel
 {
-
     protected $table = 'goods_content';
     protected $guarded = ['id'];
 

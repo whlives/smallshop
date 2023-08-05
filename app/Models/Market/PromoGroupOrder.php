@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\DB;
  */
 class PromoGroupOrder extends BaseModel
 {
+    protected $table = 'promo_group_order';
+    protected $guarded = ['id'];
+    
     //状态
     const STATUS_WAIT_PAY = 0;
     const STATUS_WAIT_SUCCESS = 1;
@@ -36,9 +39,6 @@ class PromoGroupOrder extends BaseModel
         self::IS_HEAD_NO => '否',
         self::IS_HEAD_YES => '是',
     ];
-
-    protected $table = 'promo_group_order';
-    protected $guarded = ['id'];
 
     /**
      * 提交拼团订单

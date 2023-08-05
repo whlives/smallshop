@@ -18,6 +18,10 @@ class Delivery extends BaseModel
 {
     use SoftDeletes;
 
+    protected $table = 'delivery';
+    protected $guarded = ['id'];
+    protected $dates = ['deleted_at'];
+
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -57,10 +61,5 @@ class Delivery extends BaseModel
         self::FREE_TYPE_MONEY => '按金额',
         self::FREE_TYPE_NUMBER => '按件数'
     ];
-
-    protected $table = 'delivery';
-    protected $guarded = ['id'];
-
-    protected $dates = ['deleted_at'];
 
 }

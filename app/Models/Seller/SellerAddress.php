@@ -15,6 +15,9 @@ use App\Models\BaseModel;
  */
 class SellerAddress extends BaseModel
 {
+    protected $table = 'seller_address';
+    protected $guarded = ['id'];
+    
     //是否默认
     const DEFAULT_OFF = 0;
     const DEFAULT_ON = 1;
@@ -23,6 +26,4 @@ class SellerAddress extends BaseModel
         self::DEFAULT_ON => '是'
     ];
 
-    protected $table = 'seller_address';
-    protected $guarded = ['id'];
 }

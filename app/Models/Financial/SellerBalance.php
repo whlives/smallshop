@@ -21,6 +21,7 @@ class SellerBalance extends BaseModel
 
     protected $table = 'seller_balance';
     protected $guarded = ['id'];
+    protected $dates = ['deleted_at'];
 
     /**
      * 修改现金账户并记录详情

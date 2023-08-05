@@ -15,7 +15,9 @@ use App\Models\BaseModel;
  */
 class RefundDelivery extends BaseModel
 {
-
+    protected $table = 'refund_delivery';
+    protected $guarded = ['id'];
+    
     //状态
     const TYPE_MEMBER = 1;
     const TYPE_SELLER = 2;
@@ -24,8 +26,5 @@ class RefundDelivery extends BaseModel
         self::TYPE_MEMBER => '用户',
         self::TYPE_SELLER => '商家',
     ];
-
-    protected $table = 'refund_delivery';
-    protected $guarded = ['id'];
 
 }

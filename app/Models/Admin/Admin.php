@@ -18,6 +18,11 @@ class Admin extends BaseModel
 {
     use SoftDeletes;
 
+    protected $table = 'admin';
+    protected $guarded = ['id'];
+    protected $hidden = ['password', 'deleted_at'];
+    protected $dates = ['deleted_at'];
+
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -26,9 +31,4 @@ class Admin extends BaseModel
         self::STATUS_ON => '正常',
     ];
 
-    protected $table = 'admin';
-    protected $guarded = ['id'];
-    protected $hidden = ['password', 'deleted_at'];
-
-    protected $dates = ['deleted_at'];
 }

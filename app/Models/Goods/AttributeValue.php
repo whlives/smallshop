@@ -20,7 +20,6 @@ class AttributeValue extends BaseModel
 
     protected $table = 'attribute_value';
     protected $guarded = ['id'];
-
     protected $dates = ['deleted_at'];
 
 }

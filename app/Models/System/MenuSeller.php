@@ -15,6 +15,9 @@ use App\Models\BaseModel;
  */
 class MenuSeller extends BaseModel
 {
+    protected $table = 'menu_seller';
+    protected $guarded = ['id'];
+    
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -24,9 +27,6 @@ class MenuSeller extends BaseModel
     ];
 
     const MAX_HIERARCHY = 2;//最大层级
-
-    protected $table = 'menu_seller';
-    protected $guarded = ['id'];
 
     /**
      * 获取指定上级id下的所有菜单，按上下级排列(获取管理菜单)

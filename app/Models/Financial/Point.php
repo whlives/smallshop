@@ -21,6 +21,7 @@ class Point extends BaseModel
 
     protected $table = 'point';
     protected $guarded = ['id'];
+    protected $dates = ['deleted_at'];
 
     /**
      * 修改积分账户并记录详情

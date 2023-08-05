@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\DB;
  */
 class Article extends BaseModel
 {
+    protected $table = 'article';
+    protected $guarded = ['id'];
+    
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -24,9 +27,6 @@ class Article extends BaseModel
         self::STATUS_ON => '正常',
 
     ];
-
-    protected $table = 'article';
-    protected $guarded = ['id'];
 
     /**
      * 获取详情

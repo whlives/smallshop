@@ -18,6 +18,10 @@ class Attribute extends BaseModel
 {
     use SoftDeletes;
 
+    protected $table = 'attribute';
+    protected $guarded = ['id'];
+    protected $dates = ['deleted_at'];
+
     const INPUT_TYPE_SELECT = 'select';
     const INPUT_TYPE_CHECKBOX = 'checkbox';
     const INPUT_TYPE_RADIO = 'radio';
@@ -28,11 +32,6 @@ class Attribute extends BaseModel
         self::INPUT_TYPE_RADIO => '单选',
         self::INPUT_TYPE_TEXT => '文本框'
     ];
-
-    protected $table = 'attribute';
-    protected $guarded = ['id'];
-
-    protected $dates = ['deleted_at'];
 
     /**
      * 获取属性值

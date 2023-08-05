@@ -18,6 +18,10 @@ class Category extends BaseModel
 {
     use SoftDeletes;
 
+    protected $table = 'category';
+    protected $guarded = ['id'];
+    protected $dates = ['deleted_at'];
+
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -27,11 +31,6 @@ class Category extends BaseModel
     ];
 
     const MAX_HIERARCHY = 3;//最大层级
-
-    protected $table = 'category';
-    protected $guarded = ['id'];
-
-    protected $dates = ['deleted_at'];
 
     /**
      * 获取指定上级id下的所有菜单，按上下级排列（后台管理）

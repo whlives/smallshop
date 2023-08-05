@@ -18,6 +18,10 @@ class BalanceDetail extends BaseModel
 {
     use SoftDeletes;
 
+    protected $table = 'balance_detail';
+    protected $guarded = ['id'];
+    protected $dates = ['deleted_at'];
+
     //类型
     const TYPE_INCR = 1;//增加
     const TYPE_RECR = 2;//减少
@@ -43,7 +47,4 @@ class BalanceDetail extends BaseModel
         self::EVENT_POUNDAGE => '手续费',
     ];
 
-    protected $table = 'balance_detail';
-    protected $guarded = ['id'];
-    
 }

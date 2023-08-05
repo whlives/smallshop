@@ -15,6 +15,9 @@ use App\Models\BaseModel;
  */
 class Adv extends BaseModel
 {
+    protected $table = 'adv';
+    protected $guarded = ['id'];
+    
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -38,9 +41,6 @@ class Adv extends BaseModel
         self::TARGET_TYPE_MINI_PROGRAM_PATH => '小程序地址',
         self::TARGET_TYPE_OTHER_MINI_PROGRAM_PATH => '外部小程序地址',
     ];
-
-    protected $table = 'adv';
-    protected $guarded = ['id'];
 
     /**
      * 获取广告

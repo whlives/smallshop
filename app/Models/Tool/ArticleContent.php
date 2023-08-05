@@ -15,6 +15,11 @@ use App\Models\BaseModel;
  */
 class ArticleContent extends BaseModel
 {
+    protected $table = 'article_content';
+    protected $guarded = [];
+
+    public $timestamps = false;
+    
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -23,10 +28,5 @@ class ArticleContent extends BaseModel
         self::STATUS_ON => '正常',
 
     ];
-
-    protected $table = 'article_content';
-    protected $guarded = [];
-
-    public $timestamps = false;
 
 }

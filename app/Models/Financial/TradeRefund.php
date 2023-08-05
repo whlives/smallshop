@@ -18,6 +18,10 @@ class TradeRefund extends BaseModel
 {
     use SoftDeletes;
 
+    protected $table = 'trade_refund';
+    protected $guarded = ['id'];
+    protected $dates = ['deleted_at'];
+
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -39,8 +43,5 @@ class TradeRefund extends BaseModel
         self::TYPE_REFUND => '售后单',
         self::TYPE_RECHARGE => '充值'
     ];
-
-    protected $table = 'trade_refund';
-    protected $guarded = ['id'];
 
 }

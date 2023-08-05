@@ -18,6 +18,9 @@ use App\Models\Member\Member;
  */
 class Promotion extends BaseModel
 {
+    protected $table = 'promotion';
+    protected $guarded = ['id'];
+    
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -53,9 +56,6 @@ class Promotion extends BaseModel
         self::REG_TYPE_POINT => '赠送积分',
         self::REG_TYPE_COUPONS => '赠送优惠券',
     ];
-
-    protected $table = 'promotion';
-    protected $guarded = ['id'];
 
     /**
      * 注册奖励活动

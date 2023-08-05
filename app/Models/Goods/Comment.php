@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\DB;
  */
 class Comment extends BaseModel
 {
+    protected $table = 'comment';
+    protected $guarded = ['id'];
 
     //状态
     const STATUS_OFF = 0;
@@ -32,9 +34,6 @@ class Comment extends BaseModel
     //是否有视频
     const IS_VIDEO_TRUE = 1;
     const IS_VIDEO_FALSE = 0;
-
-    protected $table = 'comment';
-    protected $guarded = ['id'];
 
     /**
      * 获取图片

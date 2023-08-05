@@ -15,6 +15,9 @@ use App\Models\BaseModel;
  */
 class Cart extends BaseModel
 {
+    protected $table = 'cart';
+    protected $guarded = ['id'];
+    
     //购买类型
     const TYPE_CART = 1;
     const TYPE_NOW = 2;
@@ -22,9 +25,6 @@ class Cart extends BaseModel
         self::TYPE_CART => '购物车',
         self::TYPE_NOW => '立即购买',
     ];
-
-    protected $table = 'cart';
-    protected $guarded = ['id'];
 
     /**
      * 删除购物车商品
