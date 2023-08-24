@@ -41,7 +41,7 @@ class WithdrawController extends BaseController
         ];
         $status = $request->input('status');
         if (is_numeric($status)) $where[] = ['status', $status];
-        $query = SellerWithdraw::select('id', 'm_id', 'type', 'amount', 'name', 'bank_name', 'pay_number', 'refuse_note', 'status', 'created_at', 'done_at')
+        $query = SellerWithdraw::query()->select('id', 'm_id', 'type', 'amount', 'name', 'bank_name', 'pay_number', 'refuse_note', 'status', 'created_at', 'done_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('status', 'asc')

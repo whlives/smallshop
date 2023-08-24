@@ -29,7 +29,7 @@ class RoleController extends BaseController
         $where = [];
         $title = $request->input('title');
         if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
-        $query = AdminRole::select('id', 'title', 'created_at', 'status')
+        $query = AdminRole::query()->select('id', 'title', 'created_at', 'status')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -58,7 +58,7 @@ class RoleController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = AdminRole::find($id);
+        $data = AdminRole::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -105,9 +105,9 @@ class RoleController extends BaseController
         }
         $save_data['right'] = json_encode($right);
         if ($id) {
-            $res = AdminRole::where('id', $id)->update($save_data);
+            $res = AdminRole::query()->where('id', $id)->update($save_data);
         } else {
-            $res = AdminRole::create($save_data);
+            $res = AdminRole::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -129,7 +129,7 @@ class RoleController extends BaseController
         if (!isset(AdminRole::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $res = AdminRole::whereIn('id', $ids)->update(['status' => $status]);
+        $res = AdminRole::query()->whereIn('id', $ids)->update(['status' => $status]);
         if ($res) {
             return $this->success();
         } else {
@@ -149,7 +149,7 @@ class RoleController extends BaseController
         if (in_array(1, $ids)) {
             api_error(__('admin.admin_role_no_del'));
         }
-        $res = AdminRole::whereIn('id', $ids)->delete();
+        $res = AdminRole::query()->whereIn('id', $ids)->delete();
         if ($res) {
             return $this->success();
         } else {
@@ -164,7 +164,7 @@ class RoleController extends BaseController
      */
     public function select(Request $request)
     {
-        $res_list = AdminRole::select('id', 'title')->where('status', AdminRole::STATUS_ON)->get();
+        $res_list = AdminRole::query()->select('id', 'title')->where('status', AdminRole::STATUS_ON)->get();
         return $this->success($res_list);
     }
 }

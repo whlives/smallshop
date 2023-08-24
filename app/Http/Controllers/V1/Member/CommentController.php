@@ -37,7 +37,7 @@ class CommentController extends BaseController
             'm_id' => $this->m_id,
             'status' => Comment::STATUS_ON
         ];
-        $query = Comment::select('id', 'goods_id', 'spec_value', 'level', 'content', 'created_at')
+        $query = Comment::query()->select('id', 'goods_id', 'spec_value', 'level', 'content', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -51,13 +51,13 @@ class CommentController extends BaseController
         $goods_ids = array_column($res_list, 'goods_id');
         $comment_ids = array_column($res_list, 'id');
         //查询商品信息
-        $goods_res = Goods::select('id', 'title', 'image')->whereIn('id', array_unique($goods_ids))->get();
+        $goods_res = Goods::query()->select('id', 'title', 'image')->whereIn('id', array_unique($goods_ids))->get();
         if (!$goods_res->isEmpty()) {
             $goods_res = array_column($goods_res->toArray(), null, 'id');
         }
         //查询图片、视频信息
         $image_url = $video_url = [];
-        $url_res = CommentUrl::select('comment_id', 'url', 'type')->whereIn('comment_id', array_unique($comment_ids))->get();
+        $url_res = CommentUrl::query()->select('comment_id', 'url', 'type')->whereIn('comment_id', array_unique($comment_ids))->get();
         if (!$url_res->isEmpty()) {
             foreach ($url_res as $value) {
                 if ($value['type'] == CommentUrl::TYPE_IMAGE) {

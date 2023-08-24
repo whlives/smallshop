@@ -48,7 +48,7 @@ class GoodsController extends BaseController
         if (is_numeric($shelves_status)) $where[] = ['shelves_status', $shelves_status];
         if (is_numeric($is_rem)) $where[] = ['is_rem', $is_rem];
         if ($type) $where[] = ['type', $type];
-        $query = Goods::select('id', 'title', 'image', 'sell_price', 'market_price', 'is_rem', 'category_id', 'type', 'shelves_status', 'status', 'position', 'created_at')
+        $query = Goods::query()->select('id', 'title', 'image', 'sell_price', 'market_price', 'is_rem', 'category_id', 'type', 'shelves_status', 'status', 'position', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -60,7 +60,7 @@ class GoodsController extends BaseController
         }
         $category_ids = array_column($res_list->toArray(), 'category_id');
         if ($category_ids) {
-            $category = Category::whereIn('id', array_unique($category_ids))->pluck('title', 'id');
+            $category = Category::query()->whereIn('id', array_unique($category_ids))->pluck('title', 'id');
         }
         $data_list = [];
         foreach ($res_list as $value) {
@@ -88,15 +88,15 @@ class GoodsController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = Goods::find($id);
+        $data = Goods::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
         $data['goods_image'] = $data->image()->pluck('url')->toArray();//查询商品图片
         $data['content'] = $data->content()->value('content');
         $data['type_title'] = Goods::TYPE_DESC[$data['type']];
-        $data['category_title'] = Category::where('id', $data['category_id'])->value('title');
-        $data['object_id'] = GoodsObject::where('goods_id', $id)->value('object_id');
+        $data['category_title'] = Category::query()->where('id', $data['category_id'])->value('title');
+        $data['object_id'] = GoodsObject::query()->where('goods_id', $id)->value('object_id');
         return $this->success($data);
     }
 
@@ -132,7 +132,7 @@ class GoodsController extends BaseController
         if (!isset(Goods::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $res = Goods::whereIn('id', $ids)->update(['status' => $status, 'shelves_status' => Goods::SHELVES_STATUS_OFF]);
+        $res = Goods::query()->whereIn('id', $ids)->update(['status' => $status, 'shelves_status' => Goods::SHELVES_STATUS_OFF]);
         if ($res) {
             Goods::delGoodsCache($ids);//清除商品缓存
             return $this->success();
@@ -155,10 +155,10 @@ class GoodsController extends BaseController
             api_error(__('admin.missing_params'));
         }
         if ($status == Goods::SHELVES_STATUS_ON) {
-            $res = Goods::whereIn('id', $ids)->where('status', Goods::STATUS_ON)->update(['shelves_status' => $status, 'shelves_at' => get_date()]);
+            $res = Goods::query()->whereIn('id', $ids)->where('status', Goods::STATUS_ON)->update(['shelves_status' => $status, 'shelves_at' => get_date()]);
             $error_msg = __('admin.goods_shelves_status_fail');
         } else {
-            $res = Goods::whereIn('id', $ids)->update(['shelves_status' => $status]);
+            $res = Goods::query()->whereIn('id', $ids)->update(['shelves_status' => $status]);
             $error_msg = __('admin.fail');
         }
         if ($res) {
@@ -182,7 +182,7 @@ class GoodsController extends BaseController
         if (!isset(Goods::REM_DESC[$is_rem])) {
             api_error(__('admin.missing_params'));
         }
-        $res = Goods::whereIn('id', $ids)->update(['is_rem' => $is_rem]);
+        $res = Goods::query()->whereIn('id', $ids)->update(['is_rem' => $is_rem]);
         if ($res) {
             return $this->success();
         } else {
@@ -199,7 +199,7 @@ class GoodsController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = Goods::whereIn('id', $ids)->delete();
+        $res = Goods::query()->whereIn('id', $ids)->delete();
         if ($res) {
             Goods::delGoodsCache($ids);//清除商品缓存
             return $this->success();
@@ -224,7 +224,7 @@ class GoodsController extends BaseController
         if (!in_array($field, $field_arr) || !$id || !$field || !$field_value) {
             api_error(__('admin.invalid_params'));
         }
-        $res = Goods::where('id', $id)->update([$field => $field_value]);
+        $res = Goods::query()->where('id', $id)->update([$field => $field_value]);
         if ($res) {
             return $this->success();
         } else {
@@ -289,7 +289,7 @@ class GoodsController extends BaseController
                 ['seller_id', $seller_id],
                 ['end_at', '>', get_date()]
             ];
-            $res_list = Coupons::select('id', 'title')->where($where)
+            $res_list = Coupons::query()->select('id', 'title')->where($where)
                 ->orderBy('id', 'desc')
                 ->get();
         } elseif ($type == Goods::TYPE_PACKAGE) {
@@ -297,7 +297,7 @@ class GoodsController extends BaseController
                 ['status', GoodsPackage::STATUS_ON],
                 ['seller_id', $seller_id],
             ];
-            $res_list = GoodsPackage::select('id', 'title')->where($where)
+            $res_list = GoodsPackage::query()->select('id', 'title')->where($where)
                 ->orderBy('id', 'desc')
                 ->get();
         }
@@ -320,7 +320,7 @@ class GoodsController extends BaseController
             'status' => Delivery::STATUS_ON,
             'seller_id' => $seller_id
         ];
-        $res_list = Delivery::select('id', 'title')->where($where)
+        $res_list = Delivery::query()->select('id', 'title')->where($where)
             ->orderBy('id', 'desc')
             ->get();
         return $this->success($res_list);
@@ -338,7 +338,7 @@ class GoodsController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = Goods::find($id);
+        $data = Goods::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }

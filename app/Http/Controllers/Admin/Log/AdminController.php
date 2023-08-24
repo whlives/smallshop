@@ -29,14 +29,14 @@ class AdminController extends BaseController
         $where = [];
         $username = $request->input('username');
         if ($username) {
-            $admin_id = Admin::where('username', $username)->value('id');
+            $admin_id = Admin::query()->where('username', $username)->value('id');
             if ($admin_id) {
                 $where[] = ['admin_id', $admin_id];
             } else {
                 api_error(__('admin.content_is_empty'));
             }
         }
-        $query = AdminLog::select('id', 'username', 'url', 'ip', 'content', 'created_at')
+        $query = AdminLog::query()->select('id', 'username', 'url', 'ip', 'content', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')

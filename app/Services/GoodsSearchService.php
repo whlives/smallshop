@@ -148,15 +148,15 @@ class GoodsSearchService
         //商家分类
         if (isset($where_data['seller_category_id']) && $where_data['seller_category_id']) {
             if (is_array($where_data['seller_category_id'])) {
-                $goods_id = GoodsSellerCategory::whereIn('category_id', $where_data['seller_category_id'])->pluck('goods_id')->toArray();
+                $goods_id = GoodsSellerCategory::query()->whereIn('category_id', $where_data['seller_category_id'])->pluck('goods_id')->toArray();
             } else {
-                $goods_id = GoodsSellerCategory::where('category_id', $where_data['seller_category_id'])->pluck('goods_id')->toArray();
+                $goods_id = GoodsSellerCategory::query()->where('category_id', $where_data['seller_category_id'])->pluck('goods_id')->toArray();
             }
             if ($goods_id) $goods_ids = array_merge($goods_ids, $goods_id);
         }
         //属性
         if (isset($where_data['attribute']) && $where_data['attribute']) {
-            $goods_attr_query = GoodsAttribute::select('goods_id');
+            $goods_attr_query = GoodsAttribute::query()->select('goods_id');
             foreach ($where_data['attribute'] as $attr_id => $attr_value) {
                 if ($attr_id && $attr_value) {
                     $goods_attr_query->orWhere(function ($query) use ($attr_id, $attr_value) {
@@ -171,7 +171,7 @@ class GoodsSearchService
             $where_in['id'] = $goods_ids;
         }
         //开始查询数据
-        $goods_query = Goods::select('id', 'title', 'subtitle', 'image', 'sell_price', 'market_price', 'seller_id', 'sale', 'brand_id', 'seller_id', 'category_id')
+        $goods_query = Goods::query()->select('id', 'title', 'subtitle', 'image', 'sell_price', 'market_price', 'seller_id', 'sale', 'brand_id', 'seller_id', 'category_id')
             ->where($where);
         if ($where_in) {
             foreach ($where_in as $key => $value) {
@@ -206,21 +206,21 @@ class GoodsSearchService
     {
         $return = [];
         if (isset($screening['brand_id']) && $screening['brand_id']) {
-            $return['brand'] = Brand::select('id', 'title')->whereIn('id', array_unique($screening['brand_id']))->get();
+            $return['brand'] = Brand::query()->select('id', 'title')->whereIn('id', array_unique($screening['brand_id']))->get();
         }
         if (isset($screening['seller_id']) && $screening['seller_id']) {
-            $return['seller'] = Seller::select('id', 'title')->whereIn('id', array_unique($screening['seller_id']))->get();
+            $return['seller'] = Seller::query()->select('id', 'title')->whereIn('id', array_unique($screening['seller_id']))->get();
         }
         if (isset($screening['category_id']) && $screening['category_id']) {
-            $return['category'] = Category::select('id', 'title')->whereIn('id', array_unique($screening['category_id']))->get();
+            $return['category'] = Category::query()->select('id', 'title')->whereIn('id', array_unique($screening['category_id']))->get();
         }
         //获取筛选属性
         if (isset($screening['goods_id']) && $screening['goods_id']) {
-            $goods_attr_res = GoodsAttribute::select('attribute_id', 'value')->whereIn('goods_id', $screening['goods_id'])->get();
+            $goods_attr_res = GoodsAttribute::query()->select('attribute_id', 'value')->whereIn('goods_id', $screening['goods_id'])->get();
             if (!$goods_attr_res->isEmpty()) {
                 $attribute_ids = array_column($goods_attr_res->toArray(), 'attribute_id');
                 if ($attribute_ids) {
-                    $attribute = Attribute::whereIn('id', array_unique($attribute_ids))->select('id', 'title', 'input_type')->get();
+                    $attribute = Attribute::query()->whereIn('id', array_unique($attribute_ids))->select('id', 'title', 'input_type')->get();
                     $attribute = array_column($attribute->toArray(), null, 'id');
                 }
                 //获取属性id
@@ -232,7 +232,7 @@ class GoodsSearchService
                 }
                 //获取属性值
                 if ($attr_value_ids) {
-                    $attr_value = AttributeValue::whereIn('id', array_unique($attr_value_ids))->pluck('value', 'id')->toArray();
+                    $attr_value = AttributeValue::query()->whereIn('id', array_unique($attr_value_ids))->pluck('value', 'id')->toArray();
                 }
                 //组装属性
                 $goods_attr = [];

@@ -25,7 +25,7 @@ class BrandController extends BaseController
         $where = [
             'status' => Brand::STATUS_ON
         ];
-        $query = Brand::select('id', 'title', 'image')
+        $query = Brand::query()->select('id', 'title', 'image')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('position', 'asc')
@@ -55,7 +55,7 @@ class BrandController extends BaseController
         if (!$id) {
             api_error(__('api.missing_params'));
         }
-        $detail = Brand::select('id', 'title', 'image', 'content')->where('id', $id)->first();
+        $detail = Brand::query()->select('id', 'title', 'image', 'content')->where('id', $id)->first();
         return $this->success($detail);
     }
 

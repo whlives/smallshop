@@ -17,7 +17,7 @@ class MenuSeller extends BaseModel
 {
     protected $table = 'menu_seller';
     protected $guarded = ['id'];
-    
+
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -39,7 +39,7 @@ class MenuSeller extends BaseModel
             'parent_id' => $parent_id,
             'status' => self::STATUS_ON,
         ];
-        $result = self::select('id', 'title', 'icon', 'url', 'parameter')
+        $result = self::query()->select('id', 'title', 'icon', 'url', 'parameter')
             ->where($where)
             ->orderBy('position', 'asc')
             ->orderBy('id', 'asc')
@@ -69,7 +69,7 @@ class MenuSeller extends BaseModel
         $where = [
             'parent_id' => $parent_id,
         ];
-        $result = self::select('id', 'title', 'parent_id', 'url', 'parameter', 'position', 'status')
+        $result = self::query()->select('id', 'title', 'parent_id', 'url', 'parameter', 'position', 'status')
             ->where($where)
             ->orderBy('position', 'asc')
             ->orderBy('id', 'asc')
@@ -103,7 +103,7 @@ class MenuSeller extends BaseModel
             'status' => self::STATUS_ON,
             'parent_id' => $parent_id,
         ];
-        $result = self::select('id', 'title')
+        $result = self::query()->select('id', 'title')
             ->where($where)
             ->orderBy('position', 'asc')
             ->orderBy('id', 'asc')

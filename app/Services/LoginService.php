@@ -81,7 +81,7 @@ class LoginService
             'system' => get_system(),
             'mobile_model' => get_mobile_model()
         ];
-        MemberLoginLog::create($log);
+        MemberLoginLog::query()->create($log);
         return [
             'id' => $member_data['id'],
             'username' => $member_data['username'],
@@ -102,10 +102,10 @@ class LoginService
     public static function authCheck(array $user_data)
     {
         //查询账号是否已经存在
-        $m_id = MemberAuth::where(['type' => $user_data['type'], 'union_id' => $user_data['union_id']])->value('m_id');
+        $m_id = MemberAuth::query()->where(['type' => $user_data['type'], 'union_id' => $user_data['union_id']])->value('m_id');
         if ($m_id) {
             //查询用户信息
-            $member_data = Member::find($m_id);
+            $member_data = Member::query()->find($m_id);
             if (!$member_data) {
                 api_error(__('api.fail'));
             }
@@ -140,10 +140,10 @@ class LoginService
         $platform = get_platform();
         //没有手机号的时候是小程序直接注册
         if (!$mobile) $mobile = $platform . '_' . $auth_data['openid'];
-        $member_data = Member::where('username', $mobile)->first();
+        $member_data = Member::query()->where('username', $mobile)->first();
         if ($member_data) {
             //手机号已经注册，查询是否绑定了第三方
-            if (MemberAuth::where(['type' => $auth_data['type'], 'm_id' => $member_data['id']])->exists()) {
+            if (MemberAuth::query()->where(['type' => $auth_data['type'], 'm_id' => $member_data['id']])->exists()) {
                 api_error(__('api.user_mobile_is_bind'));
             }
         } else {
@@ -155,7 +155,7 @@ class LoginService
             ];
             $register = self::register($member_insert_data);
             if ($register) {
-                $member_data = Member::where('username', $mobile)->first();
+                $member_data = Member::query()->where('username', $mobile)->first();
             } else {
                 api_error(__('api.fail'));
             }
@@ -166,7 +166,7 @@ class LoginService
             'union_id' => $auth_data['union_id'],
             'type' => $auth_data['type'],
         ];
-        $res = MemberAuth::create($member_auth_data);
+        $res = MemberAuth::query()->create($member_auth_data);
         if (!$res) {
             api_error(__('api.user_mobile_bind_fail'));
         }

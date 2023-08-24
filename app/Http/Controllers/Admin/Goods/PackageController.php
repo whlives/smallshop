@@ -29,7 +29,7 @@ class PackageController extends BaseController
         $where = [];
         $title = $request->input('title');
         if ($title) $where[] = ['title', $title];
-        $query = GoodsPackage::select('id', 'seller_id', 'title', 'image', 'price', 'created_at')
+        $query = GoodsPackage::query()->select('id', 'seller_id', 'title', 'image', 'price', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -41,7 +41,7 @@ class PackageController extends BaseController
         }
         $seller_ids = array_column($res_list->toArray(), 'seller_id');
         if ($seller_ids) {
-            $seller = Seller::whereIn('id', array_unique($seller_ids))->pluck('title', 'id');
+            $seller = Seller::query()->whereIn('id', array_unique($seller_ids))->pluck('title', 'id');
         }
         $data_list = [];
         foreach ($res_list as $value) {
@@ -68,7 +68,7 @@ class PackageController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = GoodsPackage::find($id);
+        $data = GoodsPackage::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -105,9 +105,9 @@ class PackageController extends BaseController
             $save_data[$key] = $value;
         }
         if ($id) {
-            $res = GoodsPackage::where('id', $id)->update($save_data);
+            $res = GoodsPackage::query()->where('id', $id)->update($save_data);
         } else {
-            $res = GoodsPackage::create($save_data);
+            $res = GoodsPackage::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -129,7 +129,7 @@ class PackageController extends BaseController
         if (!isset(GoodsPackage::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $res = GoodsPackage::whereIn('id', $ids)->update(['status' => $status]);
+        $res = GoodsPackage::query()->whereIn('id', $ids)->update(['status' => $status]);
         if ($res) {
             return $this->success();
         } else {
@@ -146,7 +146,7 @@ class PackageController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = GoodsPackage::whereIn('id', $ids)->delete();
+        $res = GoodsPackage::query()->whereIn('id', $ids)->delete();
         if ($res) {
             return $this->success();
         } else {

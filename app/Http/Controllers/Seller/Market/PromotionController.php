@@ -37,7 +37,7 @@ class PromotionController extends BaseController
         ];
         $title = $request->input('title');
         if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
-        $query = Promotion::select('id', 'title', 'use_price', 'type', 'rule_type', 'seller_id', 'start_at', 'end_at', 'status', 'created_at')
+        $query = Promotion::query()->select('id', 'title', 'use_price', 'type', 'rule_type', 'seller_id', 'start_at', 'end_at', 'status', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -72,7 +72,7 @@ class PromotionController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = Promotion::where('seller_id', $this->seller_id)->find($id);
+        $data = Promotion::query()->where('seller_id', $this->seller_id)->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -155,10 +155,10 @@ class PromotionController extends BaseController
         $save_data['type_value'] = $type_value;
         $save_data['user_group'] = implode(',', $request->input('user_group'));
         if ($id) {
-            $res = Promotion::where(['id' => $id, 'seller_id' => $this->seller_id])->update($save_data);
+            $res = Promotion::query()->where(['id' => $id, 'seller_id' => $this->seller_id])->update($save_data);
         } else {
             $save_data['seller_id'] = $this->seller_id;
-            $res = Promotion::create($save_data);
+            $res = Promotion::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -180,7 +180,7 @@ class PromotionController extends BaseController
         if (!isset(Promotion::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $res = Promotion::whereIn('id', $ids)->where('seller_id', $this->seller_id)->update(['status' => $status]);
+        $res = Promotion::query()->whereIn('id', $ids)->where('seller_id', $this->seller_id)->update(['status' => $status]);
         if ($res) {
             return $this->success();
         } else {
@@ -197,7 +197,7 @@ class PromotionController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = Promotion::whereIn('id', $ids)->where('seller_id', $this->seller_id)->delete();
+        $res = Promotion::query()->whereIn('id', $ids)->where('seller_id', $this->seller_id)->delete();
         if ($res) {
             return $this->success();
         } else {

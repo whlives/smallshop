@@ -26,7 +26,7 @@ class OutPushController extends BaseController
         $payment_id = (int)$request->route('payment_id');
         $platform = $request->route('platform');
         //验证支付方式
-        $payment = Payment::where(['id' => $payment_id, 'status' => Payment::STATUS_ON])->first();
+        $payment = Payment::query()->where(['id' => $payment_id, 'status' => Payment::STATUS_ON])->first();
         if (!$payment) {
             api_error(__('api.payment_error'));
         }

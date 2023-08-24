@@ -38,7 +38,7 @@ class MenuSellerController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = MenuSeller::find($id);
+        $data = MenuSeller::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -77,9 +77,9 @@ class MenuSellerController extends BaseController
         }
         $id = (int)$request->input('id');
         if ($id) {
-            $res = MenuSeller::where('id', $id)->update($save_data);
+            $res = MenuSeller::query()->where('id', $id)->update($save_data);
         } else {
-            $res = MenuSeller::create($save_data);
+            $res = MenuSeller::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -101,7 +101,7 @@ class MenuSellerController extends BaseController
         if (!isset(MenuSeller::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $res = MenuSeller::whereIn('id', $ids)->update(['status' => $status]);
+        $res = MenuSeller::query()->whereIn('id', $ids)->update(['status' => $status]);
         if ($res) {
             return $this->success();
         } else {
@@ -122,11 +122,11 @@ class MenuSellerController extends BaseController
             api_error(__('admin.invalid_params'));
         }
         //查询是否存在下级分类
-        $sub_menu = MenuSeller::where('parent_id', $id)->count();
+        $sub_menu = MenuSeller::query()->where('parent_id', $id)->count();
         if ($sub_menu > 0) {
             api_error(__('admin.menu_child_no_empty'));
         }
-        $res = MenuSeller::where('id', $id)->delete();
+        $res = MenuSeller::query()->where('id', $id)->delete();
         if ($res) {
             return $this->success();
         } else {

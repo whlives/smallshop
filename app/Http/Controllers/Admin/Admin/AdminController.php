@@ -36,7 +36,7 @@ class AdminController extends BaseController
         $status = $request->input('status');
         if ($username) $where[] = ['username', 'like', '%' . $username . '%'];
         if (is_numeric($status)) $where[] = ['status', $status];
-        $query = Admin::select('id', 'username', 'role_id', 'tel', 'email', 'status', 'created_at')->where($where);
+        $query = Admin::query()->select('id', 'username', 'role_id', 'tel', 'email', 'status', 'created_at')->where($where);
         if ($role_id) $query->whereRaw("find_in_set('$role_id', role_id)");
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -97,7 +97,7 @@ class AdminController extends BaseController
         if ($password) $save_data['password'] = Hash::make(md5($password));
 
         $id = $this->getUserId();
-        $res = Admin::where('id', $id)->update($save_data);
+        $res = Admin::query()->where('id', $id)->update($save_data);
         if ($res) {
             return $this->success();
         } else {
@@ -117,7 +117,7 @@ class AdminController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = Admin::find($id);
+        $data = Admin::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -160,12 +160,12 @@ class AdminController extends BaseController
         $password = $request->input('password');
         if ($password) $save_data['password'] = Hash::make(md5($password));
         if ($id) {
-            $res = Admin::where('id', $id)->update($save_data);
+            $res = Admin::query()->where('id', $id)->update($save_data);
         } else {
             if (!$password) {
                 api_error(__('admin.admin_password_empty'));
             }
-            $res = Admin::create($save_data);
+            $res = Admin::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -187,7 +187,7 @@ class AdminController extends BaseController
         if (!isset(Admin::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $res = Admin::whereIn('id', $ids)->update(['status' => $status]);
+        $res = Admin::query()->whereIn('id', $ids)->update(['status' => $status]);
         if ($res) {
             if ($status == Admin::STATUS_OFF) {
                 AdminLoginLog::removeLoginStatus($ids);//锁定的时候清除已经登录的账号
@@ -207,7 +207,7 @@ class AdminController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = Admin::whereIn('id', $ids)->delete();
+        $res = Admin::query()->whereIn('id', $ids)->delete();
         if ($res) {
             AdminLoginLog::removeLoginStatus($ids);//清除已经登录的账号
             return $this->success();

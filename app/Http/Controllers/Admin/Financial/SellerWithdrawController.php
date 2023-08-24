@@ -35,7 +35,7 @@ class SellerWithdrawController extends BaseController
         $username = $request->input('username');
         $status = $request->input('status');
         if ($username) {
-            $m_id = Seller::where('username', $username)->value('id');
+            $m_id = Seller::query()->where('username', $username)->value('id');
             if ($m_id) {
                 $where[] = ['m_id', $m_id];
             } else {
@@ -52,7 +52,7 @@ class SellerWithdrawController extends BaseController
             ExportService::sellerWithdraw($request, ['where' => $where], $start_at, $end_at);//导出数据
             exit;
         }
-        $query = SellerWithdraw::select('id', 'm_id', 'type', 'amount', 'name', 'bank_name', 'pay_number', 'refuse_note', 'status', 'created_at', 'done_at')
+        $query = SellerWithdraw::query()->select('id', 'm_id', 'type', 'amount', 'name', 'bank_name', 'pay_number', 'refuse_note', 'status', 'created_at', 'done_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('status', 'asc')
@@ -65,7 +65,7 @@ class SellerWithdrawController extends BaseController
         }
         $m_ids = array_column($res_list->toArray(), 'm_id');
         if ($m_ids) {
-            $member_data = Seller::whereIn('id', array_unique($m_ids))->pluck('username', 'id');
+            $member_data = Seller::query()->whereIn('id', array_unique($m_ids))->pluck('username', 'id');
         }
         $data_list = [];
         foreach ($res_list as $value) {
@@ -106,7 +106,7 @@ class SellerWithdrawController extends BaseController
         if (!$id || !isset(SellerWithdraw::STATUS_DESC[$status]) || (in_array($status, [SellerWithdraw::STATUS_REFUND, SellerWithdraw::STATUS_DEDUCT]) && !$note)) {
             api_error(__('admin.missing_params'));
         }
-        $withdraw = SellerWithdraw::where(['id' => $id, 'status' => SellerWithdraw::STATUS_OFF])->first();
+        $withdraw = SellerWithdraw::query()->where(['id' => $id, 'status' => SellerWithdraw::STATUS_OFF])->first();
         if (!$withdraw) {
             api_error(__('admin.missing_params'));
         }
@@ -117,7 +117,7 @@ class SellerWithdrawController extends BaseController
         ];
         try {
             DB::transaction(function () use ($withdraw, $update_data) {
-                SellerWithdraw::where(['id' => $withdraw['id'], 'status' => SellerWithdraw::STATUS_OFF])->update($update_data);
+                SellerWithdraw::query()->where(['id' => $withdraw['id'], 'status' => SellerWithdraw::STATUS_OFF])->update($update_data);
                 if ($update_data['status'] == SellerWithdraw::STATUS_REFUND) {
                     SellerBalance::updateAmount($withdraw['m_id'], $withdraw['amount'], SellerBalanceDetail::EVENT_WITHDRAW_REFUND, $withdraw['id']);
                 }

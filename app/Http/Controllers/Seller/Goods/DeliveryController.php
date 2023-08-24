@@ -37,7 +37,7 @@ class DeliveryController extends BaseController
         ];
         $title = $request->input('title');
         if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
-        $query = Delivery::select('id', 'title', 'open_default', 'price_type', 'status', 'created_at')
+        $query = Delivery::query()->select('id', 'title', 'open_default', 'price_type', 'status', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -73,7 +73,7 @@ class DeliveryController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = Delivery::where('seller_id', $this->seller_id)->find($id);
+        $data = Delivery::query()->where('seller_id', $this->seller_id)->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -171,10 +171,10 @@ class DeliveryController extends BaseController
         $save_data['group_json'] = json_encode($group_json);
         $save_data['status'] = Delivery::STATUS_ON;
         if ($id) {
-            $res = Delivery::where(['id' => $id, 'seller_id' => $this->seller_id])->update($save_data);
+            $res = Delivery::query()->where(['id' => $id, 'seller_id' => $this->seller_id])->update($save_data);
         } else {
             $save_data['seller_id'] = $this->seller_id;
-            $res = Delivery::create($save_data);
+            $res = Delivery::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -196,7 +196,7 @@ class DeliveryController extends BaseController
         if (!isset(Delivery::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $res = Delivery::whereIn('id', $ids)->where('seller_id', $this->seller_id)->update(['status' => $status]);
+        $res = Delivery::query()->whereIn('id', $ids)->where('seller_id', $this->seller_id)->update(['status' => $status]);
         if ($res) {
             return $this->success();
         } else {
@@ -213,7 +213,7 @@ class DeliveryController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = Delivery::whereIn('id', $ids)->where('seller_id', $this->seller_id)->delete();
+        $res = Delivery::query()->whereIn('id', $ids)->where('seller_id', $this->seller_id)->delete();
         if ($res) {
             return $this->success();
         } else {

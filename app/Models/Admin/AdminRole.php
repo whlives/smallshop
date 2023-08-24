@@ -39,7 +39,7 @@ class AdminRole extends BaseModel
         if (!is_array($id)) {
             $id = [$id];
         }
-        $title = self::whereIn('id', $id)->pluck('title')->toArray();
+        $title = self::query()->whereIn('id', $id)->pluck('title')->toArray();
         if ($string) {
             return is_array($title) ? join(',', $title) : '';
         }
@@ -65,7 +65,7 @@ class AdminRole extends BaseModel
                 'right' => [],//权限码
                 'button' => []//按钮
             ];
-            $res_list = self::select('right')->whereIn('id', $role_id)->get();
+            $res_list = self::query()->select('right')->whereIn('id', $role_id)->get();
             if ($res_list->isEmpty()) {
                 return $return;
             }
@@ -84,7 +84,7 @@ class AdminRole extends BaseModel
             $right = $button = [];
             //查询具体的权限和按钮
             if ($right_ids) {
-                $res_right = AdminRight::select('right', 'button')->where('status', AdminRight::STATUS_ON)->whereIn('id', $right_ids)->get();
+                $res_right = AdminRight::query()->select('right', 'button')->where('status', AdminRight::STATUS_ON)->whereIn('id', $right_ids)->get();
                 if (!$res_right->isEmpty()) {
                     foreach ($res_right as $val) {
                         $_right = json_decode($val['right'], true);

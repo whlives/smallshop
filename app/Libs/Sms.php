@@ -39,7 +39,7 @@ class Sms
         }
         //find_password、reset_password需要验证手机号码是否正确
         if (in_array($type, [SmsTemplate::TYPE_FIND_PASSWORD, SmsTemplate::TYPE_RESET_PASSWORD])) {
-            if (!Member::where('username', $mobile)->exists()) {
+            if (!Member::query()->where('username', $mobile)->exists()) {
                 return __('api.user_mobile_error');
             }
         }
@@ -159,7 +159,7 @@ class Sms
             'content' => $content,
             'error_msg' => $res
         ];
-        SmsLog::create($log_data);
+        SmsLog::query()->create($log_data);
         return $res;
     }
 
@@ -171,7 +171,7 @@ class Sms
      */
     public function getTemplate(array $data, string $type)
     {
-        $template = SmsTemplate::where('type', $type)->value('content');
+        $template = SmsTemplate::query()->where('type', $type)->value('content');
         if (!$template) return '';
         $find = $replace = [];
         foreach ($data as $key => $val) {

@@ -31,7 +31,7 @@ class ArticleController extends BaseController
             'category_id' => $category_id,
             'status' => Article::STATUS_ON
         ];
-        $query = Article::select('id', 'title', 'image', 'created_at')
+        $query = Article::query()->select('id', 'title', 'image', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('position', 'asc')
@@ -61,7 +61,7 @@ class ArticleController extends BaseController
         if (!$id) {
             api_error(__('api.missing_params'));
         }
-        $detail = Article::select('id', 'title', 'image', 'created_at')->where('id', $id)->first();
+        $detail = Article::query()->select('id', 'title', 'image', 'created_at')->where('id', $id)->first();
         if ($detail) {
             $detail['content'] = $detail->content()->value('content');
         }
@@ -81,7 +81,7 @@ class ArticleController extends BaseController
             'parent_id' => $parent_id,
             'status' => ArticleCategory::STATUS_ON
         ];
-        $res_list = ArticleCategory::select('id', 'title')
+        $res_list = ArticleCategory::query()->select('id', 'title')
             ->where($where)
             ->orderBy('position', 'asc')
             ->orderBy('id', 'desc')

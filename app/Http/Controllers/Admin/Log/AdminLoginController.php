@@ -30,14 +30,14 @@ class AdminLoginController extends BaseController
         $where = [];
         $username = $request->input('username');
         if ($username) {
-            $member_id = Admin::where('username', $username)->value('id');
+            $member_id = Admin::query()->where('username', $username)->value('id');
             if ($member_id) {
                 $where[] = ['m_id', $member_id];
             } else {
                 api_error(__('admin.content_is_empty'));
             }
         }
-        $query = AdminLoginLog::select('id', 'm_id', 'user_agent', 'ip', 'status', 'created_at')
+        $query = AdminLoginLog::query()->select('id', 'm_id', 'user_agent', 'ip', 'status', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -49,7 +49,7 @@ class AdminLoginController extends BaseController
         }
         $m_ids = array_column($res_list->toArray(), 'm_id');
         if ($m_ids) {
-            $admin_data = Admin::whereIn('id', array_unique($m_ids))->pluck('username', 'id');
+            $admin_data = Admin::query()->whereIn('id', array_unique($m_ids))->pluck('username', 'id');
         }
         $data_list = [];
         foreach ($res_list as $value) {
@@ -77,11 +77,11 @@ class AdminLoginController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = AdminLoginLog::find($id);
+        $data = AdminLoginLog::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
-        $res = AdminLoginLog::where('id', $id)->update(['status' => AdminLoginLog::STATUS_OFF]);
+        AdminLoginLog::query()->where('id', $id)->update(['status' => AdminLoginLog::STATUS_OFF]);
         $token_service = new TokenService();
         $token_service->delToken($data['token']);
         return $this->success();

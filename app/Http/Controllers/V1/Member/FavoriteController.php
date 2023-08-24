@@ -71,7 +71,7 @@ class FavoriteController extends BaseController
             'm_id' => $this->m_id,
             'type' => $type
         ];
-        $query = Favorite::where($where);
+        $query = Favorite::query()->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
             ->offset($offset)
@@ -82,13 +82,13 @@ class FavoriteController extends BaseController
         }
         switch ($type) {
             case Favorite::TYPE_GOODS:
-                $object_res = Goods::select('id', 'title', 'image')->whereIn('id', $res_list->toArray())->get();
+                $object_res = Goods::query()->select('id', 'title', 'image')->whereIn('id', $res_list->toArray())->get();
                 break;
             case Favorite::TYPE_SELLER:
-                $object_res = Seller::select('id', 'title', 'image')->whereIn('id', $res_list->toArray())->get();
+                $object_res = Seller::query()->select('id', 'title', 'image')->whereIn('id', $res_list->toArray())->get();
                 break;
             case Favorite::TYPE_ARTICLE:
-                $object_res = Article::select('id', 'title', 'image')->whereIn('id', $res_list->toArray())->get();
+                $object_res = Article::query()->select('id', 'title', 'image')->whereIn('id', $res_list->toArray())->get();
                 break;
         }
         if ($object_res->isEmpty()) {
@@ -128,13 +128,13 @@ class FavoriteController extends BaseController
             'type' => $type,
             'object_id' => $id,
         ];
-        if (Favorite::where($data)->exists()) {
+        if (Favorite::query()->where($data)->exists()) {
             //已经存在就取消
-            $res = Favorite::where($data)->delete();
+            $res = Favorite::query()->where($data)->delete();
             Favorite::delFavorite($this->m_id, $type, $id);
             $action = 'del';
         } else {
-            $res = Favorite::create($data);
+            $res = Favorite::query()->create($data);
             Favorite::setFavorite($this->m_id, $type, $id);
             $action = 'add';
         }

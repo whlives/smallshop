@@ -28,7 +28,7 @@ class SmsTemplateController extends BaseController
         $where = [];
         $title = $request->input('title');
         if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
-        $query = SmsTemplate::select('id', 'title', 'type', 'content', 'created_at')
+        $query = SmsTemplate::query()->select('id', 'title', 'type', 'content', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -57,7 +57,7 @@ class SmsTemplateController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = SmsTemplate::find($id);
+        $data = SmsTemplate::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -92,9 +92,9 @@ class SmsTemplateController extends BaseController
             $save_data[$key] = $value;
         }
         if ($id) {
-            $res = SmsTemplate::where('id', $id)->update($save_data);
+            $res = SmsTemplate::query()->where('id', $id)->update($save_data);
         } else {
-            $res = SmsTemplate::create($save_data);
+            $res = SmsTemplate::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -112,7 +112,7 @@ class SmsTemplateController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = SmsTemplate::whereIn('id', $ids)->delete();
+        $res = SmsTemplate::query()->whereIn('id', $ids)->delete();
         if ($res) {
             return $this->success();
         } else {

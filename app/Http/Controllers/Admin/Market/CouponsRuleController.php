@@ -38,7 +38,7 @@ class CouponsRuleController extends BaseController
         $where[] = ['coupons_id', $coupons_id];
         if ($type) $where[] = ['type', $type];
         if ($in_type) $where[] = ['in_type', $in_type];
-        $query = CouponsRule::select('id', 'type', 'in_type', 'obj_id')
+        $query = CouponsRule::query()->select('id', 'type', 'in_type', 'obj_id')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -62,9 +62,9 @@ class CouponsRuleController extends BaseController
                     break;
             }
         }
-        $goods = Goods::whereIn('id', $goods_ids)->pluck('title', 'id');
-        $brand = Brand::whereIn('id', $brand_ids)->pluck('title', 'id');
-        $category = Category::whereIn('id', $category_ids)->pluck('title', 'id');
+        $goods = Goods::query()->whereIn('id', $goods_ids)->pluck('title', 'id');
+        $brand = Brand::query()->whereIn('id', $brand_ids)->pluck('title', 'id');
+        $category = Category::query()->whereIn('id', $category_ids)->pluck('title', 'id');
         $data_list = [];
         foreach ($res_list as $value) {
             $_item = $value;
@@ -133,8 +133,8 @@ class CouponsRuleController extends BaseController
             ];
         }
         if ($insert_data) {
-            CouponsRule::whereIn('obj_id', $obj_id)->where(['coupons_id' => $coupons_id, 'type' => $type, 'in_type' => $in_type])->delete();
-            $res = CouponsRule::insert($insert_data);
+            CouponsRule::query()->whereIn('obj_id', $obj_id)->where(['coupons_id' => $coupons_id, 'type' => $type, 'in_type' => $in_type])->delete();
+            $res = CouponsRule::query()->insert($insert_data);
         } else {
             api_error(__('admin.invalid_params'));
         }
@@ -154,7 +154,7 @@ class CouponsRuleController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = CouponsRule::whereIn('id', $ids)->delete();
+        $res = CouponsRule::query()->whereIn('id', $ids)->delete();
         if ($res) {
             return $this->success();
         } else {
@@ -198,13 +198,13 @@ class CouponsRuleController extends BaseController
         }
         switch ($type) {
             case CouponsRule::TYPE_GOODS:
-                $data_list = Goods::select('id as value', 'title as name')->where([['seller_id', $seller_id], ['title', 'like', '%' . $keyword . '%']])->get();
+                $data_list = Goods::query()->select('id as value', 'title as name')->where([['seller_id', $seller_id], ['title', 'like', '%' . $keyword . '%']])->get();
                 break;
             case CouponsRule::TYPE_BRAND:
-                $data_list = Brand::select('id as value', 'title as name')->where([['title', 'like', '%' . $keyword . '%']])->get();
+                $data_list = Brand::query()->select('id as value', 'title as name')->where([['title', 'like', '%' . $keyword . '%']])->get();
                 break;
             case CouponsRule::TYPE_CATEGORY:
-                $data_list = Category::select('id as value', 'title as name')->where([['title', 'like', '%' . $keyword . '%']])->get();
+                $data_list = Category::query()->select('id as value', 'title as name')->where([['title', 'like', '%' . $keyword . '%']])->get();
                 break;
             default:
                 $data_list = [];

@@ -17,7 +17,7 @@ class CouponsDetail extends BaseModel
 {
     protected $table = 'coupons_detail';
     protected $guarded = ['id'];
-    
+
     public $timestamps = false;
 
     //状态
@@ -48,7 +48,7 @@ class CouponsDetail extends BaseModel
         if ($num > 100) {
             return __('admin.coupons_max_100');
         }
-        $coupons = Coupons::where('id', $coupons_id)->first();
+        $coupons = Coupons::query()->where('id', $coupons_id)->first();
         if (!$coupons) {
             return __('admin.coupons_not_exists');
         } elseif ($coupons['end_at'] < get_date() && !$coupons['day_num']) {
@@ -75,7 +75,7 @@ class CouponsDetail extends BaseModel
                 'bind_at' => get_date()
             ];
         }
-        $res = CouponsDetail::insert($insert_data);
+        $res = CouponsDetail::query()->insert($insert_data);
         if ($res) {
             return true;
         } else {

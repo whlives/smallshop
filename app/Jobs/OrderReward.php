@@ -36,7 +36,7 @@ class OrderReward implements ShouldQueue
      */
     public function handle()
     {
-        $order = Order::where(['id' => $this->order_id, 'status' => Order::STATUS_COMPLETE])->first();
+        $order = Order::query()->where(['id' => $this->order_id, 'status' => Order::STATUS_COMPLETE])->first();
         if (!$order) return false;
         Promotion::order($order->toArray());//订单奖励
     }

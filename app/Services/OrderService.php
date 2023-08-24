@@ -269,8 +269,8 @@ class OrderService
     {
         if (!$cart) return false;
         foreach ($cart as $val) {
-            GoodsSku::where('id', $val['sku_id'])->decrement('stock', $val['buy_qty']);
-            GoodsNum::where('goods_id', $val['goods_id'])->increment('sale', $val['buy_qty']);//增加销量
+            GoodsSku::query()->where('id', $val['sku_id'])->decrement('stock', $val['buy_qty']);
+            GoodsNum::query()->where('goods_id', $val['goods_id'])->increment('sale', $val['buy_qty']);//增加销量
         }
     }
 
@@ -283,8 +283,8 @@ class OrderService
     {
         if (!$cart) return false;
         foreach ($cart as $val) {
-            GoodsSku::where('id', $val['sku_id'])->increment('stock', $val['buy_qty']);
-            //GoodsNum::where('goods_id', $val['goods_id'])->decrement('sale', $val['buy_qty']);//减少销量
+            GoodsSku::query()->where('id', $val['sku_id'])->increment('stock', $val['buy_qty']);
+            //GoodsNum::query()->where('goods_id', $val['goods_id'])->decrement('sale', $val['buy_qty']);//减少销量
         }
     }
 
@@ -295,7 +295,7 @@ class OrderService
      */
     public static function orderStockIncr(array $order)
     {
-        $order_goods = OrderGoods::select('buy_qty', 'sku_id', 'goods_id')->where('order_id', $order['id'])->get();
+        $order_goods = OrderGoods::query()->select('buy_qty', 'sku_id', 'goods_id')->where('order_id', $order['id'])->get();
         if (!$order_goods->isEmpty()) {
             $order_goods = $order_goods->toArray();
             self::stockIncr($order_goods);
@@ -324,7 +324,7 @@ class OrderService
             'flag' => $notify_data['flag'],
             'pay_at' => get_date()
         ];
-        $res = Order::where('status', Order::STATUS_WAIT_PAY)->whereIn('order_no', $notify_data['order_no'])->update($update_order);
+        $res = Order::query()->where('status', Order::STATUS_WAIT_PAY)->whereIn('order_no', $notify_data['order_no'])->update($update_order);
         if ($res) {
             dispatch(new OrderPayAfter($notify_data['order_no']));//将订单加入队列处理后续的
             return true;
@@ -432,18 +432,18 @@ class OrderService
         if ($order['status'] == Order::STATUS_PAID || $order['status'] == Order::STATUS_WAIT_GROUP) {
             $status = Order::STATUS_REFUND_COMPLETE;//已经支付的状态修改为全部退款
             //已经支付的需要查询是否已经有部分订单在申请退款
-            $refund = OrderGoods::where(['order_id' => $order['id']])->whereNotIn('refund', [OrderGoods::REFUND_NO, OrderGoods::REFUND_CLOSE])->count();
+            $refund = OrderGoods::query()->where(['order_id' => $order['id']])->whereNotIn('refund', [OrderGoods::REFUND_NO, OrderGoods::REFUND_CLOSE])->count();
             if ($refund > 0) {
                 return __('api.order_refund_ing_not_cancel');
             }
         }
         try {
             DB::transaction(function () use ($order, $order_log, $status) {
-                Order::where(['id' => $order['id']])->update(['status' => $status, 'close_at' => get_date()]);
-                OrderLog::create($order_log);//添加订单日志
+                Order::query()->where(['id' => $order['id']])->update(['status' => $status, 'close_at' => get_date()]);
+                OrderLog::query()->create($order_log);//添加订单日志
                 if ($order['coupons_id']) {
                     //存在优惠券的时候需要返还
-                    CouponsDetail::where('id', $order['coupons_id'])->update(['is_use' => CouponsDetail::USE_OFF]);
+                    CouponsDetail::query()->where('id', $order['coupons_id'])->update(['is_use' => CouponsDetail::USE_OFF]);
                 }
             });
             //还原库存
@@ -484,8 +484,8 @@ class OrderService
         ];
         try {
             DB::transaction(function () use ($order, $order_log) {
-                Order::where('id', $order['id'])->update(['status' => Order::STATUS_PAID, 'pay_at' => get_date()]);
-                OrderLog::create($order_log);//添加订单日志
+                Order::query()->where('id', $order['id'])->update(['status' => Order::STATUS_PAID, 'pay_at' => get_date()]);
+                OrderLog::query()->create($order_log);//添加订单日志
             });
             dispatch(new OrderPayAfter([$order['order_no']]));//将订单加入队列处理后续的
             return true;
@@ -508,7 +508,7 @@ class OrderService
         if (!self::isDelivery($order)) {
             return __('admin.order_status_error');
         }
-        $express_company = ExpressCompany::select('title', 'code')->where('id', $param['company_id'])->first();
+        $express_company = ExpressCompany::query()->select('title', 'code')->where('id', $param['company_id'])->first();
         $delivery_data = [
             'order_id' => $order['id'],
             'order_goods_id' => json_encode($param['order_goods_id']),
@@ -528,15 +528,15 @@ class OrderService
         try {
             DB::transaction(function () use ($order, $order_log, $delivery_data, $param) {
                 //修改商品发货状态
-                OrderGoods::where('order_id', $order['id'])->whereIn('id', $param['order_goods_id'])->update(['delivery' => OrderGoods::DELIVERY_ON]);
+                OrderGoods::query()->where('order_id', $order['id'])->whereIn('id', $param['order_goods_id'])->update(['delivery' => OrderGoods::DELIVERY_ON]);
                 $order_status = Order::STATUS_PART_SHIPMENT;
                 //全部发货后修改订单状态
-                if (!OrderGoods::where(['order_id' => $order['id'], 'delivery' => OrderGoods::DELIVERY_OFF])->count()) {
+                if (!OrderGoods::query()->where(['order_id' => $order['id'], 'delivery' => OrderGoods::DELIVERY_OFF])->count()) {
                     $order_status = Order::STATUS_SHIPMENT;
                 }
-                Order::where(['id' => $order['id']])->update(['status' => $order_status, 'send_at' => get_date()]);
-                OrderLog::create($order_log);//添加订单日志
-                OrderDelivery::create($delivery_data);//添加发货信息
+                Order::query()->where(['id' => $order['id']])->update(['status' => $order_status, 'send_at' => get_date()]);
+                OrderLog::query()->create($order_log);//添加订单日志
+                OrderDelivery::query()->create($delivery_data);//添加发货信息
             });
             //订阅物流消息
             if ($param['code']) {
@@ -573,10 +573,10 @@ class OrderService
         try {
             DB::transaction(function () use ($order, $order_log) {
                 //修改商品发货状态
-                OrderGoods::where('order_id', $order['id'])->update(['delivery' => OrderGoods::DELIVERY_OFF]);
-                Order::where('id', $order['id'])->update(['status' => Order::STATUS_PAID, 'send_at' => null]);
-                OrderDelivery::where(['order_id' => $order['id']])->delete();//删除物流信息
-                OrderLog::create($order_log);//添加订单日志
+                OrderGoods::query()->where('order_id', $order['id'])->update(['delivery' => OrderGoods::DELIVERY_OFF]);
+                Order::query()->where('id', $order['id'])->update(['status' => Order::STATUS_PAID, 'send_at' => null]);
+                OrderDelivery::query()->where(['order_id' => $order['id']])->delete();//删除物流信息
+                OrderLog::query()->create($order_log);//添加订单日志
             });
             return true;
         } catch (\Exception $e) {
@@ -607,8 +607,8 @@ class OrderService
         ];
         try {
             DB::transaction(function () use ($order, $order_log) {
-                Order::where(['id' => $order['id']])->update(['status' => Order::STATUS_DONE, 'done_at' => get_date()]);
-                OrderLog::create($order_log);//添加订单日志
+                Order::query()->where(['id' => $order['id']])->update(['status' => Order::STATUS_DONE, 'done_at' => get_date()]);
+                OrderLog::query()->create($order_log);//添加订单日志
             });
             return true;
         } catch (\Exception $e) {
@@ -630,12 +630,12 @@ class OrderService
         $seller_ids = array_column($order, 'seller_id');
         try {
             //查询正在售后的订单
-            $refund_order_id = OrderGoods::whereIn('order_id', array_unique($order_ids))->whereIn('refund', [OrderGoods::REFUND_APPLY, OrderGoods::REFUND_ONGOING])->pluck('order_id')->toArray();
+            $refund_order_id = OrderGoods::query()->whereIn('order_id', array_unique($order_ids))->whereIn('refund', [OrderGoods::REFUND_APPLY, OrderGoods::REFUND_ONGOING])->pluck('order_id')->toArray();
             $new_order_ids = array_diff($order_ids, $refund_order_id);//获取没有售后的订单
             //查询商家结算信息
-            $seller = Seller::whereIn('id', array_unique($seller_ids))->pluck('pct', 'id');
+            $seller = Seller::query()->whereIn('id', array_unique($seller_ids))->pluck('pct', 'id');
             //查询订单下的商品
-            $order_goods_res = OrderGoods::select('id', 'order_id', 'sell_price', 'promotion_price', 'buy_qty', 'level_one_pct', 'level_two_pct')->whereIn('order_id', $new_order_ids)->get();
+            $order_goods_res = OrderGoods::query()->select('id', 'order_id', 'sell_price', 'promotion_price', 'buy_qty', 'level_one_pct', 'level_two_pct')->whereIn('order_id', $new_order_ids)->get();
             if ($order_goods_res->isEmpty()) {
                 return __('api.order_goods_error');
             }
@@ -644,7 +644,7 @@ class OrderService
                 $order_goods[$_goods['order_id']][] = $_goods;
             }
             //查询已经完成的售后单
-            $refund_res = Refund::select('order_id', 'order_goods_id', 'amount')->whereIn('order_id', $new_order_ids)->where('status', Refund::STATUS_DONE)->get();
+            $refund_res = Refund::query()->select('order_id', 'order_goods_id', 'amount')->whereIn('order_id', $new_order_ids)->where('status', Refund::STATUS_DONE)->get();
             $refund_data = [];
             if (!$refund_res->isEmpty()) {
                 foreach ($refund_res as $_refund) {
@@ -667,7 +667,7 @@ class OrderService
                 if ($_order['status'] == Order::STATUS_DONE) {
                     $order_update['status'] = Order::STATUS_COMPLETE;//全部退款的不修改订单状态
                 }
-                $_res = Order::where(['id' => $_order['id'], 'is_settlement' => Order::IS_SETTLEMENT_NO])->update($order_update);
+                $_res = Order::query()->where(['id' => $_order['id'], 'is_settlement' => Order::IS_SETTLEMENT_NO])->update($order_update);
                 if (!$_res) return false;//订单状态修改失败
                 //计算订单金额
                 $refund_amount = $level_one_amount = $level_two_amount = 0;
@@ -720,12 +720,12 @@ class OrderService
         }
         try {
             DB::transaction(function () use ($order, $comment) {
-                Order::where(['id' => $order['id']])->update(['comment_at' => get_date()]);
+                Order::query()->where(['id' => $order['id']])->update(['comment_at' => get_date()]);
                 foreach ($comment as $data) {
                     $image = $data['image'] ?? [];
                     $video = $data['video'] ?? [];
                     unset($data['image'], $data['video']);
-                    $result = Comment::create($data);
+                    $result = Comment::query()->create($data);
                     $comment_id = $result->id;
                     $ulr_data = [];
                     if ($image) {
@@ -751,7 +751,7 @@ class OrderService
                         }
 
                     }
-                    if ($ulr_data) CommentUrl::insert($ulr_data);
+                    if ($ulr_data) CommentUrl::query()->insert($ulr_data);
                 }
             });
             return true;
@@ -797,8 +797,8 @@ class OrderService
         ];
         try {
             DB::transaction(function () use ($order, $update_data, $order_log) {
-                Order::where('id', $order['id'])->update($update_data);
-                OrderLog::create($order_log);//添加订单日志
+                Order::query()->where('id', $order['id'])->update($update_data);
+                OrderLog::query()->create($order_log);//添加订单日志
             });
             return true;
         } catch (\Exception $e) {
@@ -817,7 +817,7 @@ class OrderService
      */
     public static function apiDelivery(array $order, array $user_data, int $user_type, array $express_company, array $api_delivery_data)
     {
-        $order_goods_id = OrderGoods::where('order_id', $order['id'])->pluck('id')->toArray();
+        $order_goods_id = OrderGoods::query()->where('order_id', $order['id'])->pluck('id')->toArray();
         $delivery_data = [
             'order_id' => $order['id'],
             'order_goods_id' => json_encode($order_goods_id),
@@ -843,13 +843,13 @@ class OrderService
         try {
             DB::transaction(function () use ($order, $order_log, $delivery_data, $template) {
                 //修改商品发货状态
-                OrderGoods::where('order_id', $order['id'])->update(['delivery' => OrderGoods::DELIVERY_ON]);
-                Order::where('id', $order['id'])->update(['status' => Order::STATUS_SHIPMENT, 'send_at' => get_date()]);
-                $delivery_res = OrderDelivery::create($delivery_data);//添加发货信息
+                OrderGoods::query()->where('order_id', $order['id'])->update(['delivery' => OrderGoods::DELIVERY_ON]);
+                Order::query()->where('id', $order['id'])->update(['status' => Order::STATUS_SHIPMENT, 'send_at' => get_date()]);
+                $delivery_res = OrderDelivery::query()->create($delivery_data);//添加发货信息
                 $delivery_id = $delivery_res->id;
-                OrderLog::create($order_log);//添加订单日志
+                OrderLog::query()->create($order_log);//添加订单日志
                 $template['order_delivery_id'] = $delivery_id;
-                OrderDeliveryTemplate::create($template);
+                OrderDeliveryTemplate::query()->create($template);
             });
             return true;
         } catch (\Exception $e) {

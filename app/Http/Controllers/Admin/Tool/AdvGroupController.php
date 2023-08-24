@@ -29,7 +29,7 @@ class AdvGroupController extends BaseController
         $where = [];
         $title = $request->input('title');
         if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
-        $query = AdvGroup::select('id', 'title', 'code', 'width', 'height', 'status', 'created_at')
+        $query = AdvGroup::query()->select('id', 'title', 'code', 'width', 'height', 'status', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -58,7 +58,7 @@ class AdvGroupController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = AdvGroup::find($id);
+        $data = AdvGroup::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -105,9 +105,9 @@ class AdvGroupController extends BaseController
             $save_data[$key] = $value;
         }
         if ($id) {
-            $res = AdvGroup::where('id', $id)->update($save_data);
+            $res = AdvGroup::query()->where('id', $id)->update($save_data);
         } else {
-            $res = AdvGroup::create($save_data);
+            $res = AdvGroup::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -129,7 +129,7 @@ class AdvGroupController extends BaseController
         if (!isset(AdvGroup::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $res = AdvGroup::whereIn('id', $ids)->update(['status' => $status]);
+        $res = AdvGroup::query()->whereIn('id', $ids)->update(['status' => $status]);
         if ($res) {
             return $this->success();
         } else {
@@ -146,7 +146,7 @@ class AdvGroupController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = AdvGroup::whereIn('id', $ids)->delete();
+        $res = AdvGroup::query()->whereIn('id', $ids)->delete();
         if ($res) {
             return $this->success();
         } else {
@@ -164,7 +164,7 @@ class AdvGroupController extends BaseController
         $where = [
             'status' => AdvGroup::STATUS_ON
         ];
-        $res_list = AdvGroup::select('id', 'title')->where($where)
+        $res_list = AdvGroup::query()->select('id', 'title')->where($where)
             ->orderBy('code', 'asc')
             ->orderBy('id', 'desc')
             ->get();

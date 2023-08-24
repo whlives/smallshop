@@ -125,7 +125,7 @@ class LoginController extends BaseController
     {
         $username = request()->post('username');
         $password = request()->post('password');
-        $seller_data = Seller::where('username', $username)->first();
+        $seller_data = Seller::query()->where('username', $username)->first();
         if (!$seller_data) {
             api_error(__('admin.admin_user_error'));
         } elseif (!Hash::check($password, $seller_data['password'])) {

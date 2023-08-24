@@ -29,7 +29,7 @@ class SpecController extends BaseController
         $where = [];
         $title = $request->input('title');
         if ($title) $where[] = ['title', $title];
-        $query = Spec::select('id', 'title', 'type', 'category_id', 'note', 'position', 'created_at')
+        $query = Spec::query()->select('id', 'title', 'type', 'category_id', 'note', 'position', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -41,7 +41,7 @@ class SpecController extends BaseController
         }
         $category_ids = array_column($res_list->toArray(), 'category_id');
         if ($category_ids) {
-            $category = Category::whereIn('id', array_unique($category_ids))->pluck('title', 'id');
+            $category = Category::query()->whereIn('id', array_unique($category_ids))->pluck('title', 'id');
         }
         $data_list = [];
         foreach ($res_list as $value) {
@@ -69,7 +69,7 @@ class SpecController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = Spec::find($id);
+        $data = Spec::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -109,9 +109,9 @@ class SpecController extends BaseController
             $save_data[$key] = $value;
         }
         if ($id) {
-            $res = Spec::where('id', $id)->update($save_data);
+            $res = Spec::query()->where('id', $id)->update($save_data);
         } else {
-            $res = Spec::create($save_data);
+            $res = Spec::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -129,7 +129,7 @@ class SpecController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = Spec::whereIn('id', $ids)->delete();
+        $res = Spec::query()->whereIn('id', $ids)->delete();
         if ($res) {
             return $this->success();
         } else {
@@ -153,7 +153,7 @@ class SpecController extends BaseController
         if (!in_array($field, $field_arr) || !$id || !$field || !$field_value) {
             api_error(__('admin.invalid_params'));
         }
-        $res = Spec::where('id', $id)->update([$field => $field_value]);
+        $res = Spec::query()->where('id', $id)->update([$field => $field_value]);
         if ($res) {
             return $this->success();
         } else {

@@ -67,7 +67,7 @@ class BalanceRecharge extends BaseModel
             ];
             try {
                 DB::transaction(function () use ($notify_data, $recharge, $recharge_update) {
-                    self::where(['recharge_no' => $notify_data['order_no'], 'status' => self::STATUS_OFF])->update($recharge_update);
+                    self::query()->where(['recharge_no' => $notify_data['order_no'], 'status' => self::STATUS_OFF])->update($recharge_update);
                     if ($recharge_update['flag'] == self::FLAG_NO) {
                         Balance::updateAmount($recharge['m_id'], $recharge['amount'], BalanceDetail::EVENT_RECHARGE, $recharge['recharge_no']);
                     }

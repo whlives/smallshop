@@ -44,7 +44,7 @@ class RefundController extends BaseController
             'm_id' => $this->member_data['id'],
             'is_delete' => Refund::IS_DELETE_NO
         ];
-        $query = Refund::select('id', 'order_goods_id', 'seller_id', 'refund_no', 'refund_type', 'status')
+        $query = Refund::query()->select('id', 'order_goods_id', 'seller_id', 'refund_no', 'refund_type', 'status')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -60,7 +60,7 @@ class RefundController extends BaseController
         //获取商品信息
         $order_goods = OrderGoods::getGoodsForId(array_unique($order_goods_ids), true);
         //获取商家信息
-        $seller_res = Seller::select('id', 'title', 'image')->whereIn('id', $seller_ids)->get();
+        $seller_res = Seller::query()->select('id', 'title', 'image')->whereIn('id', $seller_ids)->get();
         if ($seller_res->isEmpty()) {
             api_error(__('api.seller_error'));
         }
@@ -100,7 +100,7 @@ class RefundController extends BaseController
             api_error(__('api.missing_params'));
         }
         $refund = Refund::getInfo($refund_no, $this->member_data['id']);
-        $goods = OrderGoods::select('goods_id', 'goods_title', 'image', 'spec_value')->where('id', $refund['order_goods_id'])->first();
+        $goods = OrderGoods::query()->select('goods_id', 'goods_title', 'image', 'spec_value')->where('id', $refund['order_goods_id'])->first();
         $return = [
             'refund_no' => $refund['refund_no'],
             'order_goods_id' => $refund['order_goods_id'],
@@ -171,10 +171,10 @@ class RefundController extends BaseController
             $return['refund_type'] = $refund['refund_type'];
             $return['reason'] = $refund['reason'];
             //查询最后一次的日志
-            $last_log = RefundLog::where(['refund_id' => $refund['id']])->orderBy('id', 'desc')->first();
+            $last_log = RefundLog::query()->where(['refund_id' => $refund['id']])->orderBy('id', 'desc')->first();
             if ($last_log) {
                 $return['note'] = $last_log['note'] ? json_decode($last_log['note'], true) : [];
-                $image = RefundImage::select('image')->where('log_id', $last_log['id'])->get();
+                $image = RefundImage::query()->select('image')->where('log_id', $last_log['id'])->get();
                 if ($image) {
                     $return['image'] = $image;
                 }
@@ -277,7 +277,7 @@ class RefundController extends BaseController
         }
         $refund = Refund::getInfo($refund_no, $this->member_data['id']);
 
-        $express_company = ExpressCompany::select('title', 'code')->where('id', $company_id)->first();
+        $express_company = ExpressCompany::query()->select('title', 'code')->where('id', $company_id)->first();
         if (!$express_company) {
             api_error(__('api.express_company_error'));
         }
@@ -310,11 +310,11 @@ class RefundController extends BaseController
         $refund = Refund::getInfo($refund_no, $this->member_data['id']);
 
         $delivery_traces = [];
-        $delivery_res = RefundDelivery::select('company_code', 'company_name', 'code')->where(['refund_id' => $refund['id'], 'type' => RefundDelivery::TYPE_MEMBER])->get();
+        $delivery_res = RefundDelivery::query()->select('company_code', 'company_name', 'code')->where(['refund_id' => $refund['id'], 'type' => RefundDelivery::TYPE_MEMBER])->get();
         if ($delivery_res->isEmpty()) {
             return $this->success($delivery_traces);
         }
-        $traces_query = DeliveryTraces::select('company_code', 'code', 'accept_time', 'info');
+        $traces_query = DeliveryTraces::query()->select('company_code', 'code', 'accept_time', 'info');
         foreach ($delivery_res as $value) {
             $delivery_traces[$value['company_code'] . $value['code']] = [
                 'company_name' => $value['company_name'],
@@ -403,7 +403,7 @@ class RefundController extends BaseController
         if (!RefundService::isUserDelete($refund)) {
             api_error(__('api.refund_status_error'));
         }
-        $res = Refund::where(['m_id' => $this->member_data['id'], 'refund_no' => $refund_no])->update(['is_delete' => Refund::IS_DELETE_YES]);
+        $res = Refund::query()->where(['m_id' => $this->member_data['id'], 'refund_no' => $refund_no])->update(['is_delete' => Refund::IS_DELETE_YES]);
         if ($res) {
             return $this->success();
         } else {

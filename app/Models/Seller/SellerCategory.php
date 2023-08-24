@@ -17,7 +17,7 @@ class SellerCategory extends BaseModel
 {
     protected $table = 'seller_category';
     protected $guarded = ['id'];
-    
+
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -41,7 +41,7 @@ class SellerCategory extends BaseModel
             'seller_id' => $seller_id,
             'parent_id' => $parent_id,
         ];
-        $result = self::select('id', 'title', 'parent_id', 'image', 'position', 'status')
+        $result = self::query()->select('id', 'title', 'parent_id', 'image', 'position', 'status')
             ->where($where)
             ->orderBy('position', 'asc')
             ->orderBy('id', 'asc')
@@ -77,7 +77,7 @@ class SellerCategory extends BaseModel
             'status' => self::STATUS_ON,
             'parent_id' => $parent_id,
         ];
-        $result = self::select('id', 'title', 'id as value', 'title as name')
+        $result = self::query()->select('id', 'title', 'id as value', 'title as name')
             ->where($where)
             ->orderBy('position', 'asc')
             ->orderBy('id', 'asc')

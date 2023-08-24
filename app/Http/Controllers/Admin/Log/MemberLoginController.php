@@ -32,14 +32,14 @@ class MemberLoginController extends BaseController
         $where = [];
         $username = $request->input('username');
         if ($username) {
-            $member_id = Member::where('username', $username)->value('id');
+            $member_id = Member::query()->where('username', $username)->value('id');
             if ($member_id) {
                 $where[] = ['m_id', $member_id];
             } else {
                 api_error(__('admin.content_is_empty'));
             }
         }
-        $query = MemberLoginLog::select('id', 'm_id', 'ip', 'platform', 'version', 'system', 'mobile_model', 'status', 'created_at')
+        $query = MemberLoginLog::query()->select('id', 'm_id', 'ip', 'platform', 'version', 'system', 'mobile_model', 'status', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -51,7 +51,7 @@ class MemberLoginController extends BaseController
         }
         $m_ids = array_column($res_list->toArray(), 'm_id');
         if ($m_ids) {
-            $member_data = Member::whereIn('id', array_unique($m_ids))->pluck('username', 'id');
+            $member_data = Member::query()->whereIn('id', array_unique($m_ids))->pluck('username', 'id');
         }
         $data_list = [];
         foreach ($res_list as $value) {
@@ -79,11 +79,11 @@ class MemberLoginController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = MemberLoginLog::find($id);
+        $data = MemberLoginLog::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
-        MemberLoginLog::where('id', $id)->update(['status' => MemberLoginLog::STATUS_OFF]);
+        MemberLoginLog::query()->where('id', $id)->update(['status' => MemberLoginLog::STATUS_OFF]);
         $token_service = new TokenService();
         $token_service->delToken($data['token']);
         return $this->success();

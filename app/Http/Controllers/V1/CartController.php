@@ -29,7 +29,7 @@ class CartController extends BaseController
      */
     public function index(Request $request)
     {
-        $cart = Cart::select('goods_id', 'buy_qty', 'sku_id')->where('m_id', $this->m_id)->orderBy('updated_at', 'desc')->get();
+        $cart = Cart::query()->select('goods_id', 'buy_qty', 'sku_id')->where('m_id', $this->m_id)->orderBy('updated_at', 'desc')->get();
         if ($cart->isEmpty()) {
             api_error(__('api.cart_goods_not_exists'));
         }
@@ -53,13 +53,13 @@ class CartController extends BaseController
         if (!$sku_id || !$buy_qty) {
             api_error(__('api.missing_params'));
         }
-        $cart = Cart::where(['m_id' => $this->m_id, 'sku_id' => $sku_id])->first();
+        $cart = Cart::query()->where(['m_id' => $this->m_id, 'sku_id' => $sku_id])->first();
         if (isset($cart['buy_qty'])) $buy_qty = $cart['buy_qty'] + $buy_qty;
         //查询商品是否正常
         [$goods_sku, $goods] = GoodsService::checkCartGoods($sku_id, $buy_qty);
         if ($cart) {
             //已经存在直接修改数量
-            $res = Cart::where('id', $cart['id'])->update(['buy_qty' => $buy_qty]);
+            $res = Cart::query()->where('id', $cart['id'])->update(['buy_qty' => $buy_qty]);
         } else {
             $cart_data = [
                 'm_id' => $this->m_id,
@@ -68,7 +68,7 @@ class CartController extends BaseController
                 'sku_id' => $sku_id,
                 'buy_qty' => $buy_qty,
             ];
-            $res = Cart::create($cart_data);
+            $res = Cart::query()->create($cart_data);
         }
         if ($res) {
             return $this->success();
@@ -90,14 +90,14 @@ class CartController extends BaseController
         if (!$sku_id || !$buy_qty) {
             api_error(__('api.missing_params'));
         }
-        $cart = Cart::where(['m_id' => $this->m_id, 'sku_id' => $sku_id])->first();
+        $cart = Cart::query()->where(['m_id' => $this->m_id, 'sku_id' => $sku_id])->first();
         if (!$cart) {
             api_error(__('api.cart_goods_error'));
         }
         //查询商品是否正常
         [$goods_sku, $goods] = GoodsService::checkCartGoods($sku_id, $buy_qty);
         //已经存在直接修改数量
-        $res = Cart::where('id', $cart['id'])->update(['buy_qty' => $buy_qty]);
+        $res = Cart::query()->where('id', $cart['id'])->update(['buy_qty' => $buy_qty]);
         if ($res) {
             return $this->success();
         } else {
@@ -121,7 +121,7 @@ class CartController extends BaseController
         if (!$sku_id) {
             api_error(__('api.missing_params'));
         }
-        $res = Cart::where('m_id', $this->m_id)->whereIn('sku_id', $sku_id)->delete();
+        $res = Cart::query()->where('m_id', $this->m_id)->whereIn('sku_id', $sku_id)->delete();
         if ($res) {
             return $this->success();
         } else {
@@ -137,7 +137,7 @@ class CartController extends BaseController
      */
     public function clear(Request $request)
     {
-        $res = Cart::where('m_id', $this->m_id)->delete();
+        $res = Cart::query()->where('m_id', $this->m_id)->delete();
         if ($res) {
             return $this->success();
         } else {

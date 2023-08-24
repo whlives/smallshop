@@ -33,7 +33,7 @@ class RightController extends BaseController
         $menu_child = (int)$request->input('menu_child');
         if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
         if ($menu_child) $where[] = ['menu_child', $menu_child];
-        $query = AdminRight::select('id', 'title', 'menu_top', 'menu_child', 'status', 'created_at')
+        $query = AdminRight::query()->select('id', 'title', 'menu_top', 'menu_child', 'status', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -49,7 +49,7 @@ class RightController extends BaseController
             $menu_ids[] = $value['menu_child'];
         }
         if ($menu_ids) {
-            $menu = Menu::whereIn('id', array_unique($menu_ids))->pluck('title', 'id');
+            $menu = Menu::query()->whereIn('id', array_unique($menu_ids))->pluck('title', 'id');
         }
         $data_list = [];
         foreach ($res_list as $value) {
@@ -77,7 +77,7 @@ class RightController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = AdminRight::find($id);
+        $data = AdminRight::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -128,9 +128,9 @@ class RightController extends BaseController
             $save_data['right'] = json_encode($rights, JSON_UNESCAPED_UNICODE);
         }
         if ($id) {
-            $res = AdminRight::where('id', $id)->update($save_data);
+            $res = AdminRight::query()->where('id', $id)->update($save_data);
         } else {
-            $res = AdminRight::create($save_data);
+            $res = AdminRight::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -152,7 +152,7 @@ class RightController extends BaseController
         if (!isset(AdminRight::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $res = AdminRight::whereIn('id', $ids)->update(['status' => $status]);
+        $res = AdminRight::query()->whereIn('id', $ids)->update(['status' => $status]);
         if ($res) {
             return $this->success();
         } else {
@@ -169,7 +169,7 @@ class RightController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = AdminRight::whereIn('id', $ids)->delete();
+        $res = AdminRight::query()->whereIn('id', $ids)->delete();
         if ($res) {
             return $this->success();
         } else {
@@ -187,7 +187,7 @@ class RightController extends BaseController
     {
         $right_list = [];
         //获取权限列表
-        $rights = AdminRight::where('status', AdminRight::STATUS_ON)->get();
+        $rights = AdminRight::query()->where('status', AdminRight::STATUS_ON)->get();
         if ($rights) {
             $menu_ids = $role_right = [];
             foreach ($rights as $right) {
@@ -198,7 +198,7 @@ class RightController extends BaseController
             //菜单名称
             $menus = [];
             if ($menu_ids) {
-                $menu_res = Menu::whereIn('id', array_unique($menu_ids))->get();
+                $menu_res = Menu::query()->whereIn('id', array_unique($menu_ids))->get();
                 if (!$menu_res->isEmpty()) {
                     $menus = array_column($menu_res->toArray(), 'title', 'id');
                 }

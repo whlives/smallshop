@@ -56,7 +56,7 @@ class CouponsController extends BaseController
             'is_use' => CouponsDetail::USE_ON
         ];
         $res_list = self::getCoupons($where, $offset, $limit);
-        $total = CouponsDetail::where($where)->count();
+        $total = CouponsDetail::query()->where($where)->count();
         $return = [
             'lists' => $res_list,
             'total' => $total,
@@ -80,7 +80,7 @@ class CouponsController extends BaseController
             ['end_at', '>=', get_date()]
         ];
         $res_list = self::getCoupons($where, $offset, $limit);
-        $total = CouponsDetail::where($where)->count();
+        $total = CouponsDetail::query()->where($where)->count();
         $return = [
             'lists' => $res_list,
             'total' => $total,
@@ -103,7 +103,7 @@ class CouponsController extends BaseController
             ['end_at', '<=', get_date()]
         ];
         $res_list = self::getCoupons($where, $offset, $limit);
-        $total = CouponsDetail::where($where)->count();
+        $total = CouponsDetail::query()->where($where)->count();
         $return = [
             'lists' => $res_list,
             'total' => $total,
@@ -121,7 +121,7 @@ class CouponsController extends BaseController
      */
     private function getCoupons($where, $offset, $limit)
     {
-        $res_list = CouponsDetail::select('id', 'coupons_id', 'start_at', 'end_at')
+        $res_list = CouponsDetail::query()->select('id', 'coupons_id', 'start_at', 'end_at')
             ->where($where)
             ->orderBy('id', 'desc')
             ->offset($offset)
@@ -133,11 +133,11 @@ class CouponsController extends BaseController
         $coupons_ids = array_column($res_list->toArray(), 'coupons_id');
         //获取优惠券信息
         if ($coupons_ids) {
-            $coupons_res = Coupons::select('id', 'title', 'image', 'type', 'amount', 'use_price', 'note', 'seller_id')->whereIn('id', array_unique($coupons_ids))->get();
+            $coupons_res = Coupons::query()->select('id', 'title', 'image', 'type', 'amount', 'use_price', 'note', 'seller_id')->whereIn('id', array_unique($coupons_ids))->get();
             $seller_ids = array_column($coupons_res->toArray(), 'seller_id');
             $coupons_res = array_column($coupons_res->toArray(), null, 'id');
             //获取商家信息
-            $seller_res = Seller::whereIn('id', array_unique($seller_ids))->pluck('title', 'id');
+            $seller_res = Seller::query()->whereIn('id', array_unique($seller_ids))->pluck('title', 'id');
         }
         $data_list = [];
         foreach ($res_list->toArray() as $value) {

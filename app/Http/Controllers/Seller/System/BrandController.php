@@ -25,7 +25,7 @@ class BrandController extends BaseController
         $where = [
             'status' => Brand::STATUS_ON
         ];
-        $res_list = Brand::select('id', 'title')->where($where)
+        $res_list = Brand::query()->select('id', 'title')->where($where)
             ->orderBy('position', 'asc')
             ->orderBy('id', 'desc')
             ->get();

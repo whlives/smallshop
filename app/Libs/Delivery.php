@@ -88,7 +88,7 @@ class Delivery
             $param = json_decode($post_data['param'], true);
             $traces = $param['lastResult'] ?? [];
             if ($traces) {
-                DeliveryTraces::where(['company_code' => $traces['com'], 'code' => $traces['nu']])->delete();
+                DeliveryTraces::query()->where(['company_code' => $traces['com'], 'code' => $traces['nu']])->delete();
                 $insert_data = [];
                 foreach ($traces['data'] as $value) {
                     $insert_data[] = [
@@ -102,7 +102,7 @@ class Delivery
                     ];
                 }
                 if ($insert_data) {
-                    DeliveryTraces::insert($insert_data);
+                    DeliveryTraces::query()->insert($insert_data);
                 }
                 //记录日志
                 $log = [

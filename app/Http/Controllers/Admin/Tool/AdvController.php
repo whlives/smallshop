@@ -30,7 +30,7 @@ class AdvController extends BaseController
         $group_id = (int)$request->input('group_id');
         if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
         if ($group_id) $where[] = ['group_id', $group_id];
-        $query = Adv::select('id', 'title', 'image', 'target_type', 'target_value', 'position', 'start_at', 'end_at', 'status', 'created_at')
+        $query = Adv::query()->select('id', 'title', 'image', 'target_type', 'target_value', 'position', 'start_at', 'end_at', 'status', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -65,7 +65,7 @@ class AdvController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = Adv::find($id);
+        $data = Adv::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -115,9 +115,9 @@ class AdvController extends BaseController
             api_error(__('admin.adv_app_id_not_empty'));
         }
         if ($id) {
-            $res = Adv::where('id', $id)->update($save_data);
+            $res = Adv::query()->where('id', $id)->update($save_data);
         } else {
-            $res = Adv::create($save_data);
+            $res = Adv::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -139,7 +139,7 @@ class AdvController extends BaseController
         if (!isset(Adv::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $res = Adv::whereIn('id', $ids)->update(['status' => $status]);
+        $res = Adv::query()->whereIn('id', $ids)->update(['status' => $status]);
         if ($res) {
             return $this->success();
         } else {
@@ -156,7 +156,7 @@ class AdvController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = Adv::whereIn('id', $ids)->delete();
+        $res = Adv::query()->whereIn('id', $ids)->delete();
         if ($res) {
             return $this->success();
         } else {
@@ -180,7 +180,7 @@ class AdvController extends BaseController
         if (!in_array($field, $field_arr) || !$id || !$field || !$field_value) {
             api_error(__('admin.invalid_params'));
         }
-        $res = Adv::where('id', $id)->update([$field => $field_value]);
+        $res = Adv::query()->where('id', $id)->update([$field => $field_value]);
         if ($res) {
             return $this->success();
         } else {

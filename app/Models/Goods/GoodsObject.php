@@ -32,19 +32,19 @@ class GoodsObject extends BaseModel
     public static function getCoupons(array $cart, int $m_id)
     {
         //查询优惠券
-        $coupon_id = self::where(['goods_id' => $cart['goods_id'], 'type' => Goods::TYPE_COUPONS])->value('coupon_id');
+        $coupon_id = self::query()->where(['goods_id' => $cart['goods_id'], 'type' => Goods::TYPE_COUPONS])->value('coupon_id');
         if (!$coupon_id) {
             api_error(__('api.coupons_not_exists'));
         }
         //查询优惠券详情
-        $coupons = Coupons::where(['status' => Coupons::STATUS_ON, 'id' => $coupon_id])->first();
+        $coupons = Coupons::query()->where(['status' => Coupons::STATUS_ON, 'id' => $coupon_id])->first();
         if (!$coupons) {
             api_error(__('api.coupons_not_exists'));
         } elseif ($coupons['end_at'] < get_date()) {
             api_error(__('api.coupons_overdue'));
         }
         //查询已经领取的优惠券数量
-        $obtain_total = CouponsDetail::where(['coupons_id' => $coupon_id, 'm_id' => $m_id])->count();
+        $obtain_total = CouponsDetail::query()->where(['coupons_id' => $coupon_id, 'm_id' => $m_id])->count();
         $remainder = $coupons['limit'] - $obtain_total;
         //判断本次最多还能购买的数量
         if ($cart['buy_qty'] > $remainder) {

@@ -53,7 +53,7 @@ class AdminLoginStatus extends Command
         $limit = 10;
         while (true) {
             $offset = ($page - 1) * $limit;
-            $res_list = AdminLoginLog::select('id', 'token')
+            $res_list = AdminLoginLog::query()->select('id', 'token')
                 ->where($where)
                 ->offset($offset)
                 ->limit($limit)
@@ -71,7 +71,7 @@ class AdminLoginStatus extends Command
                         $token_service->delToken($value);
                     }
                 }
-                if ($ids) AdminLoginLog::whereIn('id', $ids)->update(['status' => AdminLoginLog::STATUS_OFF]);
+                if ($ids) AdminLoginLog::query()->whereIn('id', $ids)->update(['status' => AdminLoginLog::STATUS_OFF]);
                 sleep(1);
             }
         }

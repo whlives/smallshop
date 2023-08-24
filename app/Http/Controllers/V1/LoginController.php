@@ -34,7 +34,7 @@ class LoginController extends BaseController
         if (!$username || !$password) {
             api_error(__('api.missing_params'));
         }
-        $member_data = Member::where('username', $username)->first();
+        $member_data = Member::query()->where('username', $username)->first();
         if (!$member_data) {
             api_error(__('api.user_error'));
         } elseif (!Hash::check($password, $member_data['password'])) {
@@ -60,12 +60,12 @@ class LoginController extends BaseController
         } elseif (!check_mobile($mobile)) {
             api_error(__('api.invalid_params'));
         }
-        $member_data = Member::where('username', $mobile)->first();
+        $member_data = Member::query()->where('username', $mobile)->first();
         if (!$member_data) {
             //没有注册的直接注册
             $register = LoginService::register(['username' => $mobile]);
             if ($register) {
-                $member_data = Member::where('username', $mobile)->first();
+                $member_data = Member::query()->where('username', $mobile)->first();
             } else {
                 api_error(__('api.fail'));
             }
@@ -238,7 +238,7 @@ class LoginController extends BaseController
             api_error(__('api.missing_params'));
         }
         $update_data['password'] = Hash::make($password);
-        $res = Member::where('username', $mobile)->update($update_data);
+        $res = Member::query()->where('username', $mobile)->update($update_data);
         if ($res) {
             return $this->success();
         } else {
@@ -272,7 +272,7 @@ class LoginController extends BaseController
     {
         $token_service = new TokenService();
         $token_name = $token_service->getTokenName();
-        MemberLoginLog::where('token', $token_name)->update(['status' => MemberLoginLog::STATUS_OFF]);//修改登录状态
+        MemberLoginLog::query()->where('token', $token_name)->update(['status' => MemberLoginLog::STATUS_OFF]);//修改登录状态
         $token_service->delToken();
         return $this->success();
     }

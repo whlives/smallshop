@@ -28,7 +28,7 @@ class PaymentController extends BaseController
         $where = [];
         $title = $request->input('title');
         if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
-        $query = Payment::select('id', 'title', 'image', 'position', 'type', 'status', 'created_at')
+        $query = Payment::query()->select('id', 'title', 'image', 'position', 'type', 'status', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -57,7 +57,7 @@ class PaymentController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = Payment::find($id);
+        $data = Payment::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -98,9 +98,9 @@ class PaymentController extends BaseController
         }
         $save_data['client_type'] = implode(',', $request->input('client_type'));
         if ($id) {
-            $res = Payment::where('id', $id)->update($save_data);
+            $res = Payment::query()->where('id', $id)->update($save_data);
         } else {
-            $res = Payment::create($save_data);
+            $res = Payment::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -122,7 +122,7 @@ class PaymentController extends BaseController
         if (!isset(Payment::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $res = Payment::whereIn('id', $ids)->update(['status' => $status]);
+        $res = Payment::query()->whereIn('id', $ids)->update(['status' => $status]);
         if ($res) {
             return $this->success();
         } else {
@@ -139,7 +139,7 @@ class PaymentController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = Payment::whereIn('id', $ids)->delete();
+        $res = Payment::query()->whereIn('id', $ids)->delete();
         if ($res) {
             return $this->success();
         } else {
@@ -163,7 +163,7 @@ class PaymentController extends BaseController
         if (!in_array($field, $field_arr) || !$id || !$field || !$field_value) {
             api_error(__('admin.invalid_params'));
         }
-        $res = Payment::where('id', $id)->update([$field => $field_value]);
+        $res = Payment::query()->where('id', $id)->update([$field => $field_value]);
         if ($res) {
             return $this->success();
         } else {

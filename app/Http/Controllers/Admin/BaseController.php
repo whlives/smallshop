@@ -14,7 +14,7 @@ use App\Services\TokenService;
 
 class BaseController extends \App\Http\Controllers\BaseController
 {
-    
+
     /**
      * 获取用户id
      * @return int
@@ -39,7 +39,7 @@ class BaseController extends \App\Http\Controllers\BaseController
     public function getUserInfo(): array
     {
         $user_id = $this->getUserId();
-        $user_data = Admin::find($user_id);
+        $user_data = Admin::query()->find($user_id);
         return $user_data->toArray();
     }
 

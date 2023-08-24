@@ -20,7 +20,7 @@ class Promotion extends BaseModel
 {
     protected $table = 'promotion';
     protected $guarded = ['id'];
-    
+
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -72,7 +72,7 @@ class Promotion extends BaseModel
             ['end_at', '>=', get_date()],
         ];
         $group_id = $member_data['group_id'];
-        $res_list = self::select('title', 'type', 'type_value')
+        $res_list = self::query()->select('title', 'type', 'type_value')
             ->where($where)
             ->whereRaw("find_in_set($group_id, user_group)")
             ->get();
@@ -110,8 +110,8 @@ class Promotion extends BaseModel
             ['start_at', '<=', $order['created_at']],
             ['end_at', '>=', $order['created_at']],
         ];
-        $group_id = Member::where('id', $order['m_id'])->value('group_id');;
-        $res_list = self::select('title', 'type', 'type_value')
+        $group_id = Member::query()->where('id', $order['m_id'])->value('group_id');;
+        $res_list = self::query()->select('title', 'type', 'type_value')
             ->where($where)
             ->whereIn('type', [self::AMOUNT_TYPE_COUPONS, self::AMOUNT_TYPE_POINT])
             ->whereRaw("find_in_set($group_id, user_group)")

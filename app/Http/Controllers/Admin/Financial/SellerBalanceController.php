@@ -33,7 +33,7 @@ class SellerBalanceController extends BaseController
         $username = $request->input('username');
         if ($id) $where[] = ['id', $id];
         if ($username) $where[] = ['username', $username];
-        $query = Seller::select('id', 'username', 'updated_at')
+        $query = Seller::query()->select('id', 'username', 'updated_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -45,7 +45,7 @@ class SellerBalanceController extends BaseController
         }
         $m_ids = array_column($res_list->toArray(), 'id');
         if ($m_ids) {
-            $seller_balance_data = SellerBalance::select('m_id', 'amount', 'updated_at')->whereIn('m_id', array_unique($m_ids))->get();
+            $seller_balance_data = SellerBalance::query()->select('m_id', 'amount', 'updated_at')->whereIn('m_id', array_unique($m_ids))->get();
             if (!$seller_balance_data->isEmpty()) $seller_balance_data = array_column($seller_balance_data->toArray(), null, 'm_id');
         }
         $data_list = [];
@@ -90,7 +90,7 @@ class SellerBalanceController extends BaseController
         //查询id是否都存在
         $is_exists = $member = [];
         foreach ($username as $value) {
-            $member_id = Seller::where('username', $value)->value('id');
+            $member_id = Seller::query()->where('username', $value)->value('id');
             if (!$member_id) {
                 $is_exists[] = $value;
             } else {
@@ -151,7 +151,7 @@ class SellerBalanceController extends BaseController
         $amount = $request->input('amount');
         $note = $request->input('note');
         //验证用户
-        if (!Seller::where('id', $id)->exists()) {
+        if (!Seller::query()->where('id', $id)->exists()) {
             api_error(__('admin.invalid_params'));
         }
         $event = '';
@@ -185,7 +185,7 @@ class SellerBalanceController extends BaseController
             api_error(__('admin.content_is_empty'));
         }
         $where[] = ['m_id', $m_id];
-        $query = SellerBalanceDetail::select('id', 'm_id', 'type', 'event', 'detail_no', 'amount', 'balance', 'note', 'created_at')
+        $query = SellerBalanceDetail::query()->select('id', 'm_id', 'type', 'event', 'detail_no', 'amount', 'balance', 'note', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')

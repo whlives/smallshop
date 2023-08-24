@@ -28,7 +28,7 @@ class SellerController extends BaseController
         if (!$seller_id) {
             api_error(__('api.missing_params'));
         }
-        $seller = Seller::select('id', 'title', 'image')->where('id', $seller_id)->first();
+        $seller = Seller::query()->select('id', 'title', 'image')->where('id', $seller_id)->first();
         $profile = $seller->profile;
         $area_name = Areas::getAreaName([$profile['prov_id'], $profile['city_id'], $profile['area_id']]);
         $return = [

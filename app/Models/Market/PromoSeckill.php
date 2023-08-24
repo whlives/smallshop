@@ -44,7 +44,7 @@ class PromoSeckill extends BaseModel
         $cache_key = 'seckill:' . $goods_id;
         $seckill = Cache::get($cache_key);
         if (!$seckill) {
-            $seckill = self::select('start_at', 'end_at', 'end_at', 'status')->where('goods_id', $goods_id)->first();
+            $seckill = self::query()->select('start_at', 'end_at', 'end_at', 'status')->where('goods_id', $goods_id)->first();
             if ($seckill) $seckill = $seckill->toArray();
             Cache::put($cache_key, $seckill, get_custom_config('cache_time'));
         }

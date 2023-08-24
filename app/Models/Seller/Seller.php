@@ -70,13 +70,13 @@ class Seller extends BaseModel
                     $seller_data['password'] = Hash::make($seller_data['password']);
                 }
                 if ($id) {
-                    self::where('id', $id)->update($seller_data);
-                    SellerProfile::where('seller_id', $id)->update($profile_data);
+                    self::query()->where('id', $id)->update($seller_data);
+                    SellerProfile::query()->where('seller_id', $id)->update($profile_data);
                 } else {
-                    $result = self::create($seller_data);
+                    $result = self::query()->create($seller_data);
                     $seller_id = $result->id;
                     $profile_data['seller_id'] = $seller_id;
-                    SellerProfile::create($profile_data);
+                    SellerProfile::query()->create($profile_data);
                 }
             });
             $res = true;

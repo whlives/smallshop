@@ -58,7 +58,7 @@ class Point extends BaseModel
         ];
         try {
             $res = DB::transaction(function () use ($m_id, $amount, $detail) {
-                $res_data = self::where('m_id', $m_id)->lockForUpdate()->first();//查询用户余额并锁定
+                $res_data = self::query()->where('m_id', $m_id)->lockForUpdate()->first();//查询用户余额并锁定
                 if ($amount < 0 && (!isset($res_data['amount']) || ($res_data['amount'] + $amount) < 0)) {
                     return __('api.balance_insufficient');
                 } else {
@@ -69,13 +69,13 @@ class Point extends BaseModel
                         if ($amount < 0) {
                             $where[] = ['amount', '>=', abs($amount)];
                         }
-                        $res = self::where($where)->increment('amount', $amount);
+                        $res = self::query()->where($where)->increment('amount', $amount);
                     } else {
                         $res_data['amount'] = 0;
-                        $res = self::create(['m_id' => $m_id, 'amount' => $amount]);
+                        $res = self::query()->create(['m_id' => $m_id, 'amount' => $amount]);
                     }
                     $detail['balance'] = $res_data['amount'] + $amount;
-                    PointDetail::create($detail);
+                    PointDetail::query()->create($detail);
                     if ($res) {
                         return true;
                     }

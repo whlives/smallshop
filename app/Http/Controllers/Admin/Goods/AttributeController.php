@@ -29,7 +29,7 @@ class AttributeController extends BaseController
         $where = [];
         $title = $request->input('title');
         if ($title) $where[] = ['title', $title];
-        $query = Attribute::select('id', 'title', 'input_type', 'category_id', 'note', 'position', 'created_at')
+        $query = Attribute::query()->select('id', 'title', 'input_type', 'category_id', 'note', 'position', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -41,7 +41,7 @@ class AttributeController extends BaseController
         }
         $category_ids = array_column($res_list->toArray(), 'category_id');
         if ($category_ids) {
-            $category = Category::whereIn('id', array_unique($category_ids))->pluck('title', 'id');
+            $category = Category::query()->whereIn('id', array_unique($category_ids))->pluck('title', 'id');
         }
         $data_list = [];
         foreach ($res_list as $value) {
@@ -69,7 +69,7 @@ class AttributeController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = Attribute::find($id);
+        $data = Attribute::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -108,9 +108,9 @@ class AttributeController extends BaseController
             $save_data[$key] = $value;
         }
         if ($id) {
-            $res = Attribute::where('id', $id)->update($save_data);
+            $res = Attribute::query()->where('id', $id)->update($save_data);
         } else {
-            $res = Attribute::create($save_data);
+            $res = Attribute::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -128,7 +128,7 @@ class AttributeController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = Attribute::whereIn('id', $ids)->delete();
+        $res = Attribute::query()->whereIn('id', $ids)->delete();
         if ($res) {
             return $this->success();
         } else {
@@ -152,7 +152,7 @@ class AttributeController extends BaseController
         if (!in_array($field, $field_arr) || !$id || !$field || !$field_value) {
             api_error(__('admin.invalid_params'));
         }
-        $res = Attribute::where('id', $id)->update([$field => $field_value]);
+        $res = Attribute::query()->where('id', $id)->update([$field => $field_value]);
         if ($res) {
             return $this->success();
         } else {

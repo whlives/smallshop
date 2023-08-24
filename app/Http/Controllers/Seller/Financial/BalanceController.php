@@ -39,7 +39,7 @@ class BalanceController extends BaseController
         $where = [
             ['m_id', $this->seller_id]
         ];
-        $query = SellerBalanceDetail::select('id', 'm_id', 'type', 'event', 'detail_no', 'amount', 'balance', 'note', 'created_at')
+        $query = SellerBalanceDetail::query()->select('id', 'm_id', 'type', 'event', 'detail_no', 'amount', 'balance', 'note', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -97,7 +97,7 @@ class BalanceController extends BaseController
                 'bank_name' => $bank_name,
                 'pay_number' => $pay_number,
             ];
-            $add = SellerWithdraw::create($withdraw_data);
+            $add = SellerWithdraw::query()->create($withdraw_data);
             if ($add) {
                 return $this->success();
             } else {

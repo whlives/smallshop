@@ -18,7 +18,7 @@ class MemberLoginLog extends BaseModel
 {
     protected $table = 'member_login_log';
     protected $guarded = ['id'];
-    
+
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -38,12 +38,12 @@ class MemberLoginLog extends BaseModel
         if (!is_array($id)) {
             $id = [$id];
         }
-        $token_data = self::whereIn('m_id', $id)->pluck('token');
+        $token_data = self::query()->whereIn('m_id', $id)->pluck('token');
         if ($token_data) {
             foreach ($token_data as $value) {
                 $token_service->delToken($value);
             }
-            self::whereIn('m_id', $id)->update(['status' => self::STATUS_OFF]);
+            self::query()->whereIn('m_id', $id)->update(['status' => self::STATUS_OFF]);
         }
         return true;
     }
@@ -57,7 +57,7 @@ class MemberLoginLog extends BaseModel
     public static function removeLoginUser(int $m_id, string $platform)
     {
         $token_service = new TokenService();
-        $login_log = self::select('id', 'token')->where(['m_id' => $m_id, 'platform' => $platform, 'status' => self::STATUS_ON])->get();
+        $login_log = self::query()->select('id', 'token')->where(['m_id' => $m_id, 'platform' => $platform, 'status' => self::STATUS_ON])->get();
         if (!$login_log->isEmpty()) {
             $log_ids = [];
             foreach ($login_log as $value) {
@@ -65,7 +65,7 @@ class MemberLoginLog extends BaseModel
                 $log_ids[] = $value['id'];
             }
             if ($log_ids) {
-                self::whereIn('id', $log_ids)->update(['status' => self::STATUS_OFF]);
+                self::query()->whereIn('id', $log_ids)->update(['status' => self::STATUS_OFF]);
             }
         }
     }

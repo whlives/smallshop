@@ -35,7 +35,7 @@ class DeliveryController extends BaseController
         $code = $request->input('code');
         if ($order_id) $where[] = ['order_id', $order_id];
         if ($order_no) {
-            $order_id = Order::where('order_no', $order_no)->value('id');
+            $order_id = Order::query()->where('order_no', $order_no)->value('id');
             if ($order_id) {
                 $where[] = ['order_id', $order_id];
             } else {
@@ -52,7 +52,7 @@ class DeliveryController extends BaseController
             ExportService::delivery($request, ['where' => $where], $start_at, $end_at);//导出数据
             exit;
         }
-        $query = OrderDelivery::select('id', 'order_id', 'company_name', 'code', 'created_at')
+        $query = OrderDelivery::query()->select('id', 'order_id', 'company_name', 'code', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -65,7 +65,7 @@ class DeliveryController extends BaseController
         $res_list = $res_list->toArray();
         $order_ids = array_column($res_list, 'order_id');
         if ($order_ids) {
-            $order_data = Order::whereIn('id', array_unique($order_ids))->pluck('order_no', 'id');
+            $order_data = Order::query()->whereIn('id', array_unique($order_ids))->pluck('order_no', 'id');
         }
         $data_list = [];
         foreach ($res_list as $value) {
@@ -92,7 +92,7 @@ class DeliveryController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $delivery = OrderDelivery::find($id);
+        $delivery = OrderDelivery::query()->find($id);
         if (!$delivery) {
             api_error(__('admin.content_is_empty'));
         }

@@ -18,7 +18,7 @@ class Article extends BaseModel
 {
     protected $table = 'article';
     protected $guarded = ['id'];
-    
+
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -51,12 +51,12 @@ class Article extends BaseModel
                 $content = $save_data['content'];
                 unset($save_data['content']);
                 if ($id) {
-                    self::where('id', $id)->update($save_data);
-                    ArticleContent::where('article_id', $id)->update(['content' => $content]);
+                    self::query()->where('id', $id)->update($save_data);
+                    ArticleContent::query()->where('article_id', $id)->update(['content' => $content]);
                 } else {
-                    $result = self::create($save_data);
+                    $result = self::query()->create($save_data);
                     $res_id = $result->id;
-                    ArticleContent::create(['article_id' => $res_id, 'content' => $content]);
+                    ArticleContent::query()->create(['article_id' => $res_id, 'content' => $content]);
                 }
             });
             $res = true;

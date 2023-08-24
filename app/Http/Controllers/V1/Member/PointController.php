@@ -35,7 +35,7 @@ class PointController extends BaseController
             'm_id' => $this->m_id
         ];
         if (isset(PointDetail::EVENT_DESC[$event])) $where['event'] = $event;
-        $query = PointDetail::select('id', 'type', 'event', 'detail_no', 'amount', 'created_at')
+        $query = PointDetail::query()->select('id', 'type', 'event', 'detail_no', 'amount', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -72,7 +72,7 @@ class PointController extends BaseController
         if (!$id) {
             api_error(__('api.missing_params'));
         }
-        $res_list = PointDetail::select('event', 'detail_no', 'amount', 'balance', 'note', 'created_at')->where(['id' => $id, 'm_id' => $this->m_id])->first();
+        $res_list = PointDetail::query()->select('event', 'detail_no', 'amount', 'balance', 'note', 'created_at')->where(['id' => $id, 'm_id' => $this->m_id])->first();
         if (!$res_list) {
             api_error(__('api.content_is_empty'));
         }

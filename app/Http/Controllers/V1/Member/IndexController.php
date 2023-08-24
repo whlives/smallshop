@@ -35,21 +35,21 @@ class IndexController extends BaseController
      */
     public function index(Request $request)
     {
-        $member_data = Member::find($this->m_id);
+        $member_data = Member::query()->find($this->m_id);
         if (!$member_data) {
             api_error(__('api.invalid_token'));
         }
         //待付款订单
-        $wait_pay_num = Order::where(['m_id' => $this->m_id, 'status' => Order::STATUS_WAIT_PAY])->count();
+        $wait_pay_num = Order::query()->where(['m_id' => $this->m_id, 'status' => Order::STATUS_WAIT_PAY])->count();
         //待发货订单
-        $wait_send_num = Order::where(['m_id' => $this->m_id, 'status' => Order::STATUS_PAID])->count();
+        $wait_send_num = Order::query()->where(['m_id' => $this->m_id, 'status' => Order::STATUS_PAID])->count();
         //待收货订单
-        $wait_received_num = Order::where(['m_id' => $this->m_id])->whereIn('status', [Order::STATUS_SHIPMENT, Order::STATUS_PART_SHIPMENT])->count();
+        $wait_received_num = Order::query()->where(['m_id' => $this->m_id])->whereIn('status', [Order::STATUS_SHIPMENT, Order::STATUS_PART_SHIPMENT])->count();
         //待评价订单
-        $wait_comment_num = Order::where(['m_id' => $this->m_id])->whereIn('status', [Order::STATUS_DONE, Order::STATUS_COMPLETE])->whereNull('comment_at')->count();
+        $wait_comment_num = Order::query()->where(['m_id' => $this->m_id])->whereIn('status', [Order::STATUS_DONE, Order::STATUS_COMPLETE])->whereNull('comment_at')->count();
         //售后订单
-        $refund_num = Refund::where(['m_id' => $this->m_id])->whereNotIn('status', [Refund::STATUS_DONE, Refund::STATUS_CUSTOMER_CANCEL])->count();
-        $auth_type = MemberAuth::where(['m_id' => $this->m_id])->pluck('type')->toArray();
+        $refund_num = Refund::query()->where(['m_id' => $this->m_id])->whereNotIn('status', [Refund::STATUS_DONE, Refund::STATUS_CUSTOMER_CANCEL])->count();
+        $auth_type = MemberAuth::query()->where(['m_id' => $this->m_id])->pluck('type')->toArray();
         $return = [
             'id' => $member_data['id'],
             'username' => $member_data['username'],
@@ -77,7 +77,7 @@ class IndexController extends BaseController
      */
     public function info(Request $request)
     {
-        $member_data = Member::find($this->m_id);
+        $member_data = Member::query()->find($this->m_id);
         if (!$member_data) {
             api_error(__('api.invalid_token'));
         }
@@ -109,10 +109,10 @@ class IndexController extends BaseController
             $profile_data[$key] = $value;
         }
         if ($member_data) {
-            Member::where('id', $this->m_id)->update($member_data);
+            Member::query()->where('id', $this->m_id)->update($member_data);
         }
         if ($profile_data) {
-            MemberProfile::where('member_id', $this->m_id)->update($profile_data);
+            MemberProfile::query()->where('member_id', $this->m_id)->update($profile_data);
         }
         return $this->success();
     }
@@ -130,12 +130,12 @@ class IndexController extends BaseController
         if (!$old_password || !$new_password) {
             api_error(__('api.missing_params'));
         }
-        $member_data = Member::find($this->m_id);
+        $member_data = Member::query()->find($this->m_id);
         if (!Hash::check($old_password, $member_data['password'])) {
             api_error(__('api.old_password_error'));
         }
         $update_data['password'] = Hash::make($new_password);
-        $res = Member::where('id', $this->m_id)->update($update_data);
+        $res = Member::query()->where('id', $this->m_id)->update($update_data);
         if ($res) {
             return $this->success();
         } else {
@@ -155,12 +155,12 @@ class IndexController extends BaseController
         if (!$password) {
             api_error(__('api.missing_params'));
         }
-        $member_data = Member::find($this->m_id);
+        $member_data = Member::query()->find($this->m_id);
         if ($member_data['pay_password']) {
             api_error(__('api.pay_password_isset'));
         }
         $update_data['pay_password'] = Hash::make($password);
-        $res = Member::where('id', $this->m_id)->update($update_data);
+        $res = Member::query()->where('id', $this->m_id)->update($update_data);
         if ($res) {
             return $this->success();
         } else {
@@ -181,12 +181,12 @@ class IndexController extends BaseController
         if (!$old_password || !$new_password) {
             api_error(__('api.missing_params'));
         }
-        $member_data = Member::find($this->m_id);
+        $member_data = Member::query()->find($this->m_id);
         if (!Hash::check($old_password, $member_data['pay_password'])) {
             api_error(__('api.old_pay_password_error'));
         }
         $update_data['pay_password'] = Hash::make($new_password);
-        $res = Member::where('id', $this->m_id)->update($update_data);
+        $res = Member::query()->where('id', $this->m_id)->update($update_data);
         if ($res) {
             return $this->success();
         } else {
@@ -207,14 +207,14 @@ class IndexController extends BaseController
         if (!$password || !$code) {
             api_error(__('api.missing_params'));
         }
-        $member_data = Member::find($this->m_id);
+        $member_data = Member::query()->find($this->m_id);
         $sms = new Sms();
         $check_captcha = $sms->checkCaptcha($member_data['username'], $code);
         if ($check_captcha !== true) {
             api_error($check_captcha);
         }
         $update_data['pay_password'] = Hash::make($password);
-        $res = Member::where('id', $this->m_id)->update($update_data);
+        $res = Member::query()->where('id', $this->m_id)->update($update_data);
         if ($res) {
             return $this->success();
         } else {
@@ -234,7 +234,7 @@ class IndexController extends BaseController
         if (!isset(MemberAuth::TYPE_DESC[$type])) {
             api_error(__('api.missing_params'));
         }
-        $res = MemberAuth::where(['m_id' => $this->m_id, 'type' => $type])->delete();
+        $res = MemberAuth::query()->where(['m_id' => $this->m_id, 'type' => $type])->delete();
         if ($res) {
             return $this->success();
         } else {

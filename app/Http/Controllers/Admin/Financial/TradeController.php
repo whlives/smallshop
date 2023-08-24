@@ -39,7 +39,7 @@ class TradeController extends BaseController
         $status = $request->input('status');
         $type = (int)$request->input('type');
         if ($username) {
-            $m_id = Member::where('username', $username)->value('id');
+            $m_id = Member::query()->where('username', $username)->value('id');
             if ($m_id) {
                 $where[] = ['trade.m_id', $m_id];
             } else {
@@ -61,7 +61,7 @@ class TradeController extends BaseController
             ExportService::trade($request, ['where' => $where], $start_at, $end_at);//导出数据
             exit;
         }
-        $query = Trade::select('id', 'm_id', 'trade_no', 'type', 'subtotal', 'flag', 'payment_id', 'payment_no', 'pay_total', 'platform', 'status', 'pay_at', 'created_at')
+        $query = Trade::query()->select('id', 'm_id', 'trade_no', 'type', 'subtotal', 'flag', 'payment_id', 'payment_no', 'pay_total', 'platform', 'status', 'pay_at', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -73,7 +73,7 @@ class TradeController extends BaseController
         }
         $m_ids = array_column($res_list->toArray(), 'm_id');
         if ($m_ids) {
-            $member_data = Member::whereIn('id', array_unique($m_ids))->pluck('username', 'id');
+            $member_data = Member::query()->whereIn('id', array_unique($m_ids))->pluck('username', 'id');
         }
         $data_list = [];
         foreach ($res_list as $value) {
@@ -123,24 +123,24 @@ class TradeController extends BaseController
         if (!$id) {
             api_error(__('admin.invalid_params'));
         }
-        $trade = Trade::where('id', $id)->first();
+        $trade = Trade::query()->where('id', $id)->first();
         if (!$trade) {
             api_error(__('admin.trade_error'));
         } elseif ($trade['status'] != Trade::STATUS_ON) {
             api_error(__('admin.trade_status_error'));
         }
         //查询是否已经有退款单，有的话不能再这里退款
-        $trade_refund = TradeRefund::where(['trade_no' => $trade['trade_no'], 'status' => TradeRefund::STATUS_ON])->count();
+        $trade_refund = TradeRefund::query()->where(['trade_no' => $trade['trade_no'], 'status' => TradeRefund::STATUS_ON])->count();
         if ($trade_refund) {
             api_error(__('admin.trade_is_refund'));
         } else {
             $res_refund = TradeService::tradeRefund($trade['id'], $trade['trade_no'], $trade['pay_total'], TradeRefund::TYPE_TRADE);
             if ($res_refund === true) {
-                Trade::where('id', $id)->update(['status' => Trade::STATUS_REFUND]);
+                Trade::query()->where('id', $id)->update(['status' => Trade::STATUS_REFUND]);
                 return $this->success();
             } else {
                 //退款失败的话需要还原状态
-                Trade::where('id', $id)->update(['status' => $trade['status']]);
+                Trade::query()->where('id', $id)->update(['status' => $trade['status']]);
                 api_error($res_refund);
             }
         }

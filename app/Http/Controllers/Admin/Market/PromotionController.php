@@ -31,14 +31,14 @@ class PromotionController extends BaseController
         $seller_title = $request->input('seller_title');
         if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
         if ($seller_title) {
-            $seller_id = Seller::where('title', $seller_title)->value('id');
+            $seller_id = Seller::query()->where('title', $seller_title)->value('id');
             if ($seller_id) {
                 $where[] = ['seller_id', $seller_id];
             } else {
                 api_error(__('admin.content_is_empty'));
             }
         }
-        $query = Promotion::select('id', 'title', 'use_price', 'type', 'rule_type', 'seller_id', 'start_at', 'end_at', 'status', 'created_at')
+        $query = Promotion::query()->select('id', 'title', 'use_price', 'type', 'rule_type', 'seller_id', 'start_at', 'end_at', 'status', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -50,7 +50,7 @@ class PromotionController extends BaseController
         }
         $seller_ids = array_column($res_list->toArray(), 'seller_id');
         if ($seller_ids) {
-            $seller_data = Seller::whereIn('id', array_unique($seller_ids))->pluck('title', 'id');
+            $seller_data = Seller::query()->whereIn('id', array_unique($seller_ids))->pluck('title', 'id');
         }
         $data_list = [];
         foreach ($res_list as $value) {
@@ -78,7 +78,7 @@ class PromotionController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = Promotion::find($id);
+        $data = Promotion::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -164,9 +164,9 @@ class PromotionController extends BaseController
         $save_data['type_value'] = $type_value;
         $save_data['user_group'] = implode(',', $request->input('user_group'));
         if ($id) {
-            $res = Promotion::where('id', $id)->update($save_data);
+            $res = Promotion::query()->where('id', $id)->update($save_data);
         } else {
-            $res = Promotion::create($save_data);
+            $res = Promotion::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -188,7 +188,7 @@ class PromotionController extends BaseController
         if (!isset(Promotion::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $res = Promotion::whereIn('id', $ids)->update(['status' => $status]);
+        $res = Promotion::query()->whereIn('id', $ids)->update(['status' => $status]);
         if ($res) {
             return $this->success();
         } else {
@@ -205,7 +205,7 @@ class PromotionController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = Promotion::whereIn('id', $ids)->delete();
+        $res = Promotion::query()->whereIn('id', $ids)->delete();
         if ($res) {
             return $this->success();
         } else {

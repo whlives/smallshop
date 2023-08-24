@@ -67,7 +67,7 @@ class TradeService
             'subtotal' => $order_info['subtotal'],
             'platform' => get_platform()
         ];
-        $res = Trade::create($trade_data);
+        $res = Trade::query()->create($trade_data);
         if (!$res) {
             api_error(__('api.trade_create_fail'));
         }
@@ -94,7 +94,7 @@ class TradeService
             api_error(__('api.order_error'));
         }
         //开始验证订单
-        $order_list = Order::select('status', 'subtotal')->where('m_id', $m_id)->whereIn('order_no', $order_no)->get();
+        $order_list = Order::query()->select('status', 'subtotal')->where('m_id', $m_id)->whereIn('order_no', $order_no)->get();
         if ($order_list->isEmpty()) {
             api_error(__('api.order_error'));
         }
@@ -123,7 +123,7 @@ class TradeService
     public static function checkRechargeInfo(int $m_id, string $order_no)
     {
         //开始验证订单
-        $recharge = BalanceRecharge::where(['m_id' => $m_id, 'recharge_no' => $order_no])->first();
+        $recharge = BalanceRecharge::query()->where(['m_id' => $m_id, 'recharge_no' => $order_no])->first();
         if (!$recharge) {
             api_error(__('api.recharge_error'));
         } elseif ($recharge['status'] != BalanceRecharge::STATUS_OFF) {
@@ -144,7 +144,7 @@ class TradeService
     public static function updatePayStatus(array $notify_data)
     {
         //查询交易单
-        $trade = Trade::where('trade_no', $notify_data['trade_no'])->first();
+        $trade = Trade::query()->where('trade_no', $notify_data['trade_no'])->first();
         if (!$trade) {
             return false;
         }
@@ -165,7 +165,7 @@ class TradeService
             'flag' => $flag,
             'pay_at' => get_date()
         ];
-        $res = Trade::where('id', $trade['id'])->update($update_trade);
+        $res = Trade::query()->where('id', $trade['id'])->update($update_trade);
         if (!$res) {
             return false;
         }
@@ -193,7 +193,7 @@ class TradeService
         }
         if (!$res_status) {
             //如果对应的订单修改失败交易单改成异常，需要去验证是否退款
-            Trade::where('id', $trade['id'])->update(['status' => Trade::STATUS_ABNORMAL]);
+            Trade::query()->where('id', $trade['id'])->update(['status' => Trade::STATUS_ABNORMAL]);
         }
         return true;
     }
@@ -209,13 +209,13 @@ class TradeService
      */
     public static function tradeRefund(int $trade_id, string $order_no, float $amount, int $type, string|null $note = ''): bool|string|null
     {
-        $trade = Trade::find($trade_id);
+        $trade = Trade::query()->find($trade_id);
         if (!$trade) {
             return __('admin.trade_error');
         } elseif ($trade['status'] != Trade::STATUS_ON) {
             return __('admin.trade_status_error');
         }
-        $payment = Payment::find($trade['payment_id']);
+        $payment = Payment::query()->find($trade['payment_id']);
         if (!$payment) {
             return __('api.payment_error');
         }
@@ -245,14 +245,14 @@ class TradeService
             'trade_amount' => $trade['pay_total'],
             'note' => $note
         ];
-        TradeRefund::create($trade_refund);
+        TradeRefund::query()->create($trade_refund);
         $class_name = '\App\Libs\Payment\\' . $payment['class_name'];
         $pay = new $class_name($trade['platform']);
         $res = $pay->refund($refund_info);
         if ($res === true) {
             return true;
         } else {
-            TradeRefund::where('refund_no', $refund_no)->update(['status' => TradeRefund::STATUS_FAIL, 'note' => $res]);//失败后修改退款单状态记录原因
+            TradeRefund::query()->where('refund_no', $refund_no)->update(['status' => TradeRefund::STATUS_FAIL, 'note' => $res]);//失败后修改退款单状态记录原因
             return __($res);
         }
     }

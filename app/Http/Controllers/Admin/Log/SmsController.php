@@ -28,7 +28,7 @@ class SmsController extends BaseController
         $where = [];
         $mobile = $request->input('mobile');
         if ($mobile) $where[] = ['mobile', $mobile];
-        $query = SmsLog::select('id', 'mobile', 'content', 'error_msg', 'created_at')
+        $query = SmsLog::query()->select('id', 'mobile', 'content', 'error_msg', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')

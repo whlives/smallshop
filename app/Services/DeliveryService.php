@@ -84,7 +84,7 @@ class DeliveryService
             'is_delivery' => 0,
         ];
         //查询配送方式详情
-        $res_delivery = Delivery::find($delivery_id);
+        $res_delivery = Delivery::query()->find($delivery_id);
         if (!$res_delivery) {
             api_error(__('api.delivery_error'));
         } elseif ($res_delivery['status'] != Delivery::STATUS_ON) {

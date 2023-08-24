@@ -184,18 +184,18 @@ class RefundService
     public static function checkRefund(int $order_goods_id, int $m_id)
     {
         //获取订单商品信息
-        $order_goods = OrderGoods::where(['id' => $order_goods_id, 'm_id' => $m_id])->first();
+        $order_goods = OrderGoods::query()->where(['id' => $order_goods_id, 'm_id' => $m_id])->first();
         if (!$order_goods) {
             api_error(__('api.order_goods_error'));
         }
         //获取订单信息
-        $order = Order::where('id', $order_goods['order_id'])->first();
+        $order = Order::query()->where('id', $order_goods['order_id'])->first();
         //只有订单是已付款、待收货、已经确认的并且订单商品是没有售后或者售后关闭的才可以申请
         if (!in_array($order['status'], [Order::STATUS_PAID, Order::STATUS_SHIPMENT, Order::STATUS_PART_SHIPMENT, Order::STATUS_DONE])) {
             api_error(__('api.refund_time_out'));
         }
         //查询是否已经申请
-        $refund = Refund::where('order_goods_id', $order_goods_id)->first();
+        $refund = Refund::query()->where('order_goods_id', $order_goods_id)->first();
         //已经售后完成
         if (isset($refund['status']) && $refund['status'] == Refund::STATUS_DONE) {
             api_error(__('api.refund_complete'));
@@ -206,7 +206,7 @@ class RefundService
         }
         $all_refund = 0;//是否全部退款，如果是最后一个需要加上运费
         //查询订单下没有售后的商品，如果是最后一个就是全部退款
-        $wiat_refund_id = OrderGoods::where('order_id', $order['id'])->whereIn('refund', [OrderGoods::REFUND_NO, OrderGoods::REFUND_CLOSE])->pluck('id')->toArray();
+        $wiat_refund_id = OrderGoods::query()->where('order_id', $order['id'])->whereIn('refund', [OrderGoods::REFUND_NO, OrderGoods::REFUND_CLOSE])->pluck('id')->toArray();
         if (count($wiat_refund_id) == 1 && $wiat_refund_id[0] == $order_goods_id) {
             $all_refund = 1;
         }
@@ -240,17 +240,17 @@ class RefundService
         try {
             DB::transaction(function () use ($refund, $apply_data, $refund_log, $image) {
                 if ($refund) {
-                    Refund::where('id', $refund['id'])->update($apply_data);
+                    Refund::query()->where('id', $refund['id'])->update($apply_data);
                     $id = $refund['id'];
                 } else {
-                    $result = Refund::create($apply_data);
+                    $result = Refund::query()->create($apply_data);
                     $id = $result->id;
                 }
                 //修改订单商品售后状态
                 OrderGoods::where('id', $apply_data['order_goods_id'])->update(['refund' => OrderGoods::REFUND_APPLY]);
                 //日志信息
                 $refund_log['refund_id'] = $id;
-                $log_res = RefundLog::create($refund_log);
+                $log_res = RefundLog::query()->create($refund_log);
                 $log_id = $log_res->id;
                 //日志图片
                 $image_data = [];
@@ -260,7 +260,7 @@ class RefundService
                         'image' => $value
                     ];
                 }
-                if ($image_data) RefundImage::insert($image_data);
+                if ($image_data) RefundImage::query()->insert($image_data);
             });
             return true;
         } catch (\Exception $e) {
@@ -315,9 +315,9 @@ class RefundService
         ];
         try {
             DB::transaction(function () use ($refund, $delivery_data, $refund_log) {
-                RefundDelivery::create($delivery_data);
-                RefundLog::create($refund_log);
-                Refund::where('id', $refund['id'])->update(['status' => Refund::STATUS_RECEIVED]);
+                RefundDelivery::query()->create($delivery_data);
+                RefundLog::query()->create($refund_log);
+                Refund::query()->where('id', $refund['id'])->update(['status' => Refund::STATUS_RECEIVED]);
             });
             //订阅物流消息
             $delivery = new Delivery();
@@ -356,10 +356,10 @@ class RefundService
         ];
         try {
             DB::transaction(function () use ($refund, $refund_log) {
-                RefundLog::create($refund_log);
+                RefundLog::query()->create($refund_log);
                 //修改订单商品售后状态
-                OrderGoods::where('id', $refund['order_goods_id'])->update(['refund' => OrderGoods::REFUND_CLOSE]);
-                Refund::where('id', $refund['id'])->update(['status' => Refund::STATUS_CUSTOMER_CANCEL, 'done_at' => get_date()]);
+                OrderGoods::query()->where('id', $refund['order_goods_id'])->update(['refund' => OrderGoods::REFUND_CLOSE]);
+                Refund::query()->where('id', $refund['id'])->update(['status' => Refund::STATUS_CUSTOMER_CANCEL, 'done_at' => get_date()]);
             });
             return true;
         } catch (\Exception $e) {
@@ -400,14 +400,14 @@ class RefundService
         ];
         try {
             DB::transaction(function () use ($refund, $refund_log) {
-                RefundLog::create($refund_log);
+                RefundLog::query()->create($refund_log);
                 //修改订单商品售后状态
-                OrderGoods::where('id', $refund['order_goods_id'])->update(['refund' => OrderGoods::REFUND_DONE]);
-                Refund::where('id', $refund['id'])->update(['status' => Refund::STATUS_DONE, 'done_at' => get_date()]);
+                OrderGoods::query()->where('id', $refund['order_goods_id'])->update(['refund' => OrderGoods::REFUND_DONE]);
+                Refund::query()->where('id', $refund['id'])->update(['status' => Refund::STATUS_DONE, 'done_at' => get_date()]);
                 //判断订单下的商品是否全部退款,全部退款修改订单状态
-                $refund_order_count = OrderGoods::where([['order_id', $refund['order_id']], ['refund', '!=', OrderGoods::REFUND_DONE]])->count();
+                $refund_order_count = OrderGoods::query()->where([['order_id', $refund['order_id']], ['refund', '!=', OrderGoods::REFUND_DONE]])->count();
                 if ($refund_order_count == 0) {
-                    Order::where('id', $refund['order_id'])->update(['status' => Order::STATUS_REFUND_COMPLETE, 'done_at' => get_date()]);
+                    Order::query()->where('id', $refund['order_id'])->update(['status' => Order::STATUS_REFUND_COMPLETE, 'done_at' => get_date()]);
                 }
             });
             return true;
@@ -474,9 +474,9 @@ class RefundService
             try {
                 DB::transaction(function () use ($refund, $refund_log) {
                     //修改订单商品售后状态
-                    OrderGoods::where('id', $refund['order_goods_id'])->update(['refund' => OrderGoods::REFUND_ONGOING]);
-                    RefundLog::create($refund_log);
-                    Refund::where('id', $refund['id'])->update(['status' => Refund::STATUS_WAIT_PAY, 'approve_at' => get_date()]);
+                    OrderGoods::query()->where('id', $refund['order_goods_id'])->update(['refund' => OrderGoods::REFUND_ONGOING]);
+                    RefundLog::query()->create($refund_log);
+                    Refund::query()->where('id', $refund['id'])->update(['status' => Refund::STATUS_WAIT_PAY, 'approve_at' => get_date()]);
                 });
                 return true;
             } catch (\Exception $e) {
@@ -517,9 +517,9 @@ class RefundService
         ];
         try {
             DB::transaction(function () use ($refund, $refund_log) {
-                OrderGoods::where('id', $refund['order_goods_id'])->update(['refund' => OrderGoods::REFUND_ONGOING]);
-                RefundLog::create($refund_log);
-                Refund::where('id', $refund['id'])->update(['status' => Refund::STATUS_WAIT_DELIVERY, 'approve_at' => get_date()]);
+                OrderGoods::query()->where('id', $refund['order_goods_id'])->update(['refund' => OrderGoods::REFUND_ONGOING]);
+                RefundLog::query()->create($refund_log);
+                Refund::query()->where('id', $refund['id'])->update(['status' => Refund::STATUS_WAIT_DELIVERY, 'approve_at' => get_date()]);
             });
             return true;
         } catch (\Exception $e) {
@@ -554,8 +554,8 @@ class RefundService
         ];
         try {
             DB::transaction(function () use ($refund, $refund_log) {
-                RefundLog::create($refund_log);
-                Refund::where('id', $refund['id'])->update(['status' => Refund::STATUS_REFUSED_APPROVE, 'refused_at' => get_date()]);
+                RefundLog::query()->create($refund_log);
+                Refund::query()->where('id', $refund['id'])->update(['status' => Refund::STATUS_REFUSED_APPROVE, 'refused_at' => get_date()]);
             });
             return true;
         } catch (\Exception $e) {
@@ -596,8 +596,8 @@ class RefundService
         ];
         try {
             DB::transaction(function () use ($refund, $refund_log, $status) {
-                RefundLog::create($refund_log);
-                Refund::where('id', $refund['id'])->update(['status' => $status]);
+                RefundLog::query()->create($refund_log);
+                Refund::query()->where('id', $refund['id'])->update(['status' => $status]);
             });
             return true;
         } catch (\Exception $e) {
@@ -632,8 +632,8 @@ class RefundService
         ];
         try {
             DB::transaction(function () use ($refund, $refund_log) {
-                RefundLog::create($refund_log);
-                Refund::where('id', $refund['id'])->update(['status' => Refund::STATUS_REFUSED_RECEIVED, 'refused_at' => get_date()]);
+                RefundLog::query()->create($refund_log);
+                Refund::query()->where('id', $refund['id'])->update(['status' => Refund::STATUS_REFUSED_RECEIVED, 'refused_at' => get_date()]);
             });
             return true;
         } catch (\Exception $e) {
@@ -688,9 +688,9 @@ class RefundService
         ];
         try {
             DB::transaction(function () use ($refund, $delivery_data, $refund_log) {
-                RefundDelivery::create($delivery_data);
-                RefundLog::create($refund_log);
-                Refund::where('id', $refund['id'])->update(['status' => Refund::STATUS_WAIT_CONFIRM_DELIVERY]);
+                RefundDelivery::query()->create($delivery_data);
+                RefundLog::query()->create($refund_log);
+                Refund::query()->where('id', $refund['id'])->update(['status' => Refund::STATUS_WAIT_CONFIRM_DELIVERY]);
             });
             //订阅物流消息
             $delivery = new Delivery();
@@ -730,11 +730,11 @@ class RefundService
             'action' => RefundLog::ACTION_COMPLETE,
             'note' => $log_note ? json_encode($log_note, JSON_UNESCAPED_UNICODE) : ''
         ];
-        $order = Order::find($refund['order_id']);
+        $order = Order::query()->find($refund['order_id']);
         try {
             DB::transaction(function () use ($refund, $refund_log) {
-                RefundLog::create($refund_log);
-                Refund::where('id', $refund['id'])->update(['status' => Refund::STATUS_DONE, 'done_at' => get_date()]);
+                RefundLog::query()->create($refund_log);
+                Refund::query()->where('id', $refund['id'])->update(['status' => Refund::STATUS_DONE, 'done_at' => get_date()]);
             });
             $res = true;
         } catch (\Exception $e) {
@@ -749,8 +749,8 @@ class RefundService
                 $refund_log['note'] = json_encode([['title' => '退款失败', 'info' => $refund_res]], JSON_UNESCAPED_UNICODE);
                 try {
                     DB::transaction(function () use ($refund, $refund_log) {
-                        RefundLog::create($refund_log);
-                        Refund::where('id', $refund['id'])->update(['status' => Refund::STATUS_WAIT_PAY, 'done_at' => null]);
+                        RefundLog::query()->create($refund_log);
+                        Refund::query()->where('id', $refund['id'])->update(['status' => Refund::STATUS_WAIT_PAY, 'done_at' => null]);
                     });
                 } catch (\Exception $e) {
                 }
@@ -760,10 +760,10 @@ class RefundService
         //判断订单下的商品是否全部退款,全部退款修改订单状态
         try {
             DB::transaction(function () use ($refund, $order) {
-                OrderGoods::where('id', $refund['order_goods_id'])->update(['refund' => OrderGoods::REFUND_DONE]);
+                OrderGoods::query()->where('id', $refund['order_goods_id'])->update(['refund' => OrderGoods::REFUND_DONE]);
                 $refund_order_count = OrderGoods::where([['order_id', $order['id']], ['refund', '!=', OrderGoods::REFUND_DONE]])->count();
                 if ($refund_order_count == 0) {
-                    Order::where('id', $order['id'])->update(['status' => Order::STATUS_REFUND_COMPLETE, 'done_at' => get_date()]);
+                    Order::query()->where('id', $order['id'])->update(['status' => Order::STATUS_REFUND_COMPLETE, 'done_at' => get_date()]);
                 }
             });
         } catch (\Exception $e) {

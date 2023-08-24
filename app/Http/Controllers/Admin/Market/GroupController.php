@@ -33,7 +33,7 @@ class GroupController extends BaseController
         $goods_id = (int)$request->input('goods_id');
         if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
         if ($goods_title) {
-            $goods_id = Goods::where('title', $goods_title)->value('id');
+            $goods_id = Goods::query()->where('title', $goods_title)->value('id');
             if ($goods_id) {
                 $where[] = ['goods_id', $goods_id];
             } else {
@@ -41,7 +41,7 @@ class GroupController extends BaseController
             }
         }
         if ($goods_id) $where[] = ['goods_id', $goods_id];
-        $query = PromoGroup::select('id', 'title', 'goods_id', 'group_num', 'hour', 'status', 'start_at', 'end_at', 'created_at')
+        $query = PromoGroup::query()->select('id', 'title', 'goods_id', 'group_num', 'hour', 'status', 'start_at', 'end_at', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -53,7 +53,7 @@ class GroupController extends BaseController
         }
         $goods_ids = array_column($res_list->toArray(), 'goods_id');
         if ($goods_ids) {
-            $goods_data = Goods::whereIn('id', array_unique($goods_ids))->pluck('title', 'id');
+            $goods_data = Goods::query()->whereIn('id', array_unique($goods_ids))->pluck('title', 'id');
         }
         $data_list = [];
         foreach ($res_list as $value) {
@@ -80,11 +80,11 @@ class GroupController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = PromoGroup::find($id);
+        $data = PromoGroup::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
-        $data['goods'] = Goods::select('id', 'title')->where('id', $data['goods_id'])->first();
+        $data['goods'] = Goods::query()->select('id', 'title')->where('id', $data['goods_id'])->first();
         return $this->success($data);
     }
 
@@ -129,9 +129,9 @@ class GroupController extends BaseController
         $detail = [];
         if ($id) {
             //只有不是原来的商品的时候才需要验证商品
-            $detail = PromoGroup::find($id);
+            $detail = PromoGroup::query()->find($id);
             if ($detail['goods_id'] != $goods_id) {
-                $goods = Goods::where(['seller_id' => $seller_id, 'id' => $goods_id])->first();
+                $goods = Goods::query()->where(['seller_id' => $seller_id, 'id' => $goods_id])->first();
                 if (!$goods) {
                     api_error(__('admin.goods_not_exists'));
                 } elseif ($goods['promo_type'] != Goods::PROMO_TYPE_DEFAULT) {
@@ -147,14 +147,14 @@ class GroupController extends BaseController
         try {
             $res = DB::transaction(function () use ($save_data, $id, $detail) {
                 if ($id) {
-                    PromoGroup::where('id', $id)->update($save_data);
+                    PromoGroup::query()->where('id', $id)->update($save_data);
                     if ($detail['goods_id'] != $save_data['goods_id']) {
-                        Goods::where('id', $detail['goods_id'])->update(['promo_type' => Goods::PROMO_TYPE_DEFAULT, 'shelves_status' => Goods::SHELVES_STATUS_OFF]);//修改活动的时候商品变化需取消商品优惠类型并下架商品
+                        Goods::query()->where('id', $detail['goods_id'])->update(['promo_type' => Goods::PROMO_TYPE_DEFAULT, 'shelves_status' => Goods::SHELVES_STATUS_OFF]);//修改活动的时候商品变化需取消商品优惠类型并下架商品
                     }
                 } else {
-                    PromoGroup::create($save_data);
+                    PromoGroup::query()->create($save_data);
                 }
-                Goods::where('id', $save_data['goods_id'])->update(['promo_type' => Goods::PROMO_TYPE_GROUP]);
+                Goods::query()->where('id', $save_data['goods_id'])->update(['promo_type' => Goods::PROMO_TYPE_GROUP]);
                 return true;
             });
             Goods::syncRedisStock($save_data['goods_id']);//同步redis库存
@@ -184,7 +184,7 @@ class GroupController extends BaseController
         if (!isset(PromoGroup::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $res = PromoGroup::whereIn('id', $ids)->update(['status' => $status]);
+        $res = PromoGroup::query()->whereIn('id', $ids)->update(['status' => $status]);
         if ($res) {
             return $this->success();
         } else {
@@ -201,11 +201,11 @@ class GroupController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $goods_ids = PromoGroup::whereIn('id', $ids)->pluck('goods_id')->toArray();
+        $goods_ids = PromoGroup::query()->whereIn('id', $ids)->pluck('goods_id')->toArray();
         try {
             $res = DB::transaction(function () use ($ids, $goods_ids) {
-                Goods::whereIn('id', $goods_ids)->update(['promo_type' => Goods::PROMO_TYPE_DEFAULT, 'shelves_status' => Goods::SHELVES_STATUS_OFF]);//删除活动的时候需取消商品优惠类型并下架商品
-                PromoGroup::whereIn('id', $ids)->delete();
+                Goods::query()->whereIn('id', $goods_ids)->update(['promo_type' => Goods::PROMO_TYPE_DEFAULT, 'shelves_status' => Goods::SHELVES_STATUS_OFF]);//删除活动的时候需取消商品优惠类型并下架商品
+                PromoGroup::query()->whereIn('id', $ids)->delete();
                 return true;
             });
             Goods::delGoodsCache($goods_ids);//删除商品缓存
@@ -236,7 +236,7 @@ class GroupController extends BaseController
         ];
         $title = $request->input('title');
         if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
-        $res_list = Goods::select('id as value', 'title as name')
+        $res_list = Goods::query()->select('id as value', 'title as name')
             ->where($where)
             ->whereIn('promo_type', [Goods::PROMO_TYPE_DEFAULT, Goods::PROMO_TYPE_GROUP])
             ->orderBy('id', 'desc')

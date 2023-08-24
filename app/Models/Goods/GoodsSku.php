@@ -18,7 +18,7 @@ class GoodsSku extends BaseModel
 {
     protected $table = 'goods_sku';
     protected $guarded = ['id'];
-    
+
     public $timestamps = false;
 
     //状态
@@ -39,7 +39,7 @@ class GoodsSku extends BaseModel
         $cache_key = 'goods_sku:' . $id;
         $goods_sku = Cache::get($cache_key);
         if (!$goods_sku) {
-            $goods_sku = self::select('id', 'goods_id', 'stock', 'min_buy', 'max_buy')->find($id);
+            $goods_sku = self::query()->select('id', 'goods_id', 'stock', 'min_buy', 'max_buy')->find($id);
             if ($goods_sku) $goods_sku = $goods_sku->toArray();
             Cache::put($cache_key, $goods_sku, get_custom_config('cache_time'));
         }

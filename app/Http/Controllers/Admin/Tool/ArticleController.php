@@ -31,7 +31,7 @@ class ArticleController extends BaseController
         $category_id = (int)$request->input('category_id');
         if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
         if ($category_id) $where[] = ['category_id', $category_id];
-        $query = Article::select('id', 'title', 'image', 'position', 'category_id', 'status', 'created_at')
+        $query = Article::query()->select('id', 'title', 'image', 'position', 'category_id', 'status', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -43,7 +43,7 @@ class ArticleController extends BaseController
         }
         $category_ids = array_column($res_list->toArray(), 'category_id');
         if ($category_ids) {
-            $category = ArticleCategory::whereIn('id', array_unique($category_ids))->pluck('title', 'id');
+            $category = ArticleCategory::query()->whereIn('id', array_unique($category_ids))->pluck('title', 'id');
         }
         $data_list = [];
         foreach ($res_list as $value) {
@@ -70,7 +70,7 @@ class ArticleController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = Article::find($id);
+        $data = Article::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -126,7 +126,7 @@ class ArticleController extends BaseController
         if (!isset(Article::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $res = Article::whereIn('id', $ids)->update(['status' => $status]);
+        $res = Article::query()->whereIn('id', $ids)->update(['status' => $status]);
         if ($res) {
             return $this->success();
         } else {
@@ -167,7 +167,7 @@ class ArticleController extends BaseController
         if (!in_array($field, $field_arr) || !$id || !$field || !$field_value) {
             api_error(__('admin.invalid_params'));
         }
-        $res = Article::where('id', $id)->update([$field => $field_value]);
+        $res = Article::query()->where('id', $id)->update([$field => $field_value]);
         if ($res) {
             return $this->success();
         } else {

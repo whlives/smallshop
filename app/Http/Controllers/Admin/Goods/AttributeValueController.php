@@ -30,7 +30,7 @@ class AttributeValueController extends BaseController
         $attribute_id = (int)$request->input('attribute_id');
         if ($value) $where[] = ['value', $value];
         if ($attribute_id) $where[] = ['attribute_id', $attribute_id];
-        $query = AttributeValue::select('id', 'value', 'position', 'created_at')
+        $query = AttributeValue::query()->select('id', 'value', 'position', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -59,7 +59,7 @@ class AttributeValueController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = AttributeValue::find($id);
+        $data = AttributeValue::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -96,9 +96,9 @@ class AttributeValueController extends BaseController
             $save_data[$key] = $value;
         }
         if ($id) {
-            $res = AttributeValue::where('id', $id)->update($save_data);
+            $res = AttributeValue::query()->where('id', $id)->update($save_data);
         } else {
-            $res = AttributeValue::create($save_data);
+            $res = AttributeValue::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -116,7 +116,7 @@ class AttributeValueController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = AttributeValue::whereIn('id', $ids)->delete();
+        $res = AttributeValue::query()->whereIn('id', $ids)->delete();
         if ($res) {
             return $this->success();
         } else {
@@ -140,7 +140,7 @@ class AttributeValueController extends BaseController
         if (!in_array($field, $field_arr) || !$id || !$field || !$field_value) {
             api_error(__('admin.invalid_params'));
         }
-        $res = AttributeValue::where('id', $id)->update([$field => $field_value]);
+        $res = AttributeValue::query()->where('id', $id)->update([$field => $field_value]);
         if ($res) {
             return $this->success();
         } else {

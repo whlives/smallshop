@@ -127,7 +127,7 @@ class Refund extends BaseModel
      */
     public static function getInfo(string $refund_no, int $m_id)
     {
-        $order = self::where(['m_id' => $m_id, 'refund_no' => $refund_no])->first();
+        $order = self::query()->where(['m_id' => $m_id, 'refund_no' => $refund_no])->first();
         if (!$order) {
             api_error(__('api.refund_error'));
         }

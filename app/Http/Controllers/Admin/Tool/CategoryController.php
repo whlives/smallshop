@@ -38,7 +38,7 @@ class CategoryController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = ArticleCategory::find($id);
+        $data = ArticleCategory::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -74,9 +74,9 @@ class CategoryController extends BaseController
         }
         $id = (int)$request->input('id');
         if ($id) {
-            $res = ArticleCategory::where('id', $id)->update($save_data);
+            $res = ArticleCategory::query()->where('id', $id)->update($save_data);
         } else {
-            $res = ArticleCategory::create($save_data);
+            $res = ArticleCategory::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -98,7 +98,7 @@ class CategoryController extends BaseController
         if (!isset(ArticleCategory::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $res = ArticleCategory::whereIn('id', $ids)->update(['status' => $status]);
+        $res = ArticleCategory::query()->whereIn('id', $ids)->update(['status' => $status]);
         if ($res) {
             return $this->success();
         } else {
@@ -119,11 +119,11 @@ class CategoryController extends BaseController
             api_error(__('admin.invalid_params'));
         }
         //查询是否存在下级分类
-        $sub_menu = ArticleCategory::where('parent_id', $id)->count();
+        $sub_menu = ArticleCategory::query()->where('parent_id', $id)->count();
         if ($sub_menu > 0) {
             api_error(__('admin.category_child_no_empty'));
         }
-        $res = ArticleCategory::where('id', $id)->delete();
+        $res = ArticleCategory::query()->where('id', $id)->delete();
         if ($res) {
             return $this->success();
         } else {

@@ -50,7 +50,7 @@ class OrderGoods extends BaseModel
     {
         //获取订单商品
         $goods = [];
-        $goods_res = OrderGoods::select('id', 'order_id', 'goods_id', 'goods_title', 'sku_id', 'image', 'sku_code', 'sell_price', 'market_price', 'buy_qty', 'spec_value', 'delivery', 'refund')
+        $goods_res = OrderGoods::query()->select('id', 'order_id', 'goods_id', 'goods_title', 'sku_id', 'image', 'sku_code', 'sell_price', 'market_price', 'buy_qty', 'spec_value', 'delivery', 'refund')
             ->whereIn('order_id', $order_id)
             ->orderBy('id', 'desc')
             ->get();
@@ -82,7 +82,7 @@ class OrderGoods extends BaseModel
     {
         //获取订单商品
         $goods = [];
-        $goods_res = OrderGoods::select('id', 'order_id', 'goods_title', 'image', 'sku_code', 'sell_price', 'market_price', 'buy_qty', 'spec_value', 'delivery', 'refund')
+        $goods_res = OrderGoods::query()->select('id', 'order_id', 'goods_title', 'image', 'sku_code', 'sell_price', 'market_price', 'buy_qty', 'spec_value', 'delivery', 'refund')
             ->whereIn('id', $order_goods_id)
             ->orderBy('id', 'desc')
             ->get();

@@ -83,7 +83,7 @@ class AdminToken
                 'ip' => $ip,
                 'content' => $content
             ];
-            AdminLog::create($log);
+            AdminLog::query()->create($log);
         } elseif ($admin_log_type == AdminLog::LOG_TYPE_FILE) {
             try {
                 //每个小时生成一个文件

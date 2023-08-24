@@ -83,7 +83,7 @@ class Payment extends BaseModel
         if ($type == Trade::TYPE_RECHARGE) {
             $where[] = ['id', '<>', self::PAYMENT_BALANCE];
         }
-        $res_list = self::select('id', 'title', 'image')
+        $res_list = self::query()->select('id', 'title', 'image')
             ->where($where)
             ->whereRaw("find_in_set('$platform', client_type)")
             ->orderBy('position', 'asc')

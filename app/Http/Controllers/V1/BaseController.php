@@ -55,7 +55,7 @@ class BaseController extends \App\Http\Controllers\BaseController
     public function getUserInfo(): array
     {
         $m_id = $this->getUserId();
-        $member = Member::find($m_id);
+        $member = Member::query()->find($m_id);
         if (!$member) {
             api_error(__('api.invalid_token'));
         }

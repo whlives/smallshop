@@ -40,7 +40,7 @@ class OrderSubmitAfter implements ShouldQueue
     public function handle()
     {
         if (!$this->order_no) return false;
-        $res_list = Order::select('id', 'm_id', 'promo_type')->whereIn('order_no', $this->order_no)->get();
+        $res_list = Order::query()->select('id', 'm_id', 'promo_type')->whereIn('order_no', $this->order_no)->get();
         foreach ($res_list->toArray() as $value) {
             if ($value['promo_type'] == Goods::PROMO_TYPE_GROUP) {
                 //拼团的订单

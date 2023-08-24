@@ -45,7 +45,7 @@ class OrderPayAfter implements ShouldQueue
     {
         //这里开始处理支付后的订单状态，还有优惠券、电子券类的发货订单
         //查询订单类型
-        $res_list = Order::select('id', 'm_id', 'goods_type', 'promo_type', 'seller_id', 'status')->where(['status' => Order::STATUS_PAID])->whereIn('order_no', $this->order_no)->get();
+        $res_list = Order::query()->select('id', 'm_id', 'goods_type', 'promo_type', 'seller_id', 'status')->where(['status' => Order::STATUS_PAID])->whereIn('order_no', $this->order_no)->get();
         if ($res_list->isEmpty()) {
             return false;
         }
@@ -77,16 +77,16 @@ class OrderPayAfter implements ShouldQueue
             'username' => 'system'
         ];
         //查询优惠券信息
-        $goods_data = OrderGoods::select('goods_id', 'buy_qty')->where('order_id', $order['id'])->first();
+        $goods_data = OrderGoods::query()->select('goods_id', 'buy_qty')->where('order_id', $order['id'])->first();
         if (!$goods_data) {
             return false;
         }
         //查询优惠券
-        $coupon_id = GoodsObject::where(['goods_id' => $goods_data['goods_id'], 'type' => Goods::TYPE_COUPONS])->value('object_id');
+        $coupon_id = GoodsObject::query()->where(['goods_id' => $goods_data['goods_id'], 'type' => Goods::TYPE_COUPONS])->value('object_id');
         if (!$coupon_id) {
             return false;
         }
-        $order_goods_id = OrderGoods::where('order_id', $order['id'])->pluck('id')->toArray();
+        $order_goods_id = OrderGoods::query()->where('order_id', $order['id'])->pluck('id')->toArray();
         $res = CouponsDetail::generate($coupon_id, $order['m_id'], $goods_data['buy_qty']);
         if ($res) {
             $param = [

@@ -44,7 +44,7 @@ class RecycleController extends BaseController
         }
         $category_ids = array_column($res_list->toArray(), 'category_id');
         if ($category_ids) {
-            $category = Category::whereIn('id', array_unique($category_ids))->pluck('title', 'id');
+            $category = Category::query()->whereIn('id', array_unique($category_ids))->pluck('title', 'id');
         }
         $data_list = [];
         foreach ($res_list as $value) {
@@ -69,7 +69,7 @@ class RecycleController extends BaseController
     public function restore(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = Goods::whereIn('id', $ids)->restore();
+        $res = Goods::query()->whereIn('id', $ids)->restore();
         if ($res) {
             return $this->success();
         } else {

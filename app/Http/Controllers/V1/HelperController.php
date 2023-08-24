@@ -132,7 +132,7 @@ class HelperController extends BaseController
         $where = [
             'status' => ExpressCompany::STATUS_ON
         ];
-        $res_list = ExpressCompany::select('id', 'title')
+        $res_list = ExpressCompany::query()->select('id', 'title')
             ->where($where)
             ->orderBy('position', 'asc')
             ->orderBy('id', 'desc')

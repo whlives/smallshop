@@ -63,7 +63,7 @@ class OrderController extends BaseController
         if ($order_no) $where[] = ['order_no', $order_no];
         if ($full_name) $where[] = ['full_name', $full_name];
         if ($username) {
-            $member_id = Member::where('username', $username)->value('id');
+            $member_id = Member::query()->where('username', $username)->value('id');
             if ($member_id) {
                 $where[] = ['m_id', $member_id];
             } else {
@@ -72,7 +72,7 @@ class OrderController extends BaseController
         }
         if ($tel) $where[] = ['tel', $tel];
         if ($trade_no) {
-            $trade_id = Trade::where('trade_no', $trade_no)->value('id');
+            $trade_id = Trade::query()->where('trade_no', $trade_no)->value('id');
             if ($trade_id) {
                 $where[] = ['trade_id', $trade_id];
             } else {
@@ -101,7 +101,7 @@ class OrderController extends BaseController
             ExportService::order($request, ['where' => $where, 'where_in' => $where_in], $start_at, $end_at);//导出数据
             exit;
         }
-        $query = Order::select('id', 'm_id', 'order_no', 'flag', 'payment_id', 'subtotal', 'full_name', 'tel', 'status', 'pay_at', 'created_at')
+        $query = Order::query()->select('id', 'm_id', 'order_no', 'flag', 'payment_id', 'subtotal', 'full_name', 'tel', 'status', 'pay_at', 'created_at')
             ->where($where);
         if ($where_in) {
             foreach ($where_in as $key => $val) {
@@ -120,7 +120,7 @@ class OrderController extends BaseController
         $m_ids = array_column($res_list, 'm_id');
         $order_ids = array_column($res_list, 'id');
         if ($m_ids) {
-            $member_data = Member::whereIn('id', array_unique($m_ids))->pluck('username', 'id');
+            $member_data = Member::query()->whereIn('id', array_unique($m_ids))->pluck('username', 'id');
         }
         if ($order_ids) {
             $order_goods = OrderGoods::getGoodsForOrderId($order_ids, true);
@@ -163,7 +163,7 @@ class OrderController extends BaseController
         $order['delivery_type'] = Order::DELIVERY_DESC[$order['delivery_type']];
         $order['payment_name'] = Payment::PAYMENT_DESC[$order['payment_id']] ?? '';
         //人员信息
-        $member_data = Member::select("id", "username", "nickname")->whereIn('id', [$order['m_id'], $order['level_one_m_id'], $order['level_two_m_id']])->get();
+        $member_data = Member::query()->select("id", "username", "nickname")->whereIn('id', [$order['m_id'], $order['level_one_m_id'], $order['level_two_m_id']])->get();
         if (!$member_data->isEmpty()) {
             $member_data = array_column($member_data->toArray(), null, 'id');
         }
@@ -171,14 +171,14 @@ class OrderController extends BaseController
         $order['level_one_m_name'] = $member_data[$order['level_one_m_id']]['nickname'] ?? '';
         $order['level_two_m_name'] = $member_data[$order['level_two_m_id']]['nickname'] ?? '';
         //店铺信息
-        $seller = Seller::select('id', 'title')->find($order['seller_id']);
+        $seller = Seller::query()->select('id', 'title')->find($order['seller_id']);
         //发票信息
-        $invoice = OrderInvoice::select('type', 'title', 'tax_no')->where('order_id', $id)->first();
+        $invoice = OrderInvoice::query()->select('type', 'title', 'tax_no')->where('order_id', $id)->first();
         if ($invoice) $invoice['type_text'] = OrderInvoice::TYPE_DESC[$invoice['type']];
         //物流公司
         $express_company = [];
         if ($order['is_delivery']) {
-            $express_company = ExpressCompany::select('id', 'title')->where('status', ExpressCompany::STATUS_ON)->orderBy('id', 'desc')->get();
+            $express_company = ExpressCompany::query()->select('id', 'title')->where('status', ExpressCompany::STATUS_ON)->orderBy('id', 'desc')->get();
         }
         $return = [
             'order' => $order,
@@ -203,7 +203,7 @@ class OrderController extends BaseController
             api_error(__('admin.missing_params'));
         }
         self::checkOrder($order_id);//验证订单
-        $res_list = OrderDelivery::select('order_goods_id', 'company_name', 'company_code', 'code', 'note', 'created_at')
+        $res_list = OrderDelivery::query()->select('order_goods_id', 'company_name', 'company_code', 'code', 'note', 'created_at')
             ->where('order_id', $order_id)
             ->orderBy('id', 'desc')
             ->get();
@@ -237,7 +237,7 @@ class OrderController extends BaseController
             api_error(__('admin.missing_params'));
         }
         self::checkOrder($order_id);//验证订单
-        $res_list = OrderLog::select('username', 'user_type', 'action', 'note', 'created_at')
+        $res_list = OrderLog::query()->select('username', 'user_type', 'action', 'note', 'created_at')
             ->where('order_id', $order_id)
             ->orderBy('id', 'desc')
             ->get();
@@ -268,7 +268,7 @@ class OrderController extends BaseController
             api_error(__('admin.missing_params'));
         }
         self::checkOrder($order_id);//验证订单
-        $res_list = Refund::select('id', 'm_id', 'order_goods_id', 'refund_no', 'amount', 'refund_type', 'status', 'reason', 'created_at')
+        $res_list = Refund::query()->select('id', 'm_id', 'order_goods_id', 'refund_no', 'amount', 'refund_type', 'status', 'reason', 'created_at')
             ->where('order_id', $order_id)
             ->orderBy('id', 'desc')
             ->get();
@@ -313,7 +313,7 @@ class OrderController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = Order::select('id', 'sell_price_total', 'promotion_price', 'discount_price', 'delivery_price_real', 'subtotal')->where('seller_id', $this->user_data['id'])->find($id);
+        $data = Order::query()->select('id', 'sell_price_total', 'promotion_price', 'discount_price', 'delivery_price_real', 'subtotal')->where('seller_id', $this->user_data['id'])->find($id);
         if (!$data) {
             api_error(__('admin.order_error'));
         }
@@ -357,7 +357,7 @@ class OrderController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = Order::select('id', 'full_name', 'tel', 'prov', 'city', 'area', 'address')->where('seller_id', $this->user_data['id'])->find($id);
+        $data = Order::query()->select('id', 'full_name', 'tel', 'prov', 'city', 'area', 'address')->where('seller_id', $this->user_data['id'])->find($id);
         if (!$data) {
             api_error(__('admin.order_error'));
         }
@@ -405,7 +405,7 @@ class OrderController extends BaseController
         if (!OrderService::isUpdateAddress($order)) {
             api_error(__('admin.save_error'));
         }
-        $res = Order::where('id', $id)->update($update_data);
+        $res = Order::query()->where('id', $id)->update($update_data);
         if ($res) {
             return $this->success();
         } else {
@@ -459,7 +459,7 @@ class OrderController extends BaseController
         $ids = $this->checkBatchId();
         $where[] = ['seller_id', $this->user_data['id']];
         $where[] = ['status', Order::STATUS_PAID];
-        $res_list = Order::select('id', 'm_id', 'order_no', 'flag', 'full_name', 'tel', 'prov', 'city', 'area', 'address', 'status')
+        $res_list = Order::query()->select('id', 'm_id', 'order_no', 'flag', 'full_name', 'tel', 'prov', 'city', 'area', 'address', 'status')
             ->where($where)
             ->whereIn('id', $ids)
             ->orderBy('id', 'desc')
@@ -493,19 +493,19 @@ class OrderController extends BaseController
         if (!$company_id || !$address_id) {
             api_error(__('admin.missing_params'));
         }
-        $express_company = ExpressCompany::select('title', 'code', 'param')->where('id', $company_id)->first();
+        $express_company = ExpressCompany::query()->select('title', 'code', 'param')->where('id', $company_id)->first();
         if (!$express_company) {
             api_error(__('admin.express_company_error'));
         }
         $express_company = $express_company->toArray();
-        $address = SellerAddress::where(['id' => $address_id, 'seller_id' => 1])->first();
+        $address = SellerAddress::query()->where(['id' => $address_id, 'seller_id' => 1])->first();
         if (!$address) {
             api_error(__('admin.delivery_address_error'));
         }
         $address = $address->toArray();
         $where[] = ['seller_id', $this->user_data['id']];
         $where[] = ['status', Order::STATUS_PAID];
-        $res_list = Order::select('id', 'm_id', 'seller_id', 'order_no', 'product_num', 'flag', 'full_name', 'tel', 'prov', 'city', 'area', 'address', 'status')
+        $res_list = Order::query()->select('id', 'm_id', 'seller_id', 'order_no', 'product_num', 'flag', 'full_name', 'tel', 'prov', 'city', 'area', 'address', 'status')
             ->where($where)
             ->whereIn('id', $ids)
             ->orderBy('id', 'desc')
@@ -596,7 +596,7 @@ class OrderController extends BaseController
      */
     private function checkOrder(int $order_id)
     {
-        $order = Order::where('seller_id', $this->user_data['id'])->find($order_id);
+        $order = Order::query()->where('seller_id', $this->user_data['id'])->find($order_id);
         if (!$order) {
             api_error(__('admin.order_error'));
         }

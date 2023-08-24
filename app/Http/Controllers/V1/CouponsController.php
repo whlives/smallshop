@@ -36,7 +36,7 @@ class CouponsController extends BaseController
                 ['start_at', '<=', get_date()],
                 ['end_at', '>=', get_date()]
             ];
-            $query = Coupons::select('id', 'title', 'image', 'type', 'amount', 'use_price', 'start_at', 'end_at', 'day_num', 'note')
+            $query = Coupons::query()->select('id', 'title', 'image', 'type', 'amount', 'use_price', 'start_at', 'end_at', 'day_num', 'note')
                 ->where($where)
                 ->where(function ($query) use ($where_date) {
                     $query->where($where_date)

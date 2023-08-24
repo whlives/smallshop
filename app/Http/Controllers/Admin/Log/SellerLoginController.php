@@ -30,14 +30,14 @@ class SellerLoginController extends BaseController
         $where = [];
         $username = $request->input('username');
         if ($username) {
-            $member_id = Seller::where('username', $username)->value('id');
+            $member_id = Seller::query()->where('username', $username)->value('id');
             if ($member_id) {
                 $where[] = ['m_id', $member_id];
             } else {
                 api_error(__('admin.content_is_empty'));
             }
         }
-        $query = SellerLoginLog::select('id', 'm_id', 'user_agent', 'ip', 'status', 'created_at')
+        $query = SellerLoginLog::query()->select('id', 'm_id', 'user_agent', 'ip', 'status', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -49,7 +49,7 @@ class SellerLoginController extends BaseController
         }
         $m_ids = array_column($res_list->toArray(), 'm_id');
         if ($m_ids) {
-            $seller_data = Seller::whereIn('id', array_unique($m_ids))->pluck('username', 'id');
+            $seller_data = Seller::query()->whereIn('id', array_unique($m_ids))->pluck('username', 'id');
         }
         $data_list = [];
         foreach ($res_list as $value) {
@@ -77,11 +77,11 @@ class SellerLoginController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = SellerLoginLog::find($id);
+        $data = SellerLoginLog::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
-        $res = SellerLoginLog::where('id', $id)->update(['status' => SellerLoginLog::STATUS_OFF]);
+        SellerLoginLog::query()->where('id', $id)->update(['status' => SellerLoginLog::STATUS_OFF]);
         $token_service = new TokenService();
         $token_service->delToken($data['token']);
         return $this->success();

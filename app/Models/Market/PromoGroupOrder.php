@@ -19,7 +19,7 @@ class PromoGroupOrder extends BaseModel
 {
     protected $table = 'promo_group_order';
     protected $guarded = ['id'];
-    
+
     //状态
     const STATUS_WAIT_PAY = 0;
     const STATUS_WAIT_SUCCESS = 1;
@@ -51,8 +51,8 @@ class PromoGroupOrder extends BaseModel
         $group = PromoGroup::withTrashed()->where(['goods_id' => $promo_data['goods_id']])->first();
         $group_num = 0;
         if ($promo_data['group_order_id']) {
-            $group_num = self::where(['group_id' => $group['id'], 'group_order_id' => $promo_data['group_order_id'], 'status' => self::STATUS_WAIT_SUCCESS])->count();//查询待成团的订单数
-            $order_end_at = self::where('id', $promo_data['group_order_id'])->value('end_at');
+            $group_num = self::query()->where(['group_id' => $group['id'], 'group_order_id' => $promo_data['group_order_id'], 'status' => self::STATUS_WAIT_SUCCESS])->count();//查询待成团的订单数
+            $order_end_at = self::query()->where('id', $promo_data['group_order_id'])->value('end_at');
         }
         //设置拼团结束时间
         $end_at = get_date(time() + ($group['hour'] * 3600));
@@ -71,10 +71,10 @@ class PromoGroupOrder extends BaseModel
         ];
         try {
             $res = DB::transaction(function () use ($group_order) {
-                $res = self::create($group_order);
+                $res = self::query()->create($group_order);
                 $group_order_id = $res->id;
                 if ($group_order['is_head'] == self::IS_HEAD_YES) {
-                    self::where('id', $group_order_id)->update(['group_order_id' => $group_order_id]);
+                    self::query()->where('id', $group_order_id)->update(['group_order_id' => $group_order_id]);
                 }
                 return true;
             });
@@ -91,7 +91,7 @@ class PromoGroupOrder extends BaseModel
      */
     public static function cancel(int $order_id)
     {
-        $group_order = self::where('order_id', $order_id)->first();
+        $group_order = self::query()->where('order_id', $order_id)->first();
         $update_data = [
             'status' => self::STATUS_CANCEL,
             'is_head' => self::IS_HEAD_NO,
@@ -99,14 +99,14 @@ class PromoGroupOrder extends BaseModel
         $next_head = '';//是否需要指定新团长
         if ($group_order['is_head'] == self::IS_HEAD_YES) {
             //如果是开团的人，需要更换开团人员为下一位
-            $next_head = self::where(['group_order_id' => $group_order['group_order_id'], 'status' => self::STATUS_WAIT_SUCCESS])->orderBy('id', 'asc')->first();
+            $next_head = self::query()->where(['group_order_id' => $group_order['group_order_id'], 'status' => self::STATUS_WAIT_SUCCESS])->orderBy('id', 'asc')->first();
         }
         try {
             $res = DB::transaction(function () use ($group_order, $update_data, $next_head) {
-                self::where('id', $group_order['id'])->update($update_data);
+                self::query()->where('id', $group_order['id'])->update($update_data);
                 if (isset($next_head['id']) && $next_head['id']) {
-                    self::where('id', $next_head['id'])->update(['is_head' => self::IS_HEAD_YES]);//修改拼团团长
-                    self::where('group_order_id', $group_order['group_order_id'])->update(['group_order_id' => $next_head['id']]);//修改开团订单id
+                    self::query()->where('id', $next_head['id'])->update(['is_head' => self::IS_HEAD_YES]);//修改拼团团长
+                    self::query()->where('group_order_id', $group_order['group_order_id'])->update(['group_order_id' => $next_head['id']]);//修改开团订单id
                 }
                 return true;
             });
@@ -123,8 +123,8 @@ class PromoGroupOrder extends BaseModel
      */
     public static function pay(int $order_id)
     {
-        $group_order = self::where('order_id', $order_id)->first();
-        $group_head = self::where(['group_order_id' => $group_order['group_order_id']])->first();//开团订单
+        $group_order = self::query()->where('order_id', $order_id)->first();
+        $group_head = self::query()->where(['group_order_id' => $group_order['group_order_id']])->first();//开团订单
         $group = PromoGroup::withTrashed()->where('id', $group_order['group_id'])->first();//这里可能已经删除了，所以需要查询软删除的
         try {
             if ($group_head['status'] != self::STATUS_WAIT_SUCCESS) {
@@ -138,26 +138,26 @@ class PromoGroupOrder extends BaseModel
                     'end_at' => $end_at
                 ];
                 $res = DB::transaction(function () use ($order_id, $update_order) {
-                    self::where('order_id', $order_id)->update($update_order);
-                    Order::where('id', $order_id)->update(['status' => Order::STATUS_WAIT_GROUP]);
+                    self::query()->where('order_id', $order_id)->update($update_order);
+                    Order::query()->where('id', $order_id)->update(['status' => Order::STATUS_WAIT_GROUP]);
                     return true;
                 });
             } else {
-                $group_num = self::where(['group_order_id' => $group_order['group_order_id'], 'status' => self::STATUS_WAIT_SUCCESS])->count();
+                $group_num = self::query()->where(['group_order_id' => $group_order['group_order_id'], 'status' => self::STATUS_WAIT_SUCCESS])->count();
                 if (($group_num + 1) < $group['group_num']) {
                     //这种肯定是还没有达到的，改成待成团
                     $res = DB::transaction(function () use ($order_id) {
-                        self::where('order_id', $order_id)->update(['status' => self::STATUS_WAIT_SUCCESS]);
-                        Order::where('id', $order_id)->update(['status' => Order::STATUS_WAIT_GROUP]);
+                        self::query()->where('order_id', $order_id)->update(['status' => self::STATUS_WAIT_SUCCESS]);
+                        Order::query()->where('id', $order_id)->update(['status' => Order::STATUS_WAIT_GROUP]);
                         return true;
                     });
                 } else {
                     //这种是已经成功的
                     $res = DB::transaction(function () use ($order_id, $group_order) {
-                        self::where('order_id', $order_id)->update(['status' => self::STATUS_WAIT_SUCCESS]);//先修改自己的状态
-                        $order_ids = self::where(['group_order_id' => $group_order['group_order_id'], 'status' => self::STATUS_WAIT_SUCCESS])->pluck('order_id')->toArray();//查询所有带成团的拼团订单
-                        Order::where('id', $order_ids)->update(['status' => Order::STATUS_PAID]);//修改订单状态
-                        self::whereIn('order_id', $order_ids)->update(['status' => self::STATUS_SUCCESS]);//修改拼团订单状态
+                        self::query()->where('order_id', $order_id)->update(['status' => self::STATUS_WAIT_SUCCESS]);//先修改自己的状态
+                        $order_ids = self::query()->where(['group_order_id' => $group_order['group_order_id'], 'status' => self::STATUS_WAIT_SUCCESS])->pluck('order_id')->toArray();//查询所有带成团的拼团订单
+                        Order::query()->where('id', $order_ids)->update(['status' => Order::STATUS_PAID]);//修改订单状态
+                        self::query()->whereIn('order_id', $order_ids)->update(['status' => self::STATUS_SUCCESS]);//修改拼团订单状态
                         return true;
                     });
                 }
@@ -178,7 +178,7 @@ class PromoGroupOrder extends BaseModel
         $update_data = [
             'status' => self::STATUS_CANCEL,
         ];
-        $res = self::whereIn('id', $id)->update($update_data);
+        $res = self::query()->whereIn('id', $id)->update($update_data);
         if ($res) {
             return true;
         } else {

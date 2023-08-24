@@ -36,7 +36,7 @@ class MemberReg implements ShouldQueue
      */
     public function handle()
     {
-        $member_data = Member::where('username', $this->username)->first();
+        $member_data = Member::query()->where('username', $this->username)->first();
         if (!$member_data) return false;
         $member_data = $member_data->toArray();
         Promotion::reg($member_data);//注册活动

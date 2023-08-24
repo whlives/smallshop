@@ -31,8 +31,8 @@ class SellerController extends BaseController
      */
     public function info(Request $request)
     {
-        $seller = Seller::find($this->seller_id);
-        $seller_profile = SellerProfile::where('seller_id', $this->seller_id)->first();
+        $seller = Seller::query()->find($this->seller_id);
+        $seller_profile = SellerProfile::query()->where('seller_id', $this->seller_id)->first();
         return $this->success(array_merge($seller->toArray(), $seller_profile->toArray()));
     }
 

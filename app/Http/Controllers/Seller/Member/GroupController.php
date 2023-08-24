@@ -25,7 +25,7 @@ class GroupController extends BaseController
         $where = [
             'status' => MemberGroup::STATUS_ON
         ];
-        $res_list = MemberGroup::select('id', 'title')->where($where)
+        $res_list = MemberGroup::query()->select('id', 'title')->where($where)
             ->orderBy('id', 'desc')
             ->get();
         return $this->success($res_list);

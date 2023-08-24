@@ -45,7 +45,7 @@ class CategoryController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = SellerCategory::where('seller_id', $this->seller_id)->find($id);
+        $data = SellerCategory::query()->where('seller_id', $this->seller_id)->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -81,10 +81,10 @@ class CategoryController extends BaseController
         }
         $id = (int)$request->input('id');
         if ($id) {
-            $res = SellerCategory::where(['id' => $id, 'seller_id' => $this->seller_id])->update($save_data);
+            $res = SellerCategory::query()->where(['id' => $id, 'seller_id' => $this->seller_id])->update($save_data);
         } else {
             $save_data['seller_id'] = $this->seller_id;
-            $res = SellerCategory::create($save_data);
+            $res = SellerCategory::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -106,7 +106,7 @@ class CategoryController extends BaseController
         if (!isset(SellerCategory::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $res = SellerCategory::whereIn('id', $ids)->where('seller_id', $this->seller_id)->update(['status' => $status]);
+        $res = SellerCategory::query()->whereIn('id', $ids)->where('seller_id', $this->seller_id)->update(['status' => $status]);
         if ($res) {
             return $this->success();
         } else {
@@ -127,11 +127,11 @@ class CategoryController extends BaseController
             api_error(__('admin.invalid_params'));
         }
         //查询是否存在下级分类
-        $sub_menu = SellerCategory::where('parent_id', $id)->count();
+        $sub_menu = SellerCategory::query()->where('parent_id', $id)->count();
         if ($sub_menu > 0) {
             api_error(__('admin.category_child_no_empty'));
         }
-        $res = SellerCategory::where(['id' => $id, 'seller_id' => $this->seller_id])->delete();
+        $res = SellerCategory::query()->where(['id' => $id, 'seller_id' => $this->seller_id])->delete();
         if ($res) {
             return $this->success();
         } else {

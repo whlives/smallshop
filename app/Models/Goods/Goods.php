@@ -351,7 +351,7 @@ class Goods extends BaseModel
             }
             if ($goods['type'] == Goods::TYPE_COUPONS) {
                 //验证优惠券
-                $coupons = Coupons::where(['seller_id' => $goods['seller_id'], 'id' => $object_id, 'status' => Coupons::STATUS_ON])->first();
+                $coupons = Coupons::query()->where(['seller_id' => $goods['seller_id'], 'id' => $object_id, 'status' => Coupons::STATUS_ON])->first();
                 if (!$coupons) {
                     return __('admin.coupons_not_exists');
                 } elseif ($coupons['end_at'] < get_date() && !$coupons['day_num']) {
@@ -361,7 +361,7 @@ class Goods extends BaseModel
                 }
             } elseif ($goods['type'] == Goods::TYPE_PACKAGE) {
                 //验证套餐包
-                $package = GoodsPackage::where(['seller_id' => $goods['seller_id'], 'id' => $object_id, 'status' => Coupons::STATUS_ON])->first();
+                $package = GoodsPackage::query()->where(['seller_id' => $goods['seller_id'], 'id' => $object_id, 'status' => Coupons::STATUS_ON])->first();
                 if (!$package) {
                     return __('admin.package_not_exists');
                 } elseif ($package['status'] != GoodsPackage::STATUS_ON) {
@@ -375,17 +375,17 @@ class Goods extends BaseModel
             $res = DB::transaction(function () use ($id, $seller_id, $goods, $content, $image, $goods_sku, $goods_attribute, $seller_category, $object_id) {
                 //修改主商品
                 if ($id) {
-                    self::where(['id' => $id, 'seller_id' => $goods['seller_id']])->update($goods);
-                    GoodsContent::where('goods_id', $id)->update(['content' => $content]);
-                    GoodsImage::where('goods_id', $id)->delete();
-                    GoodsAttribute::where('goods_id', $id)->delete();
-                    GoodsObject::where('goods_id', $id)->delete();
-                    GoodsSku::where('goods_id', $id)->update(['status' => GoodsSku::STATUS_DEL]);
+                    self::query()->where(['id' => $id, 'seller_id' => $goods['seller_id']])->update($goods);
+                    GoodsContent::query()->where('goods_id', $id)->update(['content' => $content]);
+                    GoodsImage::query()->where('goods_id', $id)->delete();
+                    GoodsAttribute::query()->where('goods_id', $id)->delete();
+                    GoodsObject::query()->where('goods_id', $id)->delete();
+                    GoodsSku::query()->where('goods_id', $id)->update(['status' => GoodsSku::STATUS_DEL]);
                 } else {
-                    $result = self::create($goods);
+                    $result = self::query()->create($goods);
                     $id = $result->id;
-                    GoodsContent::create(['goods_id' => $id, 'content' => $content]);
-                    GoodsNum::create(['goods_id' => $id]);//商品数量相关
+                    GoodsContent::query()->create(['goods_id' => $id, 'content' => $content]);
+                    GoodsNum::query()->create(['goods_id' => $id]);//商品数量相关
                     MiniProgramQrcode::dispatch('goods', ['id' => $id]);//生成小程序码
                 }
                 //商品图片
@@ -398,7 +398,7 @@ class Goods extends BaseModel
                         ];
                         $goods_image[] = $_item;
                     }
-                    GoodsImage::insert($goods_image);
+                    GoodsImage::query()->insert($goods_image);
                 }
                 //sku商品
                 if ($goods_sku) {
@@ -408,9 +408,9 @@ class Goods extends BaseModel
                         $value['goods_id'] = $id;
                         $value['status'] = GoodsSku::STATUS_ON;
                         if ($sku_id) {
-                            GoodsSku::where('id', $sku_id)->update($value);
+                            GoodsSku::query()->where('id', $sku_id)->update($value);
                         } else {
-                            GoodsSku::create($value);
+                            GoodsSku::query()->create($value);
                         }
                     }
                 }
@@ -420,12 +420,12 @@ class Goods extends BaseModel
                         $value['goods_id'] = $id;
                         $goods_attribute[$key] = $value;
                     }
-                    GoodsAttribute::insert($goods_attribute);
+                    GoodsAttribute::query()->insert($goods_attribute);
                 }
                 //商家分类
                 if ($seller_id) {
                     //商家编辑的时候先删除
-                    GoodsSellerCategory::where('goods_id', $id)->delete();
+                    GoodsSellerCategory::query()->where('goods_id', $id)->delete();
                 }
                 if ($seller_category) {
                     $seller_category_data = [];
@@ -435,11 +435,11 @@ class Goods extends BaseModel
                             'category_id' => $value
                         ];
                     }
-                    GoodsSellerCategory::insert($seller_category_data);
+                    GoodsSellerCategory::query()->insert($seller_category_data);
                 }
                 //优惠券、套餐包商品
                 if ($object_id && ($goods['type'] == Goods::TYPE_COUPONS || $goods['type'] == Goods::TYPE_PACKAGE)) {
-                    GoodsObject::create(['goods_id' => $id, 'object_id' => $object_id, 'type' => $goods['type']]);
+                    GoodsObject::query()->create(['goods_id' => $id, 'object_id' => $object_id, 'type' => $goods['type']]);
                 }
                 return $id;
             });
@@ -462,7 +462,7 @@ class Goods extends BaseModel
         $goods_attribute = [];
         //查询商品属性
         if ($goods_id) {
-            $goods_attribute_res = GoodsAttribute::select('value', 'attribute_id')->where('goods_id', $goods_id)->get();
+            $goods_attribute_res = GoodsAttribute::query()->select('value', 'attribute_id')->where('goods_id', $goods_id)->get();
             if (!$goods_attribute_res->isEmpty()) {
                 foreach ($goods_attribute_res as $value) {
                     $goods_attribute[$value['attribute_id']][] = $value['value'];
@@ -471,7 +471,7 @@ class Goods extends BaseModel
         }
         //查询分类下的属性
         $attribute = [];
-        $attribute_res = Attribute::where('category_id', $category_id)
+        $attribute_res = Attribute::query()->where('category_id', $category_id)
             ->select('id', 'title', 'input_type')
             ->orderBy('position', 'asc')
             ->orderBy('id', 'asc')
@@ -487,7 +487,7 @@ class Goods extends BaseModel
             }
             //获取属性值
             if ($attribute_ids) {
-                $attribute_value_res = AttributeValue::whereIn('attribute_id', array_unique($attribute_ids))
+                $attribute_value_res = AttributeValue::query()->whereIn('attribute_id', array_unique($attribute_ids))
                     ->select('id', 'value', 'attribute_id')
                     ->orderBy('position', 'asc')
                     ->orderBy('id', 'asc')
@@ -523,7 +523,7 @@ class Goods extends BaseModel
         //查询子商品
         $goods_sku = [];
         if ($goods_id) {
-            $goods_sku_res = GoodsSku::where(['status' => GoodsSku::STATUS_ON, 'goods_id' => $goods_id])->get();
+            $goods_sku_res = GoodsSku::query()->where(['status' => GoodsSku::STATUS_ON, 'goods_id' => $goods_id])->get();
             if (!$goods_sku_res->isEmpty()) {
                 foreach ($goods_sku_res as $value) {
                     $_key_arr = [];
@@ -553,7 +553,7 @@ class Goods extends BaseModel
         }
         $spec = [];
         //查询分类下的属性
-        $spec_res = Spec::where('category_id', $category_id)
+        $spec_res = Spec::query()->where('category_id', $category_id)
             ->select('id', 'title', 'type')
             ->orderBy('position', 'asc')
             ->orderBy('id', 'asc')
@@ -566,7 +566,7 @@ class Goods extends BaseModel
             }
             //判断依据选择的属性值
             if ($spec_ids) {
-                $spec_value_res = SpecValue::whereIn('spec_id', $spec_ids)
+                $spec_value_res = SpecValue::query()->whereIn('spec_id', $spec_ids)
                     ->select('id', 'value', 'spec_id')
                     ->orderBy('position', 'asc')
                     ->orderBy('id', 'asc')
@@ -603,14 +603,14 @@ class Goods extends BaseModel
     {
         try {
             DB::transaction(function () use ($ids) {
-                self::whereIn('id', $ids)->forceDelete();
-                GoodsAttribute::whereIn('goods_id', $ids)->delete();
-                GoodsContent::whereIn('goods_id', $ids)->delete();
-                GoodsObject::whereIn('goods_id', $ids)->delete();
-                GoodsImage::whereIn('goods_id', $ids)->delete();
-                GoodsNum::whereIn('goods_id', $ids)->delete();
-                GoodsSellerCategory::whereIn('goods_id', $ids)->delete();
-                GoodsSku::whereIn('goods_id', $ids)->delete();
+                self::query()->whereIn('id', $ids)->forceDelete();
+                GoodsAttribute::query()->whereIn('goods_id', $ids)->delete();
+                GoodsContent::query()->whereIn('goods_id', $ids)->delete();
+                GoodsObject::query()->whereIn('goods_id', $ids)->delete();
+                GoodsImage::query()->whereIn('goods_id', $ids)->delete();
+                GoodsNum::query()->whereIn('goods_id', $ids)->delete();
+                GoodsSellerCategory::query()->whereIn('goods_id', $ids)->delete();
+                GoodsSku::query()->whereIn('goods_id', $ids)->delete();
             });
             return true;
         } catch (\Exception $e) {
@@ -631,7 +631,7 @@ class Goods extends BaseModel
         if (!$qrcode) {
             return false;
         }
-        Goods::where('id', $goods_id)->update(['qrcode' => $qrcode]);
+        Goods::query()->where('id', $goods_id)->update(['qrcode' => $qrcode]);
         return $qrcode;
     }
 
@@ -662,7 +662,7 @@ class Goods extends BaseModel
         $cache_key = 'goods:' . $id;
         $goods = Cache::get($cache_key);
         if (!$goods) {
-            $goods = self::select('id', 'title', 'subtitle', 'image', 'video', 'shelves_status', 'seller_id', 'type', 'promo_type')->find($id);
+            $goods = self::query()->select('id', 'title', 'subtitle', 'image', 'video', 'shelves_status', 'seller_id', 'type', 'promo_type')->find($id);
             if ($goods) $goods = $goods->toArray();
             Cache::put($cache_key, $goods, get_custom_config('cache_time'));
         }
@@ -679,7 +679,7 @@ class Goods extends BaseModel
         $cache_key = 'goods_detail:' . $id;
         $goods = Cache::get($cache_key);
         if (!$goods) {
-            $goods = self::select('id', 'title', 'subtitle', 'image', 'video', 'shelves_status', 'seller_id', 'type', 'promo_type')->find($id);
+            $goods = self::query()->select('id', 'title', 'subtitle', 'image', 'video', 'shelves_status', 'seller_id', 'type', 'promo_type')->find($id);
             if ($goods) {
                 $goods['favorite'] = $goods['stock'] = 0;
                 $goods['spec'] = $goods['sku'] = $goods['attribute'] = $goods['group'] = $goods['seckill'] = [];
@@ -724,7 +724,7 @@ class Goods extends BaseModel
                 $attribute_ids = array_column($goods_attribute->toArray(), 'attribute_id');
                 //获取属性信息
                 if ($attribute_ids) {
-                    $attribute = Attribute::whereIn('id', array_unique($attribute_ids))->select('id', 'title', 'input_type')->get();
+                    $attribute = Attribute::query()->whereIn('id', array_unique($attribute_ids))->select('id', 'title', 'input_type')->get();
                     $attribute = array_column($attribute->toArray(), null, 'id');
                 }
                 //获取属性id
@@ -736,7 +736,7 @@ class Goods extends BaseModel
                 }
                 //获取属性值
                 if ($attr_value_ids) {
-                    $attr_value = AttributeValue::whereIn('id', array_unique($attr_value_ids))->pluck('value', 'id')->toArray();
+                    $attr_value = AttributeValue::query()->whereIn('id', array_unique($attr_value_ids))->pluck('value', 'id')->toArray();
                 }
                 //组装属性
                 $goods_attr = [];
@@ -754,7 +754,7 @@ class Goods extends BaseModel
                 }
                 $goods['attribute'] = array_values($goods_attr);
                 //商家信息
-                $goods['seller'] = Seller::select('id', 'title', 'image')->find($goods['seller_id']);
+                $goods['seller'] = Seller::query()->select('id', 'title', 'image')->find($goods['seller_id']);
                 Cache::put($cache_key, $goods, get_custom_config('cache_time'));
             }
         }
@@ -769,15 +769,15 @@ class Goods extends BaseModel
     public static function syncRedisStock(int $goods_id)
     {
         $end_at = '';
-        $goods = self::where('id', $goods_id)->first();
+        $goods = self::query()->where('id', $goods_id)->first();
         if ($goods['promo_type'] == self::PROMO_TYPE_SECKILL) {
-            $end_at = PromoSeckill::where('goods_id', $goods_id)->value('end_at');
+            $end_at = PromoSeckill::query()->where('goods_id', $goods_id)->value('end_at');
         } elseif ($goods['type'] == self::TYPE_COUPONS) {
-            $coupons_id = GoodsObject::where('goods_id', $goods_id)->value('object_id');
-            $end_at = Coupons::where('id', $coupons_id)->value('end_at');
+            $coupons_id = GoodsObject::query()->where('goods_id', $goods_id)->value('object_id');
+            $end_at = Coupons::query()->where('id', $coupons_id)->value('end_at');
         }
         if (!$end_at) return false;
-        $sku_data = GoodsSku::where(['goods_id' => $goods_id])->pluck('stock', 'id')->toArray();
+        $sku_data = GoodsSku::query()->where(['goods_id' => $goods_id])->pluck('stock', 'id')->toArray();
         $save_data = $sku_data;
         $save_data['all'] = array_sum($sku_data);
         $stock_redis_key = 'goods_redis_stock:' . $goods_id;

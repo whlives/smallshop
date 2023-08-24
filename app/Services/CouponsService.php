@@ -35,12 +35,12 @@ class CouponsService
             ['start_at', '<=', get_date()],
             ['end_at', '>=', get_date()],
         ];
-        $my_coupons = CouponsDetail::where($where)->select('id', 'coupons_id')->get();
+        $my_coupons = CouponsDetail::query()->where($where)->select('id', 'coupons_id')->get();
         if ($my_coupons->isEmpty()) {
             return $return;
         }
         $coupons_ids = array_column($my_coupons->toArray(), 'coupons_id');
-        $res_coupons = Coupons::where(['seller_id' => $seller_id, 'status' => Coupons::STATUS_ON])->whereIn('id', array_unique($coupons_ids))->get();
+        $res_coupons = Coupons::query()->where(['seller_id' => $seller_id, 'status' => Coupons::STATUS_ON])->whereIn('id', array_unique($coupons_ids))->get();
         if ($res_coupons->isEmpty()) {
             return $return;
         }
@@ -106,7 +106,7 @@ class CouponsService
             ['status', CouponsDetail::STATUS_ON],
             ['start_at', '<=', get_date()],
         ];
-        $coupons_detail = CouponsDetail::where($where)->first();
+        $coupons_detail = CouponsDetail::query()->where($where)->first();
         if (!$coupons_detail) {
             api_error(__('api.coupons_not_exists'));
         } elseif ($coupons_detail['is_use'] == CouponsDetail::USE_ON) {
@@ -115,7 +115,7 @@ class CouponsService
             api_error(__('api.coupons_overdue'));
         }
         //查询优惠券详情
-        $coupons = Coupons::where(['seller_id' => $seller_id, 'status' => Coupons::STATUS_ON, 'id' => $coupons_detail['coupons_id']])->first();
+        $coupons = Coupons::query()->where(['seller_id' => $seller_id, 'status' => Coupons::STATUS_ON, 'id' => $coupons_detail['coupons_id']])->first();
         if (!$coupons) {
             api_error(__('api.coupons_not_exists'));
         }
@@ -136,7 +136,7 @@ class CouponsService
     public static function getConformRule(array $coupons, array $goods)
     {
         $conform_sku_id = array_column($goods, 'sku_id');//默认所有商品可用
-        $res_rules = CouponsRule::where('coupons_id', $coupons['id'])->get();
+        $res_rules = CouponsRule::query()->where('coupons_id', $coupons['id'])->get();
         $sku_ids = [];
         if (!$res_rules->isEmpty()) {
             //没有规则就是全部可用

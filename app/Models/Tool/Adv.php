@@ -17,7 +17,7 @@ class Adv extends BaseModel
 {
     protected $table = 'adv';
     protected $guarded = ['id'];
-    
+
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -54,7 +54,7 @@ class Adv extends BaseModel
             ['code', $code],
             ['status', AdvGroup::STATUS_ON]
         ];
-        $group_id = AdvGroup::where($group_where)->value('id');
+        $group_id = AdvGroup::query()->where($group_where)->value('id');
         if (!$group_id) {
             return $return;
         }
@@ -64,7 +64,7 @@ class Adv extends BaseModel
             ['start_at', '<=', get_date()],
             ['end_at', '>=', get_date()]
         ];
-        $res_list = Adv::select('title', 'image', 'target_type', 'target_value', 'app_id')
+        $res_list = Adv::query()->select('title', 'image', 'target_type', 'target_value', 'app_id')
             ->where($adv_where)
             ->orderBy('position', 'asc')
             ->orderBy('id', 'desc')

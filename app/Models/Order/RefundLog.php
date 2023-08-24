@@ -18,7 +18,7 @@ class RefundLog extends BaseModel
 {
     protected $table = 'refund_log';
     protected $guarded = ['id'];
-    
+
     //用户类型
     const USER_TYPE_MEMBER = 0;
     const USER_TYPE_SYSTEM = 1;
@@ -58,20 +58,20 @@ class RefundLog extends BaseModel
      */
     public static function getLog(array $refund)
     {
-        $log_res = RefundLog::select('id', 'user_type', 'user_id', 'username', 'action', 'note', 'created_at')->where('refund_id', $refund['id'])->orderBy('id', 'desc')->get();
+        $log_res = RefundLog::query()->select('id', 'user_type', 'user_id', 'username', 'action', 'note', 'created_at')->where('refund_id', $refund['id'])->orderBy('id', 'desc')->get();
         if ($log_res->isEmpty()) {
             api_error(__('api.content_is_empty'));
         }
         //查询售后图片
         $log_ids = array_column($log_res->toArray(), 'id');
-        $refund_image_res = RefundImage::whereIn('log_id', $log_ids)->get();
+        $refund_image_res = RefundImage::query()->whereIn('log_id', $log_ids)->get();
         $refund_image = [];
         if (!$refund_image_res->isEmpty()) {
             foreach ($refund_image_res as $value) {
                 $refund_image[$value['log_id']][]['image'] = $value['image'];
             }
         }
-        $headimg = Member::where('id', $refund['m_id'])->value('headimg');
+        $headimg = Member::query()->where('id', $refund['m_id'])->value('headimg');
         $log = [];
         foreach ($log_res as $value) {
             $_item = $value;

@@ -54,7 +54,7 @@ class OrderController extends BaseController
         if ($is_comment) {
             $where_in = [Order::STATUS_DONE, Order::STATUS_COMPLETE];
         }
-        $query = Order::select('id', 'order_no', 'seller_id', 'product_num', 'subtotal', 'status', 'delivery_price_real', 'comment_at')
+        $query = Order::query()->select('id', 'order_no', 'seller_id', 'product_num', 'subtotal', 'status', 'delivery_price_real', 'comment_at')
             ->where($where);
         if (isset($where_in)) {
             $query->whereIn('status', $where_in);
@@ -76,7 +76,7 @@ class OrderController extends BaseController
         //获取商品信息
         $order_goods = OrderGoods::getGoodsForOrderId(array_unique($order_ids), true);
         //获取商家信息
-        $seller_res = Seller::select('id', 'title', 'image')->whereIn('id', $seller_ids)->get();
+        $seller_res = Seller::query()->select('id', 'title', 'image')->whereIn('id', $seller_ids)->get();
         if ($seller_res->isEmpty()) {
             api_error(__('api.seller_error'));
         }
@@ -117,7 +117,7 @@ class OrderController extends BaseController
         }
         $order_info = Order::getInfo($order_no, $this->member_data['id']);
         //查询订单商品
-        $order_goods_res = OrderGoods::select('id', 'goods_id', 'goods_title', 'image', 'sell_price', 'buy_qty', 'spec_value', 'refund')->where('order_id', $order_info['id'])->get();
+        $order_goods_res = OrderGoods::query()->select('id', 'goods_id', 'goods_title', 'image', 'sell_price', 'buy_qty', 'spec_value', 'refund')->where('order_id', $order_info['id'])->get();
         if ($order_goods_res->isEmpty()) {
             api_error(__('api.order_goods_error'));
         }
@@ -128,7 +128,7 @@ class OrderController extends BaseController
             $_item['refund_button'] = OrderService::isRefund($order_info, $value) ? 1 : 0;
             $order_goods[] = $_item;
         }
-        $seller = Seller::select('id', 'title', 'image')->where('id', $order_info['seller_id'])->first();
+        $seller = Seller::query()->select('id', 'title', 'image')->where('id', $order_info['seller_id'])->first();
         $order = [
             'full_name' => $order_info['full_name'],
             'tel' => $order_info['tel'],
@@ -217,11 +217,11 @@ class OrderController extends BaseController
         }
         $order_info = Order::getInfo($order_no, $this->member_data['id']);
         $delivery_traces = [];
-        $delivery_res = OrderDelivery::select('order_goods_id', 'company_code', 'company_name', 'code')->where('order_id', $order_info['id'])->get();
+        $delivery_res = OrderDelivery::query()->select('order_goods_id', 'company_code', 'company_name', 'code')->where('order_id', $order_info['id'])->get();
         if ($delivery_res->isEmpty()) {
             return $this->success($delivery_traces);
         }
-        $traces_query = DeliveryTraces::select('company_code', 'code', 'accept_time', 'info');
+        $traces_query = DeliveryTraces::query()->select('company_code', 'code', 'accept_time', 'info');
         foreach ($delivery_res as $value) {
             $_item = [
                 'company_name' => $value['company_name'],
@@ -352,7 +352,7 @@ class OrderController extends BaseController
         if (!OrderService::isUserDelete($order_info)) {
             api_error(__('api.order_status_error'));
         }
-        $res = Order::where(['m_id' => $this->member_data['id'], 'order_no' => $order_no])->update(['is_delete' => Order::IS_DELETE_YES]);
+        $res = Order::query()->where(['m_id' => $this->member_data['id'], 'order_no' => $order_no])->update(['is_delete' => Order::IS_DELETE_YES]);
         if ($res) {
             return $this->success();
         } else {

@@ -18,7 +18,7 @@ class AdminLoginLog extends BaseModel
 {
     protected $table = 'admin_login_log';
     protected $guarded = ['id'];
-    
+
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -38,12 +38,12 @@ class AdminLoginLog extends BaseModel
         if (!is_array($id)) {
             $id = [$id];
         }
-        $token_data = self::where('status', self::STATUS_ON)->whereIn('m_id', $id)->pluck('token');
+        $token_data = self::query()->where('status', self::STATUS_ON)->whereIn('m_id', $id)->pluck('token');
         if ($token_data) {
             foreach ($token_data as $value) {
                 $token_service->delToken($value);
             }
-            self::whereIn('m_id', $id)->update(['status' => self::STATUS_OFF]);
+            self::query()->whereIn('m_id', $id)->update(['status' => self::STATUS_OFF]);
         }
         return true;
     }

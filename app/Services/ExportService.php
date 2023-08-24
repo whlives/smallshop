@@ -62,7 +62,7 @@ class ExportService
             'subtotal' => '金额',
             'order_no' => '订单号',
         ];
-        $query = Order::select('order.id as order_id', 'order.order_no', 'order.full_name', 'order.tel', 'order.prov', 'order.city', 'order.area', 'order.address', 'order.subtotal', 'goods.goods_title', 'goods.buy_qty');
+        $query = Order::query()->select('order.id as order_id', 'order.order_no', 'order.full_name', 'order.tel', 'order.prov', 'order.city', 'order.area', 'order.address', 'order.subtotal', 'goods.goods_title', 'goods.buy_qty');
         if (isset($where['where']) && $where['where']) {
             $query->where($where['where']);
         }
@@ -113,7 +113,7 @@ class ExportService
     {
         self::timeRange($start_at, $end_at);
         $cols = $request->input('cols');
-        $query = Refund::select('refund.id', 'refund.m_id', 'refund.order_goods_id', 'refund.refund_no', 'refund.amount', 'refund.refund_type', 'refund.status', 'refund.reason', 'refund.created_at', 'goods.goods_title', 'goods.image', 'goods.spec_value');
+        $query = Refund::query()->select('refund.id', 'refund.m_id', 'refund.order_goods_id', 'refund.refund_no', 'refund.amount', 'refund.refund_type', 'refund.status', 'refund.reason', 'refund.created_at', 'goods.goods_title', 'goods.image', 'goods.spec_value');
         if (isset($where['where']) && $where['where']) {
             $query->where($where['where']);
         }
@@ -158,7 +158,7 @@ class ExportService
     {
         self::timeRange($start_at, $end_at);
         $cols = $request->input('cols');
-        $query = OrderDelivery::select('order_delivery.id', 'order_delivery.company_name', 'order_delivery.code', 'order_delivery.created_at', 'o.order_no');
+        $query = OrderDelivery::query()->select('order_delivery.id', 'order_delivery.company_name', 'order_delivery.code', 'order_delivery.created_at', 'o.order_no');
         if (isset($where['where']) && $where['where']) {
             $query->where($where['where']);
         }
@@ -201,7 +201,7 @@ class ExportService
     {
         self::timeRange($start_at, $end_at);
         $cols = $request->input('cols');
-        $query = Trade::select('trade.id', 'trade.m_id', 'trade.trade_no', 'trade.type', 'trade.subtotal', 'trade.flag', 'trade.payment_id', 'trade.payment_no', 'trade.pay_total', 'trade.platform', 'trade.status', 'trade.pay_at', 'trade.created_at', 'm.username');
+        $query = Trade::query()->select('trade.id', 'trade.m_id', 'trade.trade_no', 'trade.type', 'trade.subtotal', 'trade.flag', 'trade.payment_id', 'trade.payment_no', 'trade.pay_total', 'trade.platform', 'trade.status', 'trade.pay_at', 'trade.created_at', 'm.username');
         if (isset($where['where']) && $where['where']) {
             $query->where($where['where']);
         }
@@ -248,7 +248,7 @@ class ExportService
     {
         self::timeRange($start_at, $end_at);
         $cols = $request->input('cols');
-        $query = TradeRefund::select('trade_refund.id', 'trade_refund.m_id', 'trade_refund.refund_no', 'trade_refund.trade_no', 'trade_refund.order_no', 'trade_refund.type', 'trade_refund.subtotal', 'trade_refund.payment_id', 'trade_refund.payment_id', 'trade_refund.payment_no', 'trade_refund.platform', 'trade_refund.status', 'trade_refund.note', 'trade_refund.pay_at', 'trade_refund.created_at', 'm.username');
+        $query = TradeRefund::query()->select('trade_refund.id', 'trade_refund.m_id', 'trade_refund.refund_no', 'trade_refund.trade_no', 'trade_refund.order_no', 'trade_refund.type', 'trade_refund.subtotal', 'trade_refund.payment_id', 'trade_refund.payment_id', 'trade_refund.payment_no', 'trade_refund.platform', 'trade_refund.status', 'trade_refund.note', 'trade_refund.pay_at', 'trade_refund.created_at', 'm.username');
         if (isset($where['where']) && $where['where']) {
             $query->where($where['where']);
         }
@@ -295,7 +295,7 @@ class ExportService
     {
         self::timeRange($start_at, $end_at);
         $cols = $request->input('cols');
-        $query = Withdraw::select('withdraw.id', 'withdraw.m_id', 'withdraw.type', 'withdraw.amount', 'withdraw.name', 'withdraw.bank_name', 'withdraw.pay_number', 'withdraw.refuse_note', 'withdraw.status', 'withdraw.created_at', 'withdraw.done_at', 'm.username');
+        $query = Withdraw::query()->select('withdraw.id', 'withdraw.m_id', 'withdraw.type', 'withdraw.amount', 'withdraw.name', 'withdraw.bank_name', 'withdraw.pay_number', 'withdraw.refuse_note', 'withdraw.status', 'withdraw.created_at', 'withdraw.done_at', 'm.username');
         if (isset($where['where']) && $where['where']) {
             $query->where($where['where']);
         }
@@ -342,7 +342,7 @@ class ExportService
     {
         self::timeRange($start_at, $end_at);
         $cols = $request->input('cols');
-        $query = SellerWithdraw::select('seller_withdraw.id', 'seller_withdraw.m_id', 'seller_withdraw.type', 'seller_withdraw.amount', 'seller_withdraw.name', 'seller_withdraw.bank_name', 'seller_withdraw.pay_number', 'seller_withdraw.refuse_note', 'seller_withdraw.status', 'seller_withdraw.created_at', 'seller_withdraw.done_at', 's.username');
+        $query = SellerWithdraw::query()->select('seller_withdraw.id', 'seller_withdraw.m_id', 'seller_withdraw.type', 'seller_withdraw.amount', 'seller_withdraw.name', 'seller_withdraw.bank_name', 'seller_withdraw.pay_number', 'seller_withdraw.refuse_note', 'seller_withdraw.status', 'seller_withdraw.created_at', 'seller_withdraw.done_at', 's.username');
         if (isset($where['where']) && $where['where']) {
             $query->where($where['where']);
         }

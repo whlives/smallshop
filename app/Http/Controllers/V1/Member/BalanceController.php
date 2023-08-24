@@ -38,7 +38,7 @@ class BalanceController extends BaseController
             'm_id' => $this->m_id
         ];
         if (isset(BalanceDetail::EVENT_DESC[$event])) $where['event'] = $event;
-        $query = BalanceDetail::select('id', 'type', 'event', 'detail_no', 'amount', 'created_at')
+        $query = BalanceDetail::query()->select('id', 'type', 'event', 'detail_no', 'amount', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -75,7 +75,7 @@ class BalanceController extends BaseController
         if (!$id) {
             api_error(__('api.missing_params'));
         }
-        $res_list = BalanceDetail::select('event', 'detail_no', 'amount', 'balance', 'note', 'created_at')->where(['id' => $id, 'm_id' => $this->m_id])->first();
+        $res_list = BalanceDetail::query()->select('event', 'detail_no', 'amount', 'balance', 'note', 'created_at')->where(['id' => $id, 'm_id' => $this->m_id])->first();
         if (!$res_list) {
             api_error(__('api.content_is_empty'));
         }
@@ -103,7 +103,7 @@ class BalanceController extends BaseController
             'recharge_no' => $recharge_no,
             'amount' => $amount,
         ];
-        $res = BalanceRecharge::create($create_data);
+        $res = BalanceRecharge::query()->create($create_data);
         if ($res) {
             return $this->success(['recharge_no' => $recharge_no]);
         } else {
@@ -145,7 +145,7 @@ class BalanceController extends BaseController
                 'bank_name' => $bank_name,
                 'pay_number' => $pay_number,
             ];
-            $add = Withdraw::create($withdraw_data);
+            $add = Withdraw::query()->create($withdraw_data);
             if ($add) {
                 return $this->success();
             } else {
@@ -168,7 +168,7 @@ class BalanceController extends BaseController
         $where = [
             'm_id' => $this->m_id
         ];
-        $query = Withdraw::select('id', 'type', 'amount', 'status', 'refuse_note', 'created_at')
+        $query = Withdraw::query()->select('id', 'type', 'amount', 'status', 'refuse_note', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')

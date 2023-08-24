@@ -167,21 +167,21 @@ class Order extends BaseModel
                         unset($order['invoice']);
                     }
                     //添加订单
-                    $order_res = self::create($order);
+                    $order_res = self::query()->create($order);
                     $order_id = $order_res->id;
                     //更新优惠券使用状态
                     if ($order['coupons_id']) {
-                        CouponsDetail::where('id', $order['coupons_id'])->update(['is_use' => CouponsDetail::USE_ON, 'use_at' => get_date()]);
+                        CouponsDetail::query()->where('id', $order['coupons_id'])->update(['is_use' => CouponsDetail::USE_ON, 'use_at' => get_date()]);
                     }
                     //添加订单商品
                     foreach ($order_goods as $goods) {
                         $goods['order_id'] = $order_id;
-                        OrderGoods::create($goods);
+                        OrderGoods::query()->create($goods);
                     }
                     //发票信息
                     if ($invoice) {
                         $invoice['order_id'] = $order_id;
-                        OrderInvoice::create($invoice);
+                        OrderInvoice::query()->create($invoice);
                     }
                 }
             });

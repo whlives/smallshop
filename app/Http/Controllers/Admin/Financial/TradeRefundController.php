@@ -39,7 +39,7 @@ class TradeRefundController extends BaseController
         $type = (int)$request->input('type');
         $status = $request->input('status');
         if ($username) {
-            $m_id = Member::where('username', $username)->value('id');
+            $m_id = Member::query()->where('username', $username)->value('id');
             if ($m_id) {
                 $where[] = ['trade_refund.m_id', $m_id];
             } else {
@@ -61,7 +61,7 @@ class TradeRefundController extends BaseController
             ExportService::tradeRefund($request, ['where' => $where], $start_at, $end_at);//导出数据
             exit;
         }
-        $query = TradeRefund::select('id', 'm_id', 'refund_no', 'trade_no', 'order_no', 'type', 'subtotal', 'payment_id', 'payment_id', 'payment_no', 'platform', 'status', 'note', 'pay_at', 'created_at')
+        $query = TradeRefund::query()->select('id', 'm_id', 'refund_no', 'trade_no', 'order_no', 'type', 'subtotal', 'payment_id', 'payment_id', 'payment_no', 'platform', 'status', 'note', 'pay_at', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -73,7 +73,7 @@ class TradeRefundController extends BaseController
         }
         $m_ids = array_column($res_list->toArray(), 'm_id');
         if ($m_ids) {
-            $member_data = Member::whereIn('id', array_unique($m_ids))->pluck('username', 'id');
+            $member_data = Member::query()->whereIn('id', array_unique($m_ids))->pluck('username', 'id');
         }
         $data_list = [];
         foreach ($res_list as $value) {

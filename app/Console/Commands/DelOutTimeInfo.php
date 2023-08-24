@@ -47,14 +47,14 @@ class DelOutTimeInfo extends Command
         LogService::putLog('crontab', '删除30天以上的物流信息');
         //删除30天以上的物流信息
         $traces_date_time = get_date(time() - 30 * 24 * 3600);
-        DeliveryTraces::where([['created_at', '<', $traces_date_time]])->delete();
+        DeliveryTraces::query()->where([['created_at', '<', $traces_date_time]])->delete();
 
         //删除30天以上的快递模板信息
         $tmp_date_time = get_date(time() - 30 * 24 * 3600);
-        OrderDeliveryTemplate::where([['created_at', '<', $tmp_date_time]])->delete();
+        OrderDeliveryTemplate::query()->where([['created_at', '<', $tmp_date_time]])->delete();
 
         //删除60天以上的登录记录
         $member_login_log_date_time = get_date(time() - 60 * 24 * 3600);
-        MemberLoginLog::where([['created_at', '<', $member_login_log_date_time]])->delete();
+        MemberLoginLog::query()->where([['created_at', '<', $member_login_log_date_time]])->delete();
     }
 }

@@ -40,7 +40,7 @@ class MemberController extends BaseController
         if ($nickname) $where[] = ['nickname', 'like', '%' . $nickname . '%'];
         if ($full_name) $where[] = ['full_name', 'like', '%' . $full_name . '%'];
         if ($group_id) $where[] = ['group_id', $group_id];
-        $query = Member::select('id', 'username', 'nickname', 'headimg', 'full_name', 'group_id', 'status', 'created_at')
+        $query = Member::query()->select('id', 'username', 'nickname', 'headimg', 'full_name', 'group_id', 'status', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -53,7 +53,7 @@ class MemberController extends BaseController
         $res_list = $res_list->toArray();
         $group_ids = array_column($res_list, 'group_id');
         if ($group_ids) {
-            $group = MemberGroup::whereIn('id', array_unique($group_ids))->pluck('title', 'id');
+            $group = MemberGroup::query()->whereIn('id', array_unique($group_ids))->pluck('title', 'id');
         }
         $data_list = [];
         foreach ($res_list as $value) {
@@ -80,7 +80,7 @@ class MemberController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = Member::find($id);
+        $data = Member::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -163,7 +163,7 @@ class MemberController extends BaseController
         if (!isset(Member::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $res = Member::whereIn('id', $ids)->update(['status' => $status]);
+        $res = Member::query()->whereIn('id', $ids)->update(['status' => $status]);
         if ($res) {
             if ($status == Member::STATUS_OFF) {
                 //被禁用的账号踢出登录
@@ -184,7 +184,7 @@ class MemberController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = Member::whereIn('id', $ids)->delete();
+        $res = Member::query()->whereIn('id', $ids)->delete();
         if ($res) {
             return $this->success();
         } else {
@@ -205,7 +205,7 @@ class MemberController extends BaseController
         if (!$id || !$type) {
             api_error(__('admin.missing_params'));
         }
-        $res = MemberAuth::where(['m_id' => $id, 'type' => $type])->delete();
+        $res = MemberAuth::query()->where(['m_id' => $id, 'type' => $type])->delete();
         if ($res) {
             return $this->success();
         } else {

@@ -34,7 +34,7 @@ class PackageGoodsController extends BaseController
             api_error(__('admin.content_is_empty'));
         }
         $goods_ids = array_keys($package['goods_data']);
-        $query = Goods::select('id', 'title', 'image', 'sell_price')
+        $query = Goods::query()->select('id', 'title', 'image', 'sell_price')
             ->whereIn('id', $goods_ids)
             ->where(['seller_id' => $package['seller_id']]);
         $total = $query->count();//总条数
@@ -75,7 +75,7 @@ class PackageGoodsController extends BaseController
         $package = self::getPackage($package_id);
         $goods_data = $package['goods_data'];
         $goods_data[$goods_id] = $num;
-        $res = GoodsPackage::where('id', $package_id)->update(['goods_data' => json_encode($goods_data)]);
+        $res = GoodsPackage::query()->where('id', $package_id)->update(['goods_data' => json_encode($goods_data)]);
         if ($res) {
             return $this->success();
         } else {
@@ -99,7 +99,7 @@ class PackageGoodsController extends BaseController
         $package = self::getPackage($package_id);
         $goods_data = $package['goods_data'];
         unset($goods_data[$goods_id]);
-        $res = GoodsPackage::where('id', $package_id)->update(['goods_data' => json_encode($goods_data)]);
+        $res = GoodsPackage::query()->where('id', $package_id)->update(['goods_data' => json_encode($goods_data)]);
         if ($res) {
             return $this->success();
         } else {
@@ -120,7 +120,7 @@ class PackageGoodsController extends BaseController
         ];
         $title = $request->input('title');
         if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
-        $res_list = Goods::select('id as value', 'title as name')
+        $res_list = Goods::query()->select('id as value', 'title as name')
             ->where($where)
             ->orderBy('id', 'desc')
             ->limit(100)
@@ -136,7 +136,7 @@ class PackageGoodsController extends BaseController
      */
     private function getPackage(int $package_id)
     {
-        $package = GoodsPackage::where('id', $package_id)->first();
+        $package = GoodsPackage::query()->where('id', $package_id)->first();
         if (!$package) {
             api_error(__('admin.content_is_empty'));
         }

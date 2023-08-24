@@ -28,7 +28,7 @@ class Areas extends BaseModel
         $new_ids = $ids;
         if (!is_array($ids)) $new_ids = [$ids];
         if ($new_ids) {
-            $area = self::whereIn('id', $new_ids)->pluck('name', 'id');
+            $area = self::query()->whereIn('id', $new_ids)->pluck('name', 'id');
             if (!is_array($ids)) return $area[$ids] ?? '';
             return $area->toArray();
         }
@@ -45,7 +45,7 @@ class Areas extends BaseModel
     {
         $id = 0;
         if ($name) {
-            $area = self::where([['name', $name], ['parent_id', $parent_id]])->first();
+            $area = self::query()->where([['name', $name], ['parent_id', $parent_id]])->first();
             if ($area) $id = $area['id'];
         }
         return $id;
@@ -60,7 +60,7 @@ class Areas extends BaseModel
     {
         return Cache::remember('area_select_' . $parent_id, get_custom_config('cache_time'), function () use ($parent_id) {
             $area = [];
-            $area_res = self::where('parent_id', $parent_id)->select('id', 'name')->get();
+            $area_res = self::query()->where('parent_id', $parent_id)->select('id', 'name')->get();
             if (!$area_res->isEmpty()) {
                 $area = $area_res->toArray();
             }

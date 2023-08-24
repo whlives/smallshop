@@ -56,7 +56,7 @@ class GoodsService
     public static function checkCartGoods(int $sku_id, int $buy_qty)
     {
         //查询商品是否正常
-        $goods_sku = GoodsSku::select('goods_id', 'status', 'min_buy', 'max_buy', 'stock')->where('id', $sku_id)->first();
+        $goods_sku = GoodsSku::query()->select('goods_id', 'status', 'min_buy', 'max_buy', 'stock')->where('id', $sku_id)->first();
         if (!$goods_sku) {
             api_error(__('api.goods_sku_error'));
         } elseif ($goods_sku['status'] != GoodsSku::STATUS_ON) {
@@ -68,7 +68,7 @@ class GoodsService
         } elseif ($goods_sku['stock'] < $buy_qty) {
             api_error(__('api.goods_stock_no_enough') . '最多能订购' . $goods_sku['stock'] . '件');
         }
-        $goods = Goods::select('id', 'seller_id', 'shelves_status', 'type', 'promo_type')->where('id', $goods_sku['goods_id'])->first();
+        $goods = Goods::query()->select('id', 'seller_id', 'shelves_status', 'type', 'promo_type')->where('id', $goods_sku['goods_id'])->first();
         if (!$goods) {
             api_error(__('api.goods_error'));
         } elseif ($goods['shelves_status'] != Goods::SHELVES_STATUS_ON) {
@@ -119,7 +119,7 @@ class GoodsService
             if (!$sku_id) {
                 api_error(__('api.missing_params'));
             }
-            $cart = Cart::select('goods_id', 'sku_id', 'buy_qty')->where('m_id', $this->m_id)->whereIn('sku_id', $sku_id)->orderBy('updated_at', 'desc')->get();
+            $cart = Cart::query()->select('goods_id', 'sku_id', 'buy_qty')->where('m_id', $this->m_id)->whereIn('sku_id', $sku_id)->orderBy('updated_at', 'desc')->get();
             if ($cart->isEmpty()) {
                 api_error(__('api.cart_goods_error'));
             }
@@ -151,13 +151,13 @@ class GoodsService
             api_error(__('api.address_not_exists'));
         }
         if ($address_id) {
-            $address = Address::where(['m_id' => $this->m_id, 'id' => $address_id])->first();
+            $address = Address::query()->where(['m_id' => $this->m_id, 'id' => $address_id])->first();
             if (!$address) {
                 api_error(__('api.address_not_exists'));
             }
         } else {
             //没有收货地址查询默认地址
-            $address = Address::where(['m_id' => $this->m_id])->orderBy('default', 'desc')->orderBy('id', 'desc')->first();
+            $address = Address::query()->where(['m_id' => $this->m_id])->orderBy('default', 'desc')->orderBy('id', 'desc')->first();
         }
         $return = [];
         if ($address) {
@@ -191,7 +191,7 @@ class GoodsService
         $format_goods_sku = self::formatGoodsSku($sku_ids);
         $seller_ids = array_column($format_goods_sku, 'seller_id');
         //获取商家信息
-        $res_seller = Seller::select('id', 'title', 'image', 'status', 'invoice')->whereIn('id', array_unique($seller_ids))->get();
+        $res_seller = Seller::query()->select('id', 'title', 'image', 'status', 'invoice')->whereIn('id', array_unique($seller_ids))->get();
         if ($res_seller->isEmpty()) {
             api_error(__('api.seller_error'));
         }
@@ -242,14 +242,14 @@ class GoodsService
     public function formatGoodsSku(array $sku_ids)
     {
         //获取子商品信息
-        $res_sku = GoodsSku::select('id as sku_id', 'goods_id', 'image', 'sku_code', 'spec_value', 'stock', 'sell_price', 'market_price', 'point', 'weight', 'min_buy', 'max_buy', 'status')->whereIn('id', $sku_ids)->get();
+        $res_sku = GoodsSku::query()->select('id as sku_id', 'goods_id', 'image', 'sku_code', 'spec_value', 'stock', 'sell_price', 'market_price', 'point', 'weight', 'min_buy', 'max_buy', 'status')->whereIn('id', $sku_ids)->get();
         if ($res_sku->isEmpty()) {
             api_error(__('api.goods_sku_error'));
         }
         $res_sku = $res_sku->toArray();
         //获取主商品信息
         $goods_ids = array_column($res_sku, 'goods_id');
-        $res_goods = Goods::select('id as goods_id', 'title', 'seller_id', 'brand_id', 'category_id', 'delivery_id', 'shelves_status', 'type', 'promo_type', 'level_one_pct', 'level_two_pct')->whereIn('id', array_unique($goods_ids))->get();
+        $res_goods = Goods::query()->select('id as goods_id', 'title', 'seller_id', 'brand_id', 'category_id', 'delivery_id', 'shelves_status', 'type', 'promo_type', 'level_one_pct', 'level_two_pct')->whereIn('id', array_unique($goods_ids))->get();
         if ($res_goods->isEmpty()) {
             api_error(__('api.goods_error'));
         }
@@ -479,7 +479,7 @@ class GoodsService
                 ['end_at', '>=', get_date()],
             ];
             $type_promotion = [Promotion::AMOUNT_TYPE_REDUCTION, Promotion::AMOUNT_TYPE_DISCOUNT];
-            $res_promotion = Promotion::select('title', 'type', 'type_value')->where($where)->whereIn('type', $type_promotion)->whereRaw("find_in_set($group_id, user_group)")->get();
+            $res_promotion = Promotion::query()->select('title', 'type', 'type_value')->where($where)->whereIn('type', $type_promotion)->whereRaw("find_in_set($group_id, user_group)")->get();
             if (!$res_promotion->isEmpty()) {
                 $promotion = [
                     'title' => '',

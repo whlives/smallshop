@@ -39,7 +39,7 @@ class PromoGroup extends BaseModel
      */
     public static function checkGroup(int $goods_id, int $group_order_id = 0)
     {
-        $group = self::select('group_num', 'status', 'start_at', 'end_at')->where('goods_id', $goods_id)->first();
+        $group = self::query()->select('group_num', 'status', 'start_at', 'end_at')->where('goods_id', $goods_id)->first();
         if (!$group) {
             api_error(__('api.group_error'));
         } elseif ($group['status'] != self::STATUS_ON) {
@@ -51,7 +51,7 @@ class PromoGroup extends BaseModel
         }
         //存在拼团订单的时候验证订单
         if ($group_order_id) {
-            $group_order = PromoGroupOrder::where('group_order_id', $group_order_id)->first();
+            $group_order = PromoGroupOrder::query()->where('group_order_id', $group_order_id)->first();
             if (!$group_order) {
                 api_error(__('api.group_order_id_error'));
             } elseif ($group_order['group_id'] != $group['id']) {

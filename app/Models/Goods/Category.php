@@ -43,7 +43,7 @@ class Category extends BaseModel
         $where = [
             'parent_id' => $parent_id,
         ];
-        $result = self::select('id', 'title', 'parent_id', 'image', 'position', 'status')
+        $result = self::query()->select('id', 'title', 'parent_id', 'image', 'position', 'status')
             ->where($where)
             ->orderBy('position', 'asc')
             ->orderBy('id', 'asc')
@@ -77,7 +77,7 @@ class Category extends BaseModel
             'status' => self::STATUS_ON,
             'parent_id' => $parent_id,
         ];
-        $result = self::select('id', 'title', 'image')
+        $result = self::query()->select('id', 'title', 'image')
             ->where($where)
             ->orderBy('position', 'asc')
             ->orderBy('id', 'asc')

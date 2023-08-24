@@ -17,7 +17,7 @@ class Cart extends BaseModel
 {
     protected $table = 'cart';
     protected $guarded = ['id'];
-    
+
     //购买类型
     const TYPE_CART = 1;
     const TYPE_NOW = 2;
@@ -35,6 +35,6 @@ class Cart extends BaseModel
     public static function delCart(int $m_id, array $cart)
     {
         $sku_id = array_column($cart, 'sku_id');
-        self::where('m_id', $m_id)->whereIn('sku_id', $sku_id)->delete();
+        self::query()->where('m_id', $m_id)->whereIn('sku_id', $sku_id)->delete();
     }
 }

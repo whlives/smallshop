@@ -25,7 +25,7 @@ class ConfigController extends BaseController
     public function index(Request $request)
     {
         $config = [];
-        $res_config = Config::orderBy('position', 'asc')->orderBy('id', 'asc')->get();
+        $res_config = Config::query()->orderBy('position', 'asc')->orderBy('id', 'asc')->get();
         if (!$res_config->isEmpty()) {
             foreach ($res_config as $val) {
                 if (in_array($val['input_type'], ['radio', 'select'])) {
@@ -79,7 +79,7 @@ class ConfigController extends BaseController
             $select_value = textarea_br_to_array($select_value);
             $save_data['select_value'] = join(',', $select_value);
         }
-        $res = Config::create($save_data);
+        $res = Config::query()->create($save_data);
         if ($res) {
             self::updateConfig();//更新配置
             return $this->success();
@@ -98,7 +98,7 @@ class ConfigController extends BaseController
         $config = $request->input('config');
         if ($config) {
             foreach ($config as $id => $value) {
-                Config::where('id', $id)->update(['value' => $value]);
+                Config::query()->where('id', $id)->update(['value' => $value]);
             }
             self::updateConfig();//更新配置
         }
@@ -115,7 +115,7 @@ class ConfigController extends BaseController
         if (!config('app.is_slb')) {
             //单机部署
             $file_path = app_path() . "/../config/custom.php";
-            $res_config = Config::select('key_name', 'value')->get();
+            $res_config = Config::query()->select('key_name', 'value')->get();
             if ($res_config->isEmpty()) {
                 api_error(__('admin.content_is_empty'));
             }

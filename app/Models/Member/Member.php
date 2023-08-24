@@ -49,7 +49,7 @@ class Member extends BaseModel
      */
     public static function group(int $group_id)
     {
-        $group_title = MemberGroup::where('id', $group_id)->value('title');
+        $group_title = MemberGroup::query()->where('id', $group_id)->value('title');
         return $group_title ?: '';
     }
 
@@ -69,13 +69,13 @@ class Member extends BaseModel
                     $member_data['password'] = Hash::make($member_data['password']);
                 }
                 if ($id) {
-                    self::where('id', $id)->update($member_data);
-                    MemberProfile::where('member_id', $id)->update($profile_data);
+                    self::query()->where('id', $id)->update($member_data);
+                    MemberProfile::query()->where('member_id', $id)->update($profile_data);
                 } else {
-                    $result = self::create($member_data);
+                    $result = self::query()->create($member_data);
                     $member_id = $result->id;
                     $profile_data['member_id'] = $member_id;
-                    MemberProfile::create($profile_data);
+                    MemberProfile::query()->create($profile_data);
                 }
             });
             $res = true;
@@ -93,9 +93,9 @@ class Member extends BaseModel
     public static function getLevelParentId(int $m_id)
     {
         $level_one_m_id = 0;
-        $level_two_m_id = Member::where('id', $m_id)->value('parent_id');
+        $level_two_m_id = Member::query()->where('id', $m_id)->value('parent_id');
         if ($level_two_m_id) {
-            $level_one_m_id = Member::where('id', $level_two_m_id)->value('parent_id');
+            $level_one_m_id = Member::query()->where('id', $level_two_m_id)->value('parent_id');
         }
         return [(int)$level_one_m_id, (int)$level_two_m_id];
     }
@@ -115,7 +115,7 @@ class Member extends BaseModel
         if (!$pay_password) {
             api_error(__('api.pay_password_error'));
         }
-        $member_data = Member::find($m_id);
+        $member_data = Member::query()->find($m_id);
         if (empty($member_data['pay_password'])) {
             api_error(__('api.pay_password_notset'));
         }
