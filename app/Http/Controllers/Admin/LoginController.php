@@ -126,7 +126,7 @@ class LoginController extends BaseController
     {
         $username = request()->post('username');
         $password = request()->post('password');
-        $admin_data = Admin::where('username', $username)->first();
+        $admin_data = Admin::query()->where('username', $username)->first();
         if (!$admin_data) {
             api_error(__('admin.admin_user_error'));
         } elseif (!Hash::check($password, $admin_data['password'])) {
@@ -158,7 +158,7 @@ class LoginController extends BaseController
         //非测试环境发送登录验证码(需要后台先开启提示)
         if (!config('app.debug') && get_custom_config('admin_login_sms_notice')) {
             //判断ip和设备是否和上一条有变化，有变化需要发送短信
-            $admin_login_log = AdminLoginLog::where('m_id', $admin_data['id'])->orderBy('id', 'desc')->first();
+            $admin_login_log = AdminLoginLog::query()->where('m_id', $admin_data['id'])->orderBy('id', 'desc')->first();
             if (!$admin_login_log || $admin_login_log['ip'] != $ip || $admin_login_log['user_agent'] != $user_agent) {
                 $send_data = [
                     'username' => $admin_data['username'],
@@ -175,7 +175,7 @@ class LoginController extends BaseController
             'user_agent' => $user_agent,
             'ip' => $ip
         ];
-        AdminLoginLog::create($log);
+        AdminLoginLog::query()->create($log);
         $role_right = AdminRole::adminRight($admin_data['role_id'], true);//获取最新的权限
         $return = [
             'username' => $admin_data['username'],

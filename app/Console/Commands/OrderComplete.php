@@ -60,7 +60,7 @@ class OrderComplete extends Command
         $limit = 10;
         while (true) {
             $offset = ($page - 1) * $limit;
-            $res_list = Order::select('id', 'seller_id', 'order_no', 'subtotal', 'status', 'level_one_m_id', 'level_two_m_id', 'is_settlement')
+            $res_list = Order::query()->select('id', 'seller_id', 'order_no', 'subtotal', 'status', 'level_one_m_id', 'level_two_m_id', 'is_settlement')
                 ->where($where)
                 ->whereIn('status', [Order::STATUS_DONE, Order::STATUS_REFUND_COMPLETE])
                 ->offset($offset)

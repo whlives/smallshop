@@ -28,7 +28,7 @@ class BrandController extends BaseController
         $where = [];
         $title = $request->input('title');
         if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
-        $query = Brand::select('id', 'title', 'image', 'position', 'content', 'status', 'created_at')
+        $query = Brand::query()->select('id', 'title', 'image', 'position', 'content', 'status', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -57,7 +57,7 @@ class BrandController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = Brand::find($id);
+        $data = Brand::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -91,9 +91,9 @@ class BrandController extends BaseController
             $save_data[$key] = $value;
         }
         if ($id) {
-            $res = Brand::where('id', $id)->update($save_data);
+            $res = Brand::query()->where('id', $id)->update($save_data);
         } else {
-            $res = Brand::create($save_data);
+            $res = Brand::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -115,7 +115,7 @@ class BrandController extends BaseController
         if (!isset(Brand::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $res = Brand::whereIn('id', $ids)->update(['status' => $status]);
+        $res = Brand::query()->whereIn('id', $ids)->update(['status' => $status]);
         if ($res) {
             return $this->success();
         } else {
@@ -132,7 +132,7 @@ class BrandController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = Brand::whereIn('id', $ids)->delete();
+        $res = Brand::query()->whereIn('id', $ids)->delete();
         if ($res) {
             return $this->success();
         } else {
@@ -156,7 +156,7 @@ class BrandController extends BaseController
         if (!in_array($field, $field_arr) || !$id || !$field || !$field_value) {
             api_error(__('admin.invalid_params'));
         }
-        $res = Brand::where('id', $id)->update([$field => $field_value]);
+        $res = Brand::query()->where('id', $id)->update([$field => $field_value]);
         if ($res) {
             return $this->success();
         } else {
@@ -174,7 +174,7 @@ class BrandController extends BaseController
         $where = [
             'status' => Brand::STATUS_ON
         ];
-        $res_list = Brand::select('id', 'title')->where($where)
+        $res_list = Brand::query()->select('id', 'title')->where($where)
             ->orderBy('position', 'asc')
             ->orderBy('id', 'desc')
             ->get();

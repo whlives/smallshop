@@ -59,7 +59,7 @@ class OrderConfirm extends Command
         $limit = 10;
         while (true) {
             $offset = ($page - 1) * $limit;
-            $res_list = Order::select('id', 'status')
+            $res_list = Order::query()->select('id', 'status')
                 ->where($where)
                 ->offset($offset)
                 ->limit($limit)

@@ -37,7 +37,7 @@ class CouponsController extends BaseController
         ];
         $title = $request->input('title');
         if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
-        $query = Coupons::select('id', 'title', 'image', 'type', 'amount', 'use_price', 'seller_id', 'status', 'start_at', 'end_at', 'created_at')
+        $query = Coupons::query()->select('id', 'title', 'image', 'type', 'amount', 'use_price', 'seller_id', 'status', 'start_at', 'end_at', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -66,7 +66,7 @@ class CouponsController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = Coupons::where('seller_id', $this->seller_id)->find($id);
+        $data = Coupons::query()->where('seller_id', $this->seller_id)->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -144,10 +144,10 @@ class CouponsController extends BaseController
             $save_data['end_at'] = null;
         }
         if ($id) {
-            $res = Coupons::where(['id' => $id, 'seller_id' => $this->seller_id])->update($save_data);
+            $res = Coupons::query()->where(['id' => $id, 'seller_id' => $this->seller_id])->update($save_data);
         } else {
             $save_data['seller_id'] = $this->seller_id;
-            $res = Coupons::create($save_data);
+            $res = Coupons::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -169,7 +169,7 @@ class CouponsController extends BaseController
         if (!isset(Coupons::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $res = Coupons::whereIn('id', $ids)->where('seller_id', $this->seller_id)->update(['status' => $status]);
+        $res = Coupons::query()->whereIn('id', $ids)->where('seller_id', $this->seller_id)->update(['status' => $status]);
         if ($res) {
             return $this->success();
         } else {
@@ -186,7 +186,7 @@ class CouponsController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = Coupons::whereIn('id', $ids)->where('seller_id', $this->seller_id)->delete();
+        $res = Coupons::query()->whereIn('id', $ids)->where('seller_id', $this->seller_id)->delete();
         if ($res) {
             return $this->success();
         } else {
@@ -206,7 +206,7 @@ class CouponsController extends BaseController
             ['status', Coupons::STATUS_ON],
             ['seller_id', $this->seller_id],
         ];
-        $res_list = Coupons::select('id', 'title')->where($where)
+        $res_list = Coupons::query()->select('id', 'title')->where($where)
             ->where(function ($query) {
                 $query->where([['end_at', '>', get_date()]])->orWhere([['day_num', '>', 0]]);
             })

@@ -49,7 +49,7 @@ class OrderComment extends Command
         $limit = 10;
         while (true) {
             $offset = ($page - 1) * $limit;
-            $res_list = Order::select('id', 'm_id', 'status', 'comment_at')
+            $res_list = Order::query()->select('id', 'm_id', 'status', 'comment_at')
                 ->whereNull('comment_at')
                 ->wherein('status', [Order::STATUS_DONE, Order::STATUS_COMPLETE])
                 ->offset($offset)

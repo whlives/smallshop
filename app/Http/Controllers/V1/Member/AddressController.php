@@ -34,7 +34,7 @@ class AddressController extends BaseController
         $where = [
             'm_id' => $this->m_id
         ];
-        $res_list = Address::select('id', 'full_name', 'tel', 'prov_name', 'city_name', 'area_name', 'address', 'default')
+        $res_list = Address::query()->select('id', 'full_name', 'tel', 'prov_name', 'city_name', 'area_name', 'address', 'default')
             ->where($where)
             ->orderBy('id', 'desc')
             ->get();
@@ -56,7 +56,7 @@ class AddressController extends BaseController
         if (!$id) {
             api_error(__('api.missing_params'));
         }
-        $address = Address::select('id', 'full_name', 'tel', 'prov_id', 'city_id', 'area_id', 'address', 'default')->where(['id' => $id, 'm_id' => $this->m_id])->first();
+        $address = Address::query()->select('id', 'full_name', 'tel', 'prov_id', 'city_id', 'area_id', 'address', 'default')->where(['id' => $id, 'm_id' => $this->m_id])->first();
         if (!$address) {
             api_error(__('api.address_error'));
         }
@@ -102,12 +102,12 @@ class AddressController extends BaseController
         $save_data['area_name'] = $area_name[$save_data['area_id']] ?? '';
         //如果是设置默认先把其他的全部取消默认
         if ($save_data['default'] == Address::DEFAULT_ON) {
-            Address::where('m_id', $this->m_id)->update(['default' => Address::DEFAULT_OFF]);
+            Address::query()->where('m_id', $this->m_id)->update(['default' => Address::DEFAULT_OFF]);
         }
         if ($id) {
-            $res = Address::where('id', $id)->update($save_data);
+            $res = Address::query()->where('id', $id)->update($save_data);
         } else {
-            $res = Address::create($save_data);
+            $res = Address::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -128,7 +128,7 @@ class AddressController extends BaseController
         if (!$id) {
             api_error(__('api.missing_params'));
         }
-        $res = Address::where(['id' => $id, 'm_id' => $this->m_id])->delete();
+        $res = Address::query()->where(['id' => $id, 'm_id' => $this->m_id])->delete();
         if ($res) {
             return $this->success();
         } else {
@@ -148,8 +148,8 @@ class AddressController extends BaseController
         if (!$id) {
             api_error(__('api.missing_params'));
         }
-        Address::where('m_id', $this->m_id)->update(['default' => Address::DEFAULT_OFF]);
-        $res = Address::where(['id' => $id, 'm_id' => $this->m_id])->update(['default' => Address::DEFAULT_ON]);
+        Address::query()->where('m_id', $this->m_id)->update(['default' => Address::DEFAULT_OFF]);
+        $res = Address::query()->where(['id' => $id, 'm_id' => $this->m_id])->update(['default' => Address::DEFAULT_ON]);
         if ($res) {
             return $this->success();
         } else {

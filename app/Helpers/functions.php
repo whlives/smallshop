@@ -59,7 +59,7 @@ if (!function_exists('get_custom_config_all')) {
             }
             $custom_config = \Illuminate\Support\Facades\Cache::get($cache_key);
             if (!$custom_config) {
-                $custom_config = \App\Models\System\Config::select('key_name', 'value')->pluck('value', 'key_name')->toArray();
+                $custom_config = \App\Models\System\Config::query()->select('key_name', 'value')->pluck('value', 'key_name')->toArray();
                 \Illuminate\Support\Facades\Cache::put($cache_key, $custom_config, 3600 * 24 * 20);//注意memcache最大缓存时间是30天
             }
         }

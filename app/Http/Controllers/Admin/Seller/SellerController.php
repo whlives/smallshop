@@ -32,7 +32,7 @@ class SellerController extends BaseController
         $title = $request->input('title');
         if ($username) $where[] = ['username', $username];
         if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
-        $query = Seller::select('id', 'username', 'title', 'image', 'level', 'status', 'created_at')
+        $query = Seller::query()->select('id', 'username', 'title', 'image', 'level', 'status', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -61,7 +61,7 @@ class SellerController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = Seller::find($id);
+        $data = Seller::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -147,7 +147,7 @@ class SellerController extends BaseController
         if (!isset(Seller::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $res = Seller::whereIn('id', $ids)->update(['status' => $status]);
+        $res = Seller::query()->whereIn('id', $ids)->update(['status' => $status]);
         if ($res) {
             if ($status == Seller::STATUS_OFF) {
                 SellerLoginLog::removeLoginStatus($ids);//锁定的时候清除已经登录的账号
@@ -167,7 +167,7 @@ class SellerController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = Seller::whereIn('id', $ids)->delete();
+        $res = Seller::query()->whereIn('id', $ids)->delete();
         if ($res) {
             SellerLoginLog::removeLoginStatus($ids);//清除已经登录的账号
             return $this->success();
@@ -186,7 +186,7 @@ class SellerController extends BaseController
         $where = [
             'status' => Seller::STATUS_ON
         ];
-        $res_list = Seller::select('id', 'title')->where($where)
+        $res_list = Seller::query()->select('id', 'title')->where($where)
             ->orderBy('id', 'desc')
             ->get();
         return $this->success($res_list);

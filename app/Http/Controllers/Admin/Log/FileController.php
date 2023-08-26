@@ -29,7 +29,7 @@ class FileController extends BaseController
         $where = [];
         $title = $request->input('title');
         if ($title) $where[] = ['title', $title];
-        $query = FileLog::select('id', 'title', 'url', 'type', 'created_at')
+        $query = FileLog::query()->select('id', 'title', 'url', 'type', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -76,7 +76,7 @@ class FileController extends BaseController
         foreach ($request->only(['title', 'url']) as $key => $value) {
             $save_data[$key] = $value;
         }
-        $res = FileLog::create($save_data);
+        $res = FileLog::query()->create($save_data);
         if ($res) {
             return $this->success();
         } else {

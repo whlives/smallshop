@@ -31,7 +31,7 @@ class PromoController extends BaseController
             ['start_at', '<', get_date()],
             ['end_at', '>', get_date()]
         ];
-        $query = PromoGroup::select('id', 'title', 'goods_id', 'group_num', 'start_at', 'end_at')
+        $query = PromoGroup::query()->select('id', 'title', 'goods_id', 'group_num', 'start_at', 'end_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -42,7 +42,7 @@ class PromoController extends BaseController
             api_error(__('api.content_is_empty'));
         }
         $goods_ids = array_column($res_list->toArray(), 'goods_id');
-        $goods = Goods::select('id', 'title', 'image')->whereIn('id', $goods_ids)->get();
+        $goods = Goods::query()->select('id', 'title', 'image')->whereIn('id', $goods_ids)->get();
         if (!$goods->isEmpty()) {
             $goods = array_column($goods->toArray(), null, 'id');
         }
@@ -85,7 +85,7 @@ class PromoController extends BaseController
             'is_head' => PromoGroupOrder::IS_HEAD_YES,
             'status' => PromoGroupOrder::STATUS_WAIT_SUCCESS
         ];
-        $query = PromoGroupOrder::select('id', 'm_id', 'group_id', 'end_at', 'is_head')
+        $query = PromoGroupOrder::query()->select('id', 'm_id', 'group_id', 'end_at', 'is_head')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('is_head', 'desc')
@@ -97,7 +97,7 @@ class PromoController extends BaseController
             api_error(__('api.content_is_empty'));
         }
         $m_ids = array_column($res_list->toArray(), 'm_id');
-        $member = Member::select('id', 'headimg', 'nickname')->whereIn('id', $m_ids)->get();
+        $member = Member::query()->select('id', 'headimg', 'nickname')->whereIn('id', $m_ids)->get();
         if (!$member->isEmpty()) {
             $member = array_column($member->toArray(), null, 'id');
         }
@@ -134,7 +134,7 @@ class PromoController extends BaseController
         $where = [
             'group_order_id' => $group_order_id,
         ];
-        $query = PromoGroupOrder::select('id', 'm_id', 'end_at', 'is_head')
+        $query = PromoGroupOrder::query()->select('id', 'm_id', 'end_at', 'is_head')
             ->where($where)
             ->whereIn('status', [PromoGroupOrder::STATUS_WAIT_SUCCESS, PromoGroupOrder::STATUS_SUCCESS]);
         $total = $query->count();//总条数
@@ -147,7 +147,7 @@ class PromoController extends BaseController
             api_error(__('api.content_is_empty'));
         }
         $m_ids = array_column($res_list->toArray(), 'm_id');
-        $member = Member::select('id', 'headimg', 'nickname')->whereIn('id', $m_ids)->get();
+        $member = Member::query()->select('id', 'headimg', 'nickname')->whereIn('id', $m_ids)->get();
         if (!$member->isEmpty()) {
             $member = array_column($member->toArray(), null, 'id');
         }
@@ -183,7 +183,7 @@ class PromoController extends BaseController
             ['start_at', '<', get_date()],
             ['end_at', '>', get_date()]
         ];
-        $query = PromoSeckill::select('id', 'title', 'goods_id', 'start_at', 'end_at')
+        $query = PromoSeckill::query()->select('id', 'title', 'goods_id', 'start_at', 'end_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -194,7 +194,7 @@ class PromoController extends BaseController
             api_error(__('api.content_is_empty'));
         }
         $goods_ids = array_column($res_list->toArray(), 'goods_id');
-        $goods = Goods::select('id', 'title', 'image')->whereIn('id', $goods_ids)->get();
+        $goods = Goods::query()->select('id', 'title', 'image')->whereIn('id', $goods_ids)->get();
         if (!$goods->isEmpty()) {
             $goods = array_column($goods->toArray(), null, 'id');
         }

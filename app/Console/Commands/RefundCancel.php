@@ -59,7 +59,7 @@ class RefundCancel extends Command
         $limit = 10;
         while (true) {
             $offset = ($page - 1) * $limit;
-            $res_list = Refund::select('id', 'order_goods_id', 'status')
+            $res_list = Refund::query()->select('id', 'order_goods_id', 'status')
                 ->where($where)
                 ->whereIn('status', [Refund::STATUS_REFUSED_APPROVE, Refund::STATUS_WAIT_DELIVERY, Refund::STATUS_REFUSED_RECEIVED])
                 ->offset($offset)

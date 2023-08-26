@@ -30,7 +30,7 @@ class SpecValueController extends BaseController
         $spec_id = (int)$request->input('spec_id');
         if ($value) $where[] = ['value', $value];
         if ($spec_id) $where[] = ['spec_id', $spec_id];
-        $query = SpecValue::select('id', 'value', 'position', 'created_at')
+        $query = SpecValue::query()->select('id', 'value', 'position', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -59,7 +59,7 @@ class SpecValueController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = SpecValue::find($id);
+        $data = SpecValue::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -96,9 +96,9 @@ class SpecValueController extends BaseController
             $save_data[$key] = $value;
         }
         if ($id) {
-            $res = SpecValue::where('id', $id)->update($save_data);
+            $res = SpecValue::query()->where('id', $id)->update($save_data);
         } else {
-            $res = SpecValue::create($save_data);
+            $res = SpecValue::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -116,7 +116,7 @@ class SpecValueController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = SpecValue::whereIn('id', $ids)->delete();
+        $res = SpecValue::query()->whereIn('id', $ids)->delete();
         if ($res) {
             return $this->success();
         } else {
@@ -140,7 +140,7 @@ class SpecValueController extends BaseController
         if (!in_array($field, $field_arr) || !$id || !$field || !$field_value) {
             api_error(__('admin.invalid_params'));
         }
-        $res = SpecValue::where('id', $id)->update([$field => $field_value]);
+        $res = SpecValue::query()->where('id', $id)->update([$field => $field_value]);
         if ($res) {
             return $this->success();
         } else {

@@ -51,7 +51,7 @@ class RefundController extends BaseController
         $time_type = $request->input('time_type');
         if ($order_id) $where[] = ['order_id', $order_id];
         if ($order_no) {
-            $order_id = Order::where('order_no', $order_no)->value('id');
+            $order_id = Order::query()->where('order_no', $order_no)->value('id');
             if ($order_id) {
                 $where[] = ['order_id', $order_id];
             } else {
@@ -62,7 +62,7 @@ class RefundController extends BaseController
         if ($refund_type) $where[] = ['refund_type', $refund_type];
         if (is_numeric($status)) $where[] = ['status', $status];
         if ($username) {
-            $member_id = Member::where('username', $username)->value('id');
+            $member_id = Member::query()->where('username', $username)->value('id');
             if ($member_id) {
                 $where[] = ['m_id', $member_id];
             } else {
@@ -78,7 +78,7 @@ class RefundController extends BaseController
             ExportService::refund($request, ['where' => $where], $start_at, $end_at);//导出数据
             exit;
         }
-        $query = Refund::select('id', 'm_id', 'order_goods_id', 'refund_no', 'amount', 'refund_type', 'status', 'reason', 'created_at')
+        $query = Refund::query()->select('id', 'm_id', 'order_goods_id', 'refund_no', 'amount', 'refund_type', 'status', 'reason', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -142,17 +142,17 @@ class RefundController extends BaseController
         $refund['status_text'] = Refund::STATUS_DESC[$refund['status']];
         $refund['refund_type_text'] = Refund::REFUND_TYPE_DESC[$refund['refund_type']];
         $log = RefundLog::getLog($refund);
-        $order = Order::select('order_no', 'subtotal', 'status', 'note')->find($refund['order_id']);
+        $order = Order::query()->select('order_no', 'subtotal', 'status', 'note')->find($refund['order_id']);
         $order['status_text'] = Order::STATUS_DESC[$order['status']];
         $order_goods = OrderGoods::getGoodsForId([$refund['order_goods_id']], true);
         $address = [];
         if ($refund['refund_type'] != Refund::REFUND_TYPE_MONEY && $refund['is_audit']) {
-            $address = SellerAddress::select('id', 'full_name', 'tel', 'prov_name', 'city_name', 'area_name', 'address')->where('seller_id', $refund['seller_id'])->orderBy('default', 'desc')->get();
+            $address = SellerAddress::query()->select('id', 'full_name', 'tel', 'prov_name', 'city_name', 'area_name', 'address')->where('seller_id', $refund['seller_id'])->orderBy('default', 'desc')->get();
         }
         //物流公司
         $express_company = [];
         if ($refund['is_send']) {
-            $express_company = ExpressCompany::select('id', 'title')->where('status', ExpressCompany::STATUS_ON)->orderBy('id', 'desc')->get();
+            $express_company = ExpressCompany::query()->select('id', 'title')->where('status', ExpressCompany::STATUS_ON)->orderBy('id', 'desc')->get();
         }
         $return = [
             'refund' => $refund,
@@ -185,7 +185,7 @@ class RefundController extends BaseController
             if (!$address_id) {
                 api_error(__('admin.refund_address_error'));
             }
-            $address = SellerAddress::where(['id' => $address_id, 'seller_id' => $refund['seller_id']])->first();
+            $address = SellerAddress::query()->where(['id' => $address_id, 'seller_id' => $refund['seller_id']])->first();
             if (!$address) {
                 api_error(__('admin.refund_address_error'));
             }
@@ -347,7 +347,7 @@ class RefundController extends BaseController
      */
     private function checkRefund(int $id)
     {
-        $refund = Refund::find($id);
+        $refund = Refund::query()->find($id);
         if (!$refund) {
             api_error(__('admin.invalid_params'));
         }

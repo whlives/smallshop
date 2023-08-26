@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use App\Services\LogService;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Psr\Http\Client\RequestExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 

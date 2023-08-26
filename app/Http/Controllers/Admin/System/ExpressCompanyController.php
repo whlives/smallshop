@@ -28,7 +28,7 @@ class ExpressCompanyController extends BaseController
         $where = [];
         $title = $request->input('title');
         if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
-        $query = ExpressCompany::select('id', 'title', 'code', 'position', 'created_at', 'status')
+        $query = ExpressCompany::query()->select('id', 'title', 'code', 'position', 'created_at', 'status')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -57,7 +57,7 @@ class ExpressCompanyController extends BaseController
         if (!$id) {
             api_error(__('admin.missing_params'));
         }
-        $data = ExpressCompany::find($id);
+        $data = ExpressCompany::query()->find($id);
         if (!$data) {
             api_error(__('admin.content_is_empty'));
         }
@@ -113,9 +113,9 @@ class ExpressCompanyController extends BaseController
             $save_data['param'] = json_encode($new_param);
         }
         if ($id) {
-            $res = ExpressCompany::where('id', $id)->update($save_data);
+            $res = ExpressCompany::query()->where('id', $id)->update($save_data);
         } else {
-            $res = ExpressCompany::create($save_data);
+            $res = ExpressCompany::query()->create($save_data);
         }
         if ($res) {
             return $this->success();
@@ -137,7 +137,7 @@ class ExpressCompanyController extends BaseController
         if (!isset(ExpressCompany::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $res = ExpressCompany::whereIn('id', $ids)->update(['status' => $status]);
+        $res = ExpressCompany::query()->whereIn('id', $ids)->update(['status' => $status]);
         if ($res) {
             return $this->success();
         } else {
@@ -154,7 +154,7 @@ class ExpressCompanyController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = ExpressCompany::whereIn('id', $ids)->where([['id', '<>', ExpressCompany::NOT_DELIVERY]])->delete();
+        $res = ExpressCompany::query()->whereIn('id', $ids)->where([['id', '<>', ExpressCompany::NOT_DELIVERY]])->delete();
         if ($res) {
             return $this->success();
         } else {
@@ -172,7 +172,7 @@ class ExpressCompanyController extends BaseController
         $where = [
             'status' => ExpressCompany::STATUS_ON
         ];
-        $res_list = ExpressCompany::select('id', 'title')->where($where)
+        $res_list = ExpressCompany::query()->select('id', 'title')->where($where)
             ->orderBy('position', 'asc')
             ->orderBy('id', 'desc')
             ->get();

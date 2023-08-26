@@ -59,7 +59,7 @@ class PayController extends BaseController
             api_error(__('api.recharge_not_balance_pay'));
         }
         //验证支付方式是否存在
-        $payment = Payment::find($payment_id);
+        $payment = Payment::query()->find($payment_id);
         if (!$payment || $payment['status'] != Payment::STATUS_ON || !in_array($platform, explode(',', $payment['client_type']))) {
             api_error(__('api.payment_error'));
         }
@@ -108,7 +108,7 @@ class PayController extends BaseController
         if (!$trade_no) {
             api_error(__('api.missing_params'));
         }
-        $trade = Trade::where('trade_no', $trade_no)->first();
+        $trade = Trade::query()->where('trade_no', $trade_no)->first();
         if ($trade && $trade['status'] == Trade::STATUS_ON) {
             return $this->success();
         } else {

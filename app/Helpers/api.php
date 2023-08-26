@@ -138,9 +138,9 @@ if (!function_exists('get_user_group')) {
         $token = $token_service->getToken();
         $m_id = (isset($token['id']) && $token['id']) ?: 0;
         if ($m_id) {
-            $group_id = \App\Models\Member\Member::where('id', $m_id)->value('group_id');
+            $group_id = \App\Models\Member\Member::query()->where('id', $m_id)->value('group_id');
             if ($group_id) {
-                $group = \App\Models\Member\MemberGroup::where(['id' => $group_id, 'status' => \App\Models\Member\MemberGroup::STATUS_ON])->first();
+                $group = \App\Models\Member\MemberGroup::query()->where(['id' => $group_id, 'status' => \App\Models\Member\MemberGroup::STATUS_ON])->first();
                 if ($group) {
                     $pct = format_price($group['pct'] / 100);
                     if ($pct > 1) $pct = 1;

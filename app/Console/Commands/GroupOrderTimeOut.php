@@ -58,7 +58,7 @@ class GroupOrderTimeOut extends Command
         $limit = 10;
         while (true) {
             $offset = ($page - 1) * $limit;
-            $res_list = PromoGroupOrder::select('id', 'order_id')
+            $res_list = PromoGroupOrder::query()->select('id', 'order_id')
                 ->where($where)
                 ->whereIn('status', [PromoGroupOrder::STATUS_WAIT_PAY, PromoGroupOrder::STATUS_WAIT_SUCCESS])
                 ->offset($offset)
@@ -72,7 +72,7 @@ class GroupOrderTimeOut extends Command
                 $res_list = $res_list->toArray();
                 $ids = array_column($res_list, 'id');
                 $order_ids = array_column($res_list, 'order_id');
-                $res_order = Order::select('id', 'trade_id', 'order_no', 'subtotal', 'promo_type', 'status', 'coupons_id')->whereIn('id', $order_ids)->get();
+                $res_order = Order::query()->select('id', 'trade_id', 'order_no', 'subtotal', 'promo_type', 'status', 'coupons_id')->whereIn('id', $order_ids)->get();
                 if ($res_order->isEmpty()) {
                     continue;
                 }

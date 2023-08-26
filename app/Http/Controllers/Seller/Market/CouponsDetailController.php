@@ -39,14 +39,14 @@ class CouponsDetailController extends BaseController
         ];
         $username = $request->input('username');
         if ($username) {
-            $member_id = Member::where('username', $username)->value('id');
+            $member_id = Member::query()->where('username', $username)->value('id');
             if ($member_id) {
                 $where[] = ['m_id', $member_id];
             } else {
                 api_error(__('admin.content_is_empty'));
             }
         }
-        $query = CouponsDetail::select('id', 'm_id', 'status', 'is_use', 'use_at', 'bind_at')
+        $query = CouponsDetail::query()->select('id', 'm_id', 'status', 'is_use', 'use_at', 'bind_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -58,7 +58,7 @@ class CouponsDetailController extends BaseController
         }
         $m_ids = array_column($res_list->toArray(), 'm_id');
         if ($m_ids) {
-            $member_data = Member::whereIn('id', array_unique($m_ids))->pluck('username', 'id');
+            $member_data = Member::query()->whereIn('id', array_unique($m_ids))->pluck('username', 'id');
         }
         $data_list = [];
         foreach ($res_list as $value) {
@@ -102,7 +102,7 @@ class CouponsDetailController extends BaseController
         $coupons_id = self::checkCoupons();
         $num = (int)$request->input('num');
         //验证用户名
-        $m_id = Member::where('username', $username)->value('id');
+        $m_id = Member::query()->where('username', $username)->value('id');
         if (!$m_id) {
             api_error(__('admin.user_error'));
         }
@@ -129,8 +129,8 @@ class CouponsDetailController extends BaseController
         if (!isset(CouponsDetail::STATUS_DESC[$status])) {
             api_error(__('admin.missing_params'));
         }
-        $coupons_ids = Coupons::where('seller_id', $this->seller_id)->where('id', $ids)->pluck('id')->toArray();
-        $res = CouponsDetail::whereIn('id', $ids)->whereIn('coupons_id', $coupons_ids)->update(['status' => $status]);
+        $coupons_ids = Coupons::query()->where('seller_id', $this->seller_id)->where('id', $ids)->pluck('id')->toArray();
+        $res = CouponsDetail::query()->whereIn('id', $ids)->whereIn('coupons_id', $coupons_ids)->update(['status' => $status]);
         if ($res) {
             return $this->success();
         } else {
@@ -147,8 +147,8 @@ class CouponsDetailController extends BaseController
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $coupons_ids = Coupons::where('seller_id', $this->seller_id)->where('id', $ids)->pluck('id')->toArray();
-        $res = CouponsDetail::whereIn('id', $ids)->whereIn('coupons_id', $coupons_ids)->delete();
+        $coupons_ids = Coupons::query()->where('seller_id', $this->seller_id)->where('id', $ids)->pluck('id')->toArray();
+        $res = CouponsDetail::query()->whereIn('id', $ids)->whereIn('coupons_id', $coupons_ids)->delete();
         if ($res) {
             return $this->success();
         } else {
@@ -168,7 +168,7 @@ class CouponsDetailController extends BaseController
             api_error(__('admin.content_is_empty'));
         }
         //验证是否是商家的
-        if (!Coupons::where(['id' => $coupons_id, 'seller_id' => $this->seller_id])->exists()) {
+        if (!Coupons::query()->where(['id' => $coupons_id, 'seller_id' => $this->seller_id])->exists()) {
             api_error(__('admin.role_error'));
         }
         return $coupons_id;

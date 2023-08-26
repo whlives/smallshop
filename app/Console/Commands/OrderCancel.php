@@ -56,7 +56,7 @@ class OrderCancel extends Command
         $limit = 10;
         while (true) {
             $offset = ($page - 1) * $limit;
-            $res_list = Order::select('id', 'trade_id', 'order_no', 'subtotal', 'promo_type', 'status', 'coupons_id')
+            $res_list = Order::query()->select('id', 'trade_id', 'order_no', 'subtotal', 'promo_type', 'status', 'coupons_id')
                 ->where($where)
                 ->offset($offset)
                 ->limit($limit)
