@@ -15,7 +15,6 @@ use App\Libs\Weixin\Mp;
 use App\Models\Areas;
 use App\Models\System\ExpressCompany;
 use App\Models\Tool\Adv;
-use App\Models\Tool\AdvGroup;
 use Illuminate\Http\Request;
 
 class HelperController extends BaseController

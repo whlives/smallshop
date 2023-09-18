@@ -14,7 +14,6 @@ use App\Models\Member\Favorite;
 use App\Models\Seller\Seller;
 use App\Models\Tool\Article;
 use Illuminate\Http\Request;
-use function Symfony\Component\String\b;
 
 class FavoriteController extends BaseController
 {

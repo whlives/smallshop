@@ -12,7 +12,7 @@ use App\Http\Controllers\V1\BaseController;
 use App\Models\Areas;
 use App\Models\Member\Address;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class AddressController extends BaseController
 {

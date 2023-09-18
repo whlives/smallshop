@@ -9,8 +9,6 @@
 namespace App\Http\Controllers\V1\Member;
 
 use App\Http\Controllers\V1\BaseController;
-use App\Libs\Delivery;
-use App\Models\Member\Member;
 use App\Models\Order\DeliveryTraces;
 use App\Models\Order\OrderGoods;
 use App\Models\Order\Refund;
