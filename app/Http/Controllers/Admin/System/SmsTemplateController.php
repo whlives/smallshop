@@ -11,7 +11,7 @@ namespace App\Http\Controllers\Admin\System;
 use App\Http\Controllers\Admin\BaseController;
 use App\Models\System\SmsTemplate;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class SmsTemplateController extends BaseController
 {

@@ -12,7 +12,7 @@ use App\Http\Controllers\Admin\BaseController;
 use App\Models\Tool\Article;
 use App\Models\Tool\ArticleCategory;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class ArticleController extends BaseController
 {

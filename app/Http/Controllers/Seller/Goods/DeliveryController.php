@@ -11,7 +11,7 @@ namespace App\Http\Controllers\Seller\Goods;
 use App\Http\Controllers\Seller\BaseController;
 use App\Models\Goods\Delivery;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class DeliveryController extends BaseController
 {

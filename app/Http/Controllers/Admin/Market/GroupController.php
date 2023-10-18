@@ -13,7 +13,7 @@ use App\Models\Goods\Goods;
 use App\Models\Market\PromoGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class GroupController extends BaseController
 {

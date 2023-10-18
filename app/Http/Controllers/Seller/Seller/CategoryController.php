@@ -11,7 +11,7 @@ namespace App\Http\Controllers\Seller\Seller;
 use App\Http\Controllers\Seller\BaseController;
 use App\Models\Seller\SellerCategory;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends BaseController
 {

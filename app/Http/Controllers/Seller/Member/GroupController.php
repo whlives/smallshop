@@ -11,7 +11,6 @@ namespace App\Http\Controllers\Seller\Member;
 use App\Http\Controllers\Seller\BaseController;
 use App\Models\Member\MemberGroup;
 use Illuminate\Http\Request;
-use Validator;
 
 class GroupController extends BaseController
 {

@@ -13,7 +13,7 @@ use App\Models\Market\Coupons;
 use App\Models\Market\CouponsDetail;
 use App\Models\Member\Member;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class CouponsDetailController extends BaseController
 {

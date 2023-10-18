@@ -11,7 +11,6 @@ namespace App\Http\Controllers\Seller\System;
 use App\Http\Controllers\Seller\BaseController;
 use App\Models\System\ExpressCompany;
 use Illuminate\Http\Request;
-use Validator;
 
 class ExpressCompanyController extends BaseController
 {

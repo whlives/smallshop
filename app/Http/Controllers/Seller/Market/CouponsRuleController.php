@@ -15,7 +15,7 @@ use App\Models\Market\Coupons;
 use App\Models\Market\CouponsRule;
 use App\Models\System\Brand;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class CouponsRuleController extends BaseController
 {

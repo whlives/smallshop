@@ -12,7 +12,7 @@ use App\Http\Controllers\Seller\BaseController;
 use App\Models\Seller\Seller;
 use App\Models\Seller\SellerProfile;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class SellerController extends BaseController
 {

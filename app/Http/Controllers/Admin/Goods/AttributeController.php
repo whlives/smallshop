@@ -12,7 +12,7 @@ use App\Http\Controllers\Admin\BaseController;
 use App\Models\Goods\Attribute;
 use App\Models\Goods\Category;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class AttributeController extends BaseController
 {

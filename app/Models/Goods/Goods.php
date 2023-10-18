@@ -14,13 +14,12 @@ use App\Models\BaseModel;
 use App\Models\Market\Coupons;
 use App\Models\Market\PromoSeckill;
 use App\Models\Seller\Seller;
-use App\Services\GoodsService;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Validation\Rule;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * 优惠券

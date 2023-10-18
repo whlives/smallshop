@@ -12,7 +12,7 @@ use App\Http\Controllers\Admin\BaseController;
 use App\Models\Market\Coupons;
 use App\Models\Seller\Seller;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class CouponsController extends BaseController
 {

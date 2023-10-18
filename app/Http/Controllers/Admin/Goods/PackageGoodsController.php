@@ -12,7 +12,6 @@ use App\Http\Controllers\Admin\BaseController;
 use App\Models\Goods\Goods;
 use App\Models\Goods\GoodsPackage;
 use Illuminate\Http\Request;
-use Validator;
 
 class PackageGoodsController extends BaseController
 {

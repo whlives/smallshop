@@ -13,7 +13,7 @@ use App\Models\Financial\SellerBalance;
 use App\Models\Financial\SellerBalanceDetail;
 use App\Models\Seller\Seller;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class SellerBalanceController extends BaseController
 {

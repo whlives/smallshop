@@ -15,7 +15,7 @@ use App\Models\Admin\AdminRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class AdminController extends BaseController
 {

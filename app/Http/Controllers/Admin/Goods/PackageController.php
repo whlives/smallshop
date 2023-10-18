@@ -12,7 +12,7 @@ use App\Http\Controllers\Admin\BaseController;
 use App\Models\Goods\GoodsPackage;
 use App\Models\Seller\Seller;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class PackageController extends BaseController
 {

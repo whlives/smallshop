@@ -11,7 +11,7 @@ namespace App\Http\Controllers\Admin\Tool;
 use App\Http\Controllers\Admin\BaseController;
 use App\Models\Tool\Adv;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class AdvController extends BaseController
 {

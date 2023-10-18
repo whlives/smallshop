@@ -11,7 +11,7 @@ namespace App\Http\Controllers\Seller\Market;
 use App\Http\Controllers\Seller\BaseController;
 use App\Models\Market\Promotion;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class PromotionController extends BaseController
 {

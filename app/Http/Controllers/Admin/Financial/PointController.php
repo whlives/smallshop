@@ -13,7 +13,7 @@ use App\Models\Financial\Point;
 use App\Models\Financial\PointDetail;
 use App\Models\Member\Member;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class PointController extends BaseController
 {

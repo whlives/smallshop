@@ -12,7 +12,7 @@ use App\Http\Controllers\Admin\BaseController;
 use App\Models\Market\Promotion;
 use App\Models\Seller\Seller;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class PromotionController extends BaseController
 {

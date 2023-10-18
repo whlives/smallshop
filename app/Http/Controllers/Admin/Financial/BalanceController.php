@@ -13,7 +13,7 @@ use App\Models\Financial\Balance;
 use App\Models\Financial\BalanceDetail;
 use App\Models\Member\Member;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class BalanceController extends BaseController
 {

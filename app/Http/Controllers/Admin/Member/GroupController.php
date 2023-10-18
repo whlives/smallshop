@@ -11,7 +11,7 @@ namespace App\Http\Controllers\Admin\Member;
 use App\Http\Controllers\Admin\BaseController;
 use App\Models\Member\MemberGroup;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class GroupController extends BaseController
 {

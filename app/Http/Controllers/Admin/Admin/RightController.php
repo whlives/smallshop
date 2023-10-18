@@ -13,7 +13,7 @@ use App\Models\Admin\AdminRight;
 use App\Models\System\Menu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class RightController extends BaseController
 {

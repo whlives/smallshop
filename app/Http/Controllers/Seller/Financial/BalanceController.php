@@ -12,9 +12,7 @@ use App\Http\Controllers\Seller\BaseController;
 use App\Models\Financial\SellerBalance;
 use App\Models\Financial\SellerBalanceDetail;
 use App\Models\Financial\SellerWithdraw;
-use App\Models\Seller\Seller;
 use Illuminate\Http\Request;
-use Validator;
 
 class BalanceController extends BaseController
 {

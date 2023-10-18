@@ -11,7 +11,7 @@ namespace App\Http\Controllers\Admin\Log;
 use App\Http\Controllers\Admin\BaseController;
 use App\Models\System\FileLog;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class FileController extends BaseController
 {

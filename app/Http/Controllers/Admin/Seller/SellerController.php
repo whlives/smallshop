@@ -13,7 +13,7 @@ use App\Models\Seller\Seller;
 use App\Models\Seller\SellerLoginLog;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class SellerController extends BaseController
 {

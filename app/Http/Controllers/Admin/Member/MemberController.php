@@ -15,7 +15,7 @@ use App\Models\Member\MemberGroup;
 use App\Models\Member\MemberLoginLog;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class MemberController extends BaseController
 {

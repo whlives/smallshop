@@ -16,7 +16,7 @@ use App\Services\TokenService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Mews\Captcha\Facades\Captcha;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class LoginController extends BaseController
 {

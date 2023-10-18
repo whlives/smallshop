@@ -13,7 +13,7 @@ use App\Models\System\Config;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Validation\Rule;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class ConfigController extends BaseController
 {

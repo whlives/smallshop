@@ -11,7 +11,7 @@ namespace App\Http\Controllers\Admin\Goods;
 use App\Http\Controllers\Admin\BaseController;
 use App\Models\Goods\AttributeValue;
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class AttributeValueController extends BaseController
 {

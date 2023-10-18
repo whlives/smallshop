@@ -11,7 +11,6 @@ namespace App\Http\Controllers\Seller\System;
 use App\Http\Controllers\Seller\BaseController;
 use App\Models\System\Brand;
 use Illuminate\Http\Request;
-use Validator;
 
 class BrandController extends BaseController
 {
