@@ -13,7 +13,7 @@ layui.define(function (exports) {
     //自定义验证
     form.verify({
         price: function (value, item) {
-            if (!/(^[-]?[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[-]?[0-9]\.[0-9]([0-9])?$)/.test(value)) {
+            if (!/(^[1-9]\d*(\.\d{1,2})?$)|(^0(\.\d{1,2})?$)/.test(value)) {
                 let reqText = $(item).attr('lay-reqText');
                 if (reqText) {
                     return reqText;

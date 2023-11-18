@@ -31,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
         }
         //验证金额
         Validator::extend('price', function ($attribute, $value, $parameters) {
-            return preg_match("/(^[-]?[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[-]?[0-9]\.[0-9]([0-9])?$)/", $value);
+            return preg_match("/(^[1-9]\d*(\.\d{1,2})?$)|(^0(\.\d{1,2})?$)/", $value);
         });
         //验证手机
         Validator::extend('mobile', function ($attribute, $value, $parameters) {

@@ -32,7 +32,7 @@ if (!function_exists('check_price')) {
      */
     function check_price($price): bool
     {
-        if (preg_match("/(^[-]?[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[-]?[0-9]\.[0-9]([0-9])?$)/", $price)) {
+        if (preg_match("/(^[1-9]\d*(\.\d{1,2})?$)|(^0(\.\d{1,2})?$)/", $price)) {
             return true;
         }
         return false;
