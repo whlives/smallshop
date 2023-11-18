@@ -36,7 +36,10 @@ return [
     'sms_frequent' => '10025|短信发送太频繁',
     'sms_send_fail' => '10026|短信发送失败',
     'sms_error_num_max' => '10027|错误次数已达上限，请五分钟后再试',
-    'adv_app_id_not_empty' => '10028|跳转第三方的小程序appid不能为空',
+    'file_not_exists' => '10028|文件不存在',
+    'file_type_error' => '10029|文件格式错误',
+    'adv_app_id_not_empty' => '10030|跳转第三方的小程序appid不能为空',
+    'export_is_in_run' => '10031|其他导出任务正在进行中，请稍后重试',
 
     //管理员10500
     'admin_user_error' => '10500|用户名错误',
