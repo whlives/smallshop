@@ -8,6 +8,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\ApiError;
 use App\Models\Financial\SellerWithdraw;
 use App\Models\Financial\Trade;
 use App\Models\Financial\TradeRefund;
@@ -16,11 +17,30 @@ use App\Models\Order\Order;
 use App\Models\Order\OrderDelivery;
 use App\Models\Order\Refund;
 use App\Models\System\Payment;
+use Illuminate\Support\Facades\Redis;
+use League\Csv\ByteSequence;
 use League\Csv\Reader;
 use League\Csv\Writer;
 
 class ExportService
 {
+    /**
+     * 不允许同时导出
+     * @param array $param
+     * @param int $time
+     * @return void
+     * @throws ApiError
+     */
+    public static function exportIsInRun(array $param = [], int $time = 30)
+    {
+        $redis_key = get_cache_key('export_is_in_run', $param);
+        $is_repeat = Redis::get($redis_key);
+        if ($is_repeat) {
+            api_error(__('admin.export_is_in_run'));
+        }
+        Redis::setex($redis_key, $time, 1);
+    }
+
     /**
      * 时间判断
      * @param string|null $start_at
@@ -50,6 +70,7 @@ class ExportService
     public static function order($request, array $where, string|null $start_at = '', string|null $end_at = '')
     {
         self::timeRange($start_at, $end_at);
+        self::exportIsInRun();//判断其他导出是否运行中
         //$cols = $request->input('cols');
         $cols = [
             'full_name' => '收件人姓名',
@@ -62,41 +83,56 @@ class ExportService
             'subtotal' => '金额',
             'order_no' => '订单号',
         ];
-        $query = Order::query()->select('order.id as order_id', 'order.order_no', 'order.full_name', 'order.tel', 'order.prov', 'order.city', 'order.area', 'order.address', 'order.subtotal', 'goods.goods_title', 'goods.buy_qty');
-        if (isset($where['where']) && $where['where']) {
-            $query->where($where['where']);
-        }
-        if (isset($where['where_in']) && $where['where_in']) {
-            foreach ($where['where_in'] as $key => $val) {
-                $query->wherein($key, $val);
-            }
-        }
-        $res_list = $query->leftJoin('order_goods as goods', 'order.id', '=', 'goods.order_id')
-            ->orderBy('order.id', 'desc')
-            ->get();
-        if ($res_list->isEmpty()) {
-            api_error(__('admin.content_is_empty'));
-        }
         //导出
         $csv = Writer::createFromFileObject(new \SplTempFileObject());
         $csv->insertOne(array_values($cols));//表头
-        //表数据
+        $page = 1;
+        $limit = 10000;
+        $now_at = get_date();
         $goods_title = '';
-        foreach ($res_list as $key => $value) {
-            if (!isset($res_list[$key + 1]['order_id']) || $res_list[$key + 1]['order_id'] != $value['order_id']) {
-                //这里需要看是否是相同订单的商品，相同的需要合并，只有下一条的订单id不一样的时候才开始写入
-                $value['goods_title'] = $goods_title . $value['goods_title'] . '×' . $value['buy_qty'];
-                $_cols_val = [];
-                foreach ($cols as $_name => $_title) {
-                    $_cols_val[] = $value[$_name] . "\n";
+        $last_id = 0;//最后一条数据id
+        while (true) {
+            $offset = ($page - 1) * $limit;
+            $query = Order::query()->select('order.id as order_id', 'order.order_no', 'order.full_name', 'order.tel', 'order.prov', 'order.city', 'order.area', 'order.address', 'order.subtotal', 'goods.goods_title', 'goods.buy_qty')
+                ->where('order.created_at', '<', $now_at);
+            if (isset($where['where']) && $where['where']) {
+                $query->where($where['where']);
+            }
+            if (isset($where['where_in']) && $where['where_in']) {
+                foreach ($where['where_in'] as $key => $val) {
+                    $query->wherein($key, $val);
                 }
-                $csv->insertOne($_cols_val);
-                $goods_title = '';
+            }
+            $res_list = $query->leftJoin('order_goods as goods', 'order.id', '=', 'goods.order_id')
+                ->orderBy('order.id', 'desc')
+                ->offset($offset)
+                ->limit($limit)
+                ->get();
+            if ($res_list->isEmpty()) {
+                break;
             } else {
-                $goods_title .= ',' . $value['goods_title'] . '×' . $value['buy_qty'];
+                $page++;
+                $res_list = $res_list->toArray();
+                //表数据
+                $csv_data = [];
+                foreach ($res_list as $key => $value) {
+                    if ((!isset($res_list[$key + 1]['order_id']) || $res_list[$key + 1]['order_id'] != $value['order_id']) || $value['order_id'] == $last_id) {
+                        //这里需要看是否是相同订单的商品，相同的需要合并，只有下一条的订单id不一样的时候才开始写入
+                        $value['goods_title'] = $goods_title . $value['goods_title'] . '×' . $value['buy_qty'];
+                        $_cols_val = [];
+                        foreach ($cols as $_name => $_title) {
+                            $_cols_val[] = $value[$_name] . "\n";
+                        }
+                        $csv_data[] = $_cols_val;
+                        $goods_title = '';
+                    } else {
+                        $goods_title .= ',' . $value['goods_title'] . '×' . $value['buy_qty'];
+                    }
+                }
+                $csv->insertAll($csv_data);
             }
         }
-        $csv->setOutputBOM(Reader::BOM_UTF8);
+        $csv->setOutputBOM(ByteSequence::BOM_UTF8);
         $csv->output('电商订单.csv');
     }
 
@@ -112,36 +148,51 @@ class ExportService
     public static function refund($request, array $where, string|null $start_at = '', string|null $end_at = '')
     {
         self::timeRange($start_at, $end_at);
+        self::exportIsInRun();//判断其他导出是否运行中
         $cols = $request->input('cols');
-        $query = Refund::query()->select('refund.id', 'refund.m_id', 'refund.order_goods_id', 'refund.refund_no', 'refund.amount', 'refund.refund_type', 'refund.status', 'refund.reason', 'refund.created_at', 'goods.goods_title', 'goods.image', 'goods.spec_value');
-        if (isset($where['where']) && $where['where']) {
-            $query->where($where['where']);
-        }
-        if (isset($where['where_in']) && $where['where_in']) {
-            foreach ($where['where_in'] as $key => $val) {
-                $query->wherein($key, $val);
-            }
-        }
-        $res_list = $query->leftJoin('order_goods as goods', 'goods.id', '=', 'refund.order_goods_id')
-            ->orderBy('refund.id', 'desc')
-            ->get();
-        if ($res_list->isEmpty()) {
-            api_error(__('admin.content_is_empty'));
-        }
         //导出
         $csv = Writer::createFromFileObject(new \SplTempFileObject());
         $csv->insertOne(array_values($cols));//表头
-        //表数据
-        foreach ($res_list as $value) {
-            $value['refund_type_text'] = Refund::REFUND_TYPE_DESC[$value['refund_type']];
-            $value['status_text'] = Refund::STATUS_DESC[$value['status']];
-            $_cols_val = [];
-            foreach ($cols as $_name => $_title) {
-                $_cols_val[] = $value[$_name] . "\n";
+        $page = 1;
+        $limit = 10000;
+        $now_at = get_date();
+        while (true) {
+            $offset = ($page - 1) * $limit;
+            $query = Refund::query()->select('refund.id', 'refund.m_id', 'refund.order_goods_id', 'refund.refund_no', 'refund.amount', 'refund.refund_type', 'refund.status', 'refund.reason', 'refund.created_at', 'goods.goods_title', 'goods.image', 'goods.spec_value')
+                ->where('refund.created_at', '<', $now_at);
+            if (isset($where['where']) && $where['where']) {
+                $query->where($where['where']);
             }
-            $csv->insertOne($_cols_val);
+            if (isset($where['where_in']) && $where['where_in']) {
+                foreach ($where['where_in'] as $key => $val) {
+                    $query->wherein($key, $val);
+                }
+            }
+            $res_list = $query->leftJoin('order_goods as goods', 'goods.id', '=', 'refund.order_goods_id')
+                ->orderBy('refund.id', 'desc')
+                ->offset($offset)
+                ->limit($limit)
+                ->get();
+            if ($res_list->isEmpty()) {
+                break;
+            } else {
+                $page++;
+                $res_list = $res_list->toArray();
+                $csv_data = [];
+                //表数据
+                foreach ($res_list as $value) {
+                    $value['refund_type_text'] = Refund::REFUND_TYPE_DESC[$value['refund_type']];
+                    $value['status_text'] = Refund::STATUS_DESC[$value['status']];
+                    $_cols_val = [];
+                    foreach ($cols as $_name => $_title) {
+                        $_cols_val[] = $value[$_name] . "\n";
+                    }
+                    $csv_data[] = $_cols_val;
+                }
+                $csv->insertAll($csv_data);
+            }
         }
-        $csv->setOutputBOM(Reader::BOM_UTF8);
+        $csv->setOutputBOM(ByteSequence::BOM_UTF8);
         $csv->output('售后.csv');
     }
 
@@ -157,34 +208,49 @@ class ExportService
     public static function delivery($request, array $where, string|null $start_at = '', string|null $end_at = '')
     {
         self::timeRange($start_at, $end_at);
+        self::exportIsInRun();//判断其他导出是否运行中
         $cols = $request->input('cols');
-        $query = OrderDelivery::query()->select('order_delivery.id', 'order_delivery.company_name', 'order_delivery.code', 'order_delivery.created_at', 'o.order_no');
-        if (isset($where['where']) && $where['where']) {
-            $query->where($where['where']);
-        }
-        if (isset($where['where_in']) && $where['where_in']) {
-            foreach ($where['where_in'] as $key => $val) {
-                $query->wherein($key, $val);
-            }
-        }
-        $res_list = $query->leftJoin('order as o', 'o.id', '=', 'order_delivery.order_id')
-            ->orderBy('order_delivery.id', 'desc')
-            ->get();
-        if ($res_list->isEmpty()) {
-            api_error(__('admin.content_is_empty'));
-        }
         //导出
         $csv = Writer::createFromFileObject(new \SplTempFileObject());
         $csv->insertOne(array_values($cols));//表头
-        //表数据
-        foreach ($res_list as $value) {
-            $_cols_val = [];
-            foreach ($cols as $_name => $_title) {
-                $_cols_val[] = $value[$_name] . "\n";
+        $page = 1;
+        $limit = 10000;
+        $now_at = get_date();
+        while (true) {
+            $offset = ($page - 1) * $limit;
+            $query = OrderDelivery::query()->select('order_delivery.id', 'order_delivery.company_name', 'order_delivery.code', 'order_delivery.created_at', 'o.order_no')
+                ->where('order_delivery.created_at', '<', $now_at);
+            if (isset($where['where']) && $where['where']) {
+                $query->where($where['where']);
             }
-            $csv->insertOne($_cols_val);
+            if (isset($where['where_in']) && $where['where_in']) {
+                foreach ($where['where_in'] as $key => $val) {
+                    $query->wherein($key, $val);
+                }
+            }
+            $res_list = $query->leftJoin('order as o', 'o.id', '=', 'order_delivery.order_id')
+                ->orderBy('order_delivery.id', 'desc')
+                ->offset($offset)
+                ->limit($limit)
+                ->get();
+            if ($res_list->isEmpty()) {
+                break;
+            } else {
+                $page++;
+                $res_list = $res_list->toArray();
+                $csv_data = [];
+                //表数据
+                foreach ($res_list as $value) {
+                    $_cols_val = [];
+                    foreach ($cols as $_name => $_title) {
+                        $_cols_val[] = $value[$_name] . "\n";
+                    }
+                    $csv_data[] = $_cols_val;
+                }
+                $csv->insertAll($csv_data);
+            }
         }
-        $csv->setOutputBOM(Reader::BOM_UTF8);
+        $csv->setOutputBOM(ByteSequence::BOM_UTF8);
         $csv->output('发货单.csv');
     }
 
@@ -200,38 +266,53 @@ class ExportService
     public static function trade($request, array $where, string|null $start_at = '', string|null $end_at = '')
     {
         self::timeRange($start_at, $end_at);
+        self::exportIsInRun();//判断其他导出是否运行中
         $cols = $request->input('cols');
-        $query = Trade::query()->select('trade.id', 'trade.m_id', 'trade.trade_no', 'trade.type', 'trade.subtotal', 'trade.flag', 'trade.payment_id', 'trade.payment_no', 'trade.pay_total', 'trade.platform', 'trade.status', 'trade.pay_at', 'trade.created_at', 'm.username');
-        if (isset($where['where']) && $where['where']) {
-            $query->where($where['where']);
-        }
-        if (isset($where['where_in']) && $where['where_in']) {
-            foreach ($where['where_in'] as $key => $val) {
-                $query->wherein($key, $val);
-            }
-        }
-        $res_list = $query->leftJoin('member as m', 'm.id', '=', 'trade.m_id')
-            ->orderBy('trade.id', 'desc')
-            ->get();
-        if ($res_list->isEmpty()) {
-            api_error(__('admin.content_is_empty'));
-        }
         //导出
         $csv = Writer::createFromFileObject(new \SplTempFileObject());
         $csv->insertOne(array_values($cols));//表头
-        //表数据
-        foreach ($res_list as $value) {
-            $value['flag'] = Trade::FLAG_DESC[$value['flag']];
-            $value['type'] = Trade::TYPE_DESC[$value['type']];
-            $value['status_text'] = Trade::STATUS_DESC[$value['status']];
-            $value['payment'] = Payment::PAYMENT_DESC[$value['payment_id']] ?? '';
-            $_cols_val = [];
-            foreach ($cols as $_name => $_title) {
-                $_cols_val[] = $value[$_name] . "\n";
+        $page = 1;
+        $limit = 10000;
+        $now_at = get_date();
+        while (true) {
+            $offset = ($page - 1) * $limit;
+            $query = Trade::query()->select('trade.id', 'trade.m_id', 'trade.trade_no', 'trade.type', 'trade.subtotal', 'trade.flag', 'trade.payment_id', 'trade.payment_no', 'trade.pay_total', 'trade.platform', 'trade.status', 'trade.pay_at', 'trade.created_at', 'm.username')
+                ->where('trade.created_at', '<', $now_at);
+            if (isset($where['where']) && $where['where']) {
+                $query->where($where['where']);
             }
-            $csv->insertOne($_cols_val);
+            if (isset($where['where_in']) && $where['where_in']) {
+                foreach ($where['where_in'] as $key => $val) {
+                    $query->wherein($key, $val);
+                }
+            }
+            $res_list = $query->leftJoin('member as m', 'm.id', '=', 'trade.m_id')
+                ->orderBy('trade.id', 'desc')
+                ->offset($offset)
+                ->limit($limit)
+                ->get();
+            if ($res_list->isEmpty()) {
+                break;
+            } else {
+                $page++;
+                $res_list = $res_list->toArray();
+                $csv_data = [];
+                //表数据
+                foreach ($res_list as $value) {
+                    $value['flag'] = Trade::FLAG_DESC[$value['flag']];
+                    $value['type'] = Trade::TYPE_DESC[$value['type']];
+                    $value['status_text'] = Trade::STATUS_DESC[$value['status']];
+                    $value['payment'] = Payment::PAYMENT_DESC[$value['payment_id']] ?? '';
+                    $_cols_val = [];
+                    foreach ($cols as $_name => $_title) {
+                        $_cols_val[] = $value[$_name] . "\n";
+                    }
+                    $csv_data[] = $_cols_val;
+                }
+                $csv->insertAll($csv_data);
+            }
         }
-        $csv->setOutputBOM(Reader::BOM_UTF8);
+        $csv->setOutputBOM(ByteSequence::BOM_UTF8);
         $csv->output('交易单.csv');
     }
 
@@ -247,37 +328,52 @@ class ExportService
     public static function tradeRefund($request, array $where, string|null $start_at = '', string|null $end_at = '')
     {
         self::timeRange($start_at, $end_at);
+        self::exportIsInRun();//判断其他导出是否运行中
         $cols = $request->input('cols');
-        $query = TradeRefund::query()->select('trade_refund.id', 'trade_refund.m_id', 'trade_refund.refund_no', 'trade_refund.trade_no', 'trade_refund.order_no', 'trade_refund.type', 'trade_refund.subtotal', 'trade_refund.payment_id', 'trade_refund.payment_id', 'trade_refund.payment_no', 'trade_refund.platform', 'trade_refund.status', 'trade_refund.note', 'trade_refund.pay_at', 'trade_refund.created_at', 'm.username');
-        if (isset($where['where']) && $where['where']) {
-            $query->where($where['where']);
-        }
-        if (isset($where['where_in']) && $where['where_in']) {
-            foreach ($where['where_in'] as $key => $val) {
-                $query->wherein($key, $val);
-            }
-        }
-        $res_list = $query->leftJoin('member as m', 'm.id', '=', 'trade_refund.m_id')
-            ->orderBy('trade_refund.id', 'desc')
-            ->get();
-        if ($res_list->isEmpty()) {
-            api_error(__('admin.content_is_empty'));
-        }
         //导出
         $csv = Writer::createFromFileObject(new \SplTempFileObject());
         $csv->insertOne(array_values($cols));//表头
-        //表数据
-        foreach ($res_list as $value) {
-            $value['type'] = TradeRefund::TYPE_DESC[$value['type']];
-            $value['payment'] = Payment::PAYMENT_DESC[$value['payment_id']] ?? '';
-            $value['status_text'] = TradeRefund::STATUS_DESC[$value['status']];
-            $_cols_val = [];
-            foreach ($cols as $_name => $_title) {
-                $_cols_val[] = $value[$_name] . "\n";
+        $page = 1;
+        $limit = 10000;
+        $now_at = get_date();
+        while (true) {
+            $offset = ($page - 1) * $limit;
+            $query = TradeRefund::query()->select('trade_refund.id', 'trade_refund.m_id', 'trade_refund.refund_no', 'trade_refund.trade_no', 'trade_refund.order_no', 'trade_refund.type', 'trade_refund.subtotal', 'trade_refund.payment_id', 'trade_refund.payment_id', 'trade_refund.payment_no', 'trade_refund.platform', 'trade_refund.status', 'trade_refund.note', 'trade_refund.pay_at', 'trade_refund.created_at', 'm.username')
+                ->where('trade_refund.created_at', '<', $now_at);
+            if (isset($where['where']) && $where['where']) {
+                $query->where($where['where']);
             }
-            $csv->insertOne($_cols_val);
+            if (isset($where['where_in']) && $where['where_in']) {
+                foreach ($where['where_in'] as $key => $val) {
+                    $query->wherein($key, $val);
+                }
+            }
+            $res_list = $query->leftJoin('member as m', 'm.id', '=', 'trade_refund.m_id')
+                ->orderBy('trade_refund.id', 'desc')
+                ->offset($offset)
+                ->limit($limit)
+                ->get();
+            if ($res_list->isEmpty()) {
+                break;
+            } else {
+                $page++;
+                $res_list = $res_list->toArray();
+                $csv_data = [];
+                //表数据
+                foreach ($res_list as $value) {
+                    $value['type'] = TradeRefund::TYPE_DESC[$value['type']];
+                    $value['payment'] = Payment::PAYMENT_DESC[$value['payment_id']] ?? '';
+                    $value['status_text'] = TradeRefund::STATUS_DESC[$value['status']];
+                    $_cols_val = [];
+                    foreach ($cols as $_name => $_title) {
+                        $_cols_val[] = $value[$_name] . "\n";
+                    }
+                    $csv_data[] = $_cols_val;
+                }
+                $csv->insertAll($csv_data);
+            }
         }
-        $csv->setOutputBOM(Reader::BOM_UTF8);
+        $csv->setOutputBOM(ByteSequence::BOM_UTF8);
         $csv->output('退款交易单.csv');
     }
 
@@ -294,37 +390,52 @@ class ExportService
     public static function withdraw($request, array $where, string|null $start_at = '', string|null $end_at = '')
     {
         self::timeRange($start_at, $end_at);
+        self::exportIsInRun();//判断其他导出是否运行中
         $cols = $request->input('cols');
-        $query = Withdraw::query()->select('withdraw.id', 'withdraw.m_id', 'withdraw.type', 'withdraw.amount', 'withdraw.name', 'withdraw.bank_name', 'withdraw.pay_number', 'withdraw.refuse_note', 'withdraw.status', 'withdraw.created_at', 'withdraw.done_at', 'm.username');
-        if (isset($where['where']) && $where['where']) {
-            $query->where($where['where']);
-        }
-        if (isset($where['where_in']) && $where['where_in']) {
-            foreach ($where['where_in'] as $key => $val) {
-                $query->wherein($key, $val);
-            }
-        }
-        $res_list = $query->leftJoin('member as m', 'm.id', '=', 'withdraw.m_id')
-            ->orderBy('withdraw.status', 'asc')
-            ->orderBy('withdraw.id', 'desc')
-            ->get();
-        if ($res_list->isEmpty()) {
-            api_error(__('admin.content_is_empty'));
-        }
         //导出
         $csv = Writer::createFromFileObject(new \SplTempFileObject());
         $csv->insertOne(array_values($cols));//表头
-        //表数据
-        foreach ($res_list as $value) {
-            $value['type'] = Withdraw::TYPE_DESC[$value['type']];
-            $value['status_text'] = Withdraw::STATUS_DESC[$value['status']];
-            $_cols_val = [];
-            foreach ($cols as $_name => $_title) {
-                $_cols_val[] = $value[$_name] . "\n";
+        $page = 1;
+        $limit = 10000;
+        $now_at = get_date();
+        while (true) {
+            $offset = ($page - 1) * $limit;
+            $query = Withdraw::query()->select('withdraw.id', 'withdraw.m_id', 'withdraw.type', 'withdraw.amount', 'withdraw.name', 'withdraw.bank_name', 'withdraw.pay_number', 'withdraw.refuse_note', 'withdraw.status', 'withdraw.created_at', 'withdraw.done_at', 'm.username')
+                ->where('withdraw.created_at', '<', $now_at);
+            if (isset($where['where']) && $where['where']) {
+                $query->where($where['where']);
             }
-            $csv->insertOne($_cols_val);
+            if (isset($where['where_in']) && $where['where_in']) {
+                foreach ($where['where_in'] as $key => $val) {
+                    $query->wherein($key, $val);
+                }
+            }
+            $res_list = $query->leftJoin('member as m', 'm.id', '=', 'withdraw.m_id')
+                ->orderBy('withdraw.status', 'asc')
+                ->orderBy('withdraw.id', 'desc')
+                ->offset($offset)
+                ->limit($limit)
+                ->get();
+            if ($res_list->isEmpty()) {
+                break;
+            } else {
+                $page++;
+                $res_list = $res_list->toArray();
+                $csv_data = [];
+                //表数据
+                foreach ($res_list as $value) {
+                    $value['type'] = Withdraw::TYPE_DESC[$value['type']];
+                    $value['status_text'] = Withdraw::STATUS_DESC[$value['status']];
+                    $_cols_val = [];
+                    foreach ($cols as $_name => $_title) {
+                        $_cols_val[] = $value[$_name] . "\n";
+                    }
+                    $csv_data[] = $_cols_val;
+                }
+                $csv->insertAll($csv_data);
+            }
         }
-        $csv->setOutputBOM(Reader::BOM_UTF8);
+        $csv->setOutputBOM(ByteSequence::BOM_UTF8);
         $csv->output('提现列表.csv');
     }
 
@@ -341,37 +452,52 @@ class ExportService
     public static function sellerWithdraw($request, array $where, string|null $start_at = '', string|null $end_at = '')
     {
         self::timeRange($start_at, $end_at);
+        self::exportIsInRun();//判断其他导出是否运行中
         $cols = $request->input('cols');
-        $query = SellerWithdraw::query()->select('seller_withdraw.id', 'seller_withdraw.m_id', 'seller_withdraw.type', 'seller_withdraw.amount', 'seller_withdraw.name', 'seller_withdraw.bank_name', 'seller_withdraw.pay_number', 'seller_withdraw.refuse_note', 'seller_withdraw.status', 'seller_withdraw.created_at', 'seller_withdraw.done_at', 's.username');
-        if (isset($where['where']) && $where['where']) {
-            $query->where($where['where']);
-        }
-        if (isset($where['where_in']) && $where['where_in']) {
-            foreach ($where['where_in'] as $key => $val) {
-                $query->wherein($key, $val);
-            }
-        }
-        $res_list = $query->leftJoin('seller as s', 's.id', '=', 'seller_withdraw.m_id')
-            ->orderBy('seller_withdraw.status', 'asc')
-            ->orderBy('seller_withdraw.id', 'desc')
-            ->get();
-        if ($res_list->isEmpty()) {
-            api_error(__('admin.content_is_empty'));
-        }
         //导出
         $csv = Writer::createFromFileObject(new \SplTempFileObject());
         $csv->insertOne(array_values($cols));//表头
-        //表数据
-        foreach ($res_list as $value) {
-            $value['type'] = SellerWithdraw::TYPE_DESC[$value['type']];
-            $value['status_text'] = SellerWithdraw::STATUS_DESC[$value['status']];
-            $_cols_val = [];
-            foreach ($cols as $_name => $_title) {
-                $_cols_val[] = $value[$_name] . "\n";
+        $page = 1;
+        $limit = 10000;
+        $now_at = get_date();
+        while (true) {
+            $offset = ($page - 1) * $limit;
+            $query = SellerWithdraw::query()->select('seller_withdraw.id', 'seller_withdraw.m_id', 'seller_withdraw.type', 'seller_withdraw.amount', 'seller_withdraw.name', 'seller_withdraw.bank_name', 'seller_withdraw.pay_number', 'seller_withdraw.refuse_note', 'seller_withdraw.status', 'seller_withdraw.created_at', 'seller_withdraw.done_at', 's.username')
+                ->where('seller_withdraw.created_at', '<', $now_at);
+            if (isset($where['where']) && $where['where']) {
+                $query->where($where['where']);
             }
-            $csv->insertOne($_cols_val);
+            if (isset($where['where_in']) && $where['where_in']) {
+                foreach ($where['where_in'] as $key => $val) {
+                    $query->wherein($key, $val);
+                }
+            }
+            $res_list = $query->leftJoin('seller as s', 's.id', '=', 'seller_withdraw.m_id')
+                ->orderBy('seller_withdraw.status', 'asc')
+                ->orderBy('seller_withdraw.id', 'desc')
+                ->offset($offset)
+                ->limit($limit)
+                ->get();
+            if ($res_list->isEmpty()) {
+                break;
+            } else {
+                $page++;
+                $res_list = $res_list->toArray();
+                $csv_data = [];
+                //表数据
+                foreach ($res_list as $value) {
+                    $value['type'] = SellerWithdraw::TYPE_DESC[$value['type']];
+                    $value['status_text'] = SellerWithdraw::STATUS_DESC[$value['status']];
+                    $_cols_val = [];
+                    foreach ($cols as $_name => $_title) {
+                        $_cols_val[] = $value[$_name] . "\n";
+                    }
+                    $csv_data[] = $_cols_val;
+                }
+                $csv->insertAll($csv_data);
+            }
         }
-        $csv->setOutputBOM(Reader::BOM_UTF8);
+        $csv->setOutputBOM(ByteSequence::BOM_UTF8);
         $csv->output('商家提现列表.csv');
     }
 }
