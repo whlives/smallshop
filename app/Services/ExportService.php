@@ -90,7 +90,7 @@ class ExportService
         $limit = 10000;
         $now_at = get_date();
         $goods_title = '';
-        $last_id = 0;//最后一条数据id
+        $last_order = [];
         while (true) {
             $offset = ($page - 1) * $limit;
             $query = Order::query()->select('order.id as order_id', 'order.order_no', 'order.full_name', 'order.tel', 'order.prov', 'order.city', 'order.area', 'order.address', 'order.subtotal', 'goods.goods_title', 'goods.buy_qty')
@@ -109,27 +109,37 @@ class ExportService
                 ->limit($limit)
                 ->get();
             if ($res_list->isEmpty()) {
+                $_last_order = $last_order;
+                $_last_order['goods_title'] = $goods_title . $_last_order['goods_title'] . '×' . $_last_order['buy_qty'];
+                $_cols_val = [];
+                foreach ($cols as $_name => $_title) {
+                    $_cols_val[] = $_last_order[$_name] . "\n";
+                }
+                $csv->insertOne($_cols_val);
                 break;
             } else {
                 $page++;
                 $res_list = $res_list->toArray();
-                //表数据
                 $csv_data = [];
-                foreach ($res_list as $key => $value) {
-                    if ((!isset($res_list[$key + 1]['order_id']) || $res_list[$key + 1]['order_id'] != $value['order_id']) || $value['order_id'] == $last_id) {
-                        //这里需要看是否是相同订单的商品，相同的需要合并，只有下一条的订单id不一样的时候才开始写入
-                        $value['goods_title'] = $goods_title . $value['goods_title'] . '×' . $value['buy_qty'];
+                //表数据
+                foreach ($res_list as $value) {
+                    if ($last_order && $last_order['order_id'] != $value['order_id']) {
+                        $last_order['goods_title'] = $goods_title . $last_order['goods_title'] . '×' . $last_order['buy_qty'];
                         $_cols_val = [];
                         foreach ($cols as $_name => $_title) {
-                            $_cols_val[] = $value[$_name] . "\n";
+                            $_cols_val[] = $last_order[$_name] . "\n";
                         }
                         $csv_data[] = $_cols_val;
                         $goods_title = '';
-                    } else {
-                        $goods_title .= ',' . $value['goods_title'] . '×' . $value['buy_qty'];
                     }
+                    if ($last_order && $last_order['order_id'] == $value['order_id']) {
+                        $goods_title .= $last_order['goods_title'] . '×' . $last_order['buy_qty'] . ',';
+                    }
+                    $last_order = $value;
                 }
-                $csv->insertAll($csv_data);
+                if ($csv_data) {
+                    $csv->insertAll($csv_data);
+                }
             }
         }
         $csv->setOutputBOM(ByteSequence::BOM_UTF8);
