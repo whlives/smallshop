@@ -11,17 +11,17 @@
             <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/admin/right/rights" lay-done="layui.form.render();">
                 {{# layui.each(d.data, function(index, top){ }}
                 <blockquote class="layui-elem-quote layui-quote-nm">
-                    <input type="checkbox" lay-skin="primary" lay-filter="select_top" title="{{ top.name }}" value="select_{{ top.id }}" data-top="{{ top.id }}">
+                    <input type="checkbox" lay-filter="select_top" title="{{ top.name }}" value="select_{{ top.id }}" data-top="{{ top.id }}">
                     <hr>
                     {{# layui.each(top.right, function(index2, child){ }}
-                    <fieldset class="layui-elem-field" id="select_{{ top.id }}">
+                    <fieldset class="layui-elem-field" style="padding-bottom: 15px;" id="select_{{ top.id }}">
                         <legend>
-                            <input type="checkbox" lay-skin="primary" lay-filter="select_child" title="{{ child.name }}" value="select_{{ child.id }}" data-top="{{ top.id }}" data-child="{{ child.id }}">
+                            <input type="checkbox" lay-filter="select_child" title="{{ child.name }}" value="select_{{ child.id }}" data-top="{{ top.id }}" data-child="{{ child.id }}">
                         </legend>
                         <div class="layui-field-box" id="select_{{ child.id }}">
                             {{# layui.each(child.right, function(index3, right){ }}
                             <div class="layui-input-inline">
-                                <input type="checkbox" name="right[{{ top.id }}][{{ child.id }}][]" lay-filter="right" title="{{ right.title }}" value="{{ right.id }}" data-top="{{ top.id }}" data-child="{{ child.id }}" {{# if(d.params.right && d.params.right[top.id]){ }}{{#
+                                <input type="checkbox" lay-skin="tag" name="right[{{ top.id }}][{{ child.id }}][]" lay-filter="right" title="{{ right.title }}" value="{{ right.id }}" data-top="{{ top.id }}" data-child="{{ child.id }}" {{# if(d.params.right && d.params.right[top.id]){ }}{{#
                                        if(layui.jquery.inArray(right.id, d.params.right[top.id][child.id])>=
                                 0){ }}checked{{# } }}{{# } }}>
                             </div>

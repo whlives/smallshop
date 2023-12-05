@@ -72,7 +72,7 @@
                             <a class="layui-btn layui-btn-normal layui-btn-xs layui-hide" lay-event="un_bind">解绑三方登录</a>
                         </script>
                         <script type="text/html" id="status_tmp">
-                            <input type="checkbox" value="{{d.id}}" lay-skin="switch" lay-text="正常|锁定" lay-filter="status_btn" {{# if(d.status== 1){ }}checked{{# } }}>
+                            <input type="checkbox" value="{{d.id}}" lay-skin="switch" title="正常|锁定" lay-filter="status_btn" {{# if(d.status== 1){ }}checked{{# } }}>
                         </script>
                         <script type="text/html" id="username_tmp">
                             {{ d.username }}

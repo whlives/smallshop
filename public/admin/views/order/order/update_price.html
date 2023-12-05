@@ -14,13 +14,13 @@
     <div class="layui-form-item">
         <label class="layui-form-label">改价金额￥</label>
         <div class="layui-input-inline">
-            <input type="text" name="discount_price" lay-verify="price" autocomplete="off" class="layui-input">
+            <input type="text" name="discount_price" lay-verify="required|price" autocomplete="off" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">运费金额￥</label>
         <div class="layui-input-inline">
-            <input type="text" name="delivery_price_real" lay-verify="price" autocomplete="off" class="layui-input">
+            <input type="text" name="delivery_price_real" lay-verify="required|price" autocomplete="off" class="layui-input">
             <div class="layui-form-mid layui-word-aux">默认金额0表示不包邮</div>
         </div>
     </div>
@@ -47,6 +47,6 @@
 </form>
 <script>
     layui.use(['verify'], function () {
-        
+
     });
 </script>

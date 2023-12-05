@@ -30,28 +30,28 @@
         <div class="layui-form-item">
             <label class="layui-form-label label-required-next">包邮金额/件</label>
             <div class="layui-input-inline">
-                <input type="text" value="0" name="free_price" lay-verify="price" lay-reqText="包邮金额/件不能为空" autocomplete="off" class="layui-input">
+                <input type="text" value="0" name="free_price" lay-verify="required|price" lay-reqText="包邮金额/件不能为空" autocomplete="off" class="layui-input">
             </div>
             <div class="layui-form-mid layui-word-aux">默认金额0表示不包邮</div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label label-required-next">首重/件数</label>
             <div class="layui-input-inline">
-                <input type="text" name="first_weight" lay-verify="number" lay-reqText="首重/件数不能为空" autocomplete="off" class="layui-input" placeholder="重量单位克">
+                <input type="text" name="first_weight" lay-verify="required|number" lay-reqText="首重/件数不能为空" autocomplete="off" class="layui-input" placeholder="重量单位克">
             </div>
             <label class="layui-form-label label-required-next">费用</label>
             <div class="layui-input-inline">
-                <input type="text" name="first_price" lay-verify="price" lay-reqText="首重/件数费用不能为空" autocomplete="off" class="layui-input">
+                <input type="text" name="first_price" lay-verify="required|price" lay-reqText="首重/件数费用不能为空" autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label label-required-next">续重/件数</label>
             <div class="layui-input-inline">
-                <input type="text" name="second_weight" lay-verify="number" lay-reqText="续重/件数不能为空" autocomplete="off" class="layui-input" placeholder="重量单位克">
+                <input type="text" name="second_weight" lay-verify="required|number" lay-reqText="续重/件数不能为空" autocomplete="off" class="layui-input" placeholder="重量单位克">
             </div>
             <label class="layui-form-label label-required-next">费用</label>
             <div class="layui-input-inline">
-                <input type="text" name="second_price" lay-verify="price" lay-reqText="续重/件数费用不能为空" autocomplete="off" class="layui-input">
+                <input type="text" name="second_price" lay-verify="required|price" lay-reqText="续重/件数费用不能为空" autocomplete="off" class="layui-input">
             </div>
         </div>
     </fieldset>
@@ -107,28 +107,28 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label label-required-next">包邮金额/件</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="group_free_price[{{ item.list_id }}]" value="{{ item.free_price }}" lay-verify="price" lay-reqText="包邮金额/件不能为空" autocomplete="off" class="layui-input">
+                        <input type="text" name="group_free_price[{{ item.list_id }}]" value="{{ item.free_price }}" lay-verify="required|price" lay-reqText="包邮金额/件不能为空" autocomplete="off" class="layui-input">
                     </div>
                     <div class="layui-form-mid layui-word-aux">默认金额0表示不包邮</div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label label-required-next">续重/件数</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="group_first_weight[{{ item.list_id }}]" value="{{ item.first_weight }}" lay-verify="number" lay-reqText="首重/件数不能为空" autocomplete="off" class="layui-input" placeholder="重量单位克">
+                        <input type="text" name="group_first_weight[{{ item.list_id }}]" value="{{ item.first_weight }}" lay-verify="required|number" lay-reqText="首重/件数不能为空" autocomplete="off" class="layui-input" placeholder="重量单位克">
                     </div>
                     <label class="layui-form-label label-required-next">费用</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="group_first_price[{{ item.list_id }}]" value="{{ item.first_price }}" lay-verify="price" lay-reqText="首重/件数费用不能为空" autocomplete="off" class="layui-input">
+                        <input type="text" name="group_first_price[{{ item.list_id }}]" value="{{ item.first_price }}" lay-verify="required|price" lay-reqText="首重/件数费用不能为空" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label label-required-next">续重/件数</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="group_second_weight[{{ item.list_id }}]" value="{{ item.second_weight }}" lay-verify="number" lay-reqText="续重/件数不能为空" autocomplete="off" class="layui-input" placeholder="重量单位克">
+                        <input type="text" name="group_second_weight[{{ item.list_id }}]" value="{{ item.second_weight }}" lay-verify="required|number" lay-reqText="续重/件数不能为空" autocomplete="off" class="layui-input" placeholder="重量单位克">
                     </div>
                     <label class="layui-form-label label-required-next">费用</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="group_second_price[{{ item.list_id }}]" value="{{ item.second_price }}" lay-verify="price" lay-reqText="续重/件数费用不能为空" autocomplete="off" class="layui-input">
+                        <input type="text" name="group_second_price[{{ item.list_id }}]" value="{{ item.second_price }}" lay-verify="required|price" lay-reqText="续重/件数费用不能为空" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">

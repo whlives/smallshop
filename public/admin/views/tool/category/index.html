@@ -54,7 +54,7 @@
                                 </td>
                                 <td class="td_center">{{ d.position }}</td>
                                 <td class="td_center">
-                                    <input type="checkbox" name="status" value="{{ d.id }}" lay-skin="switch" lay-text="锁定|正常" lay-filter="status_btn" {{# if(d.status== 1){ }}checked{{# } }}>
+                                    <input type="checkbox" name="status" value="{{ d.id }}" lay-skin="switch" title="锁定|正常" lay-filter="status_btn" {{# if(d.status== 1){ }}checked{{# } }}>
                                 </td>
                                 <td>
                                     <a class="layui-btn layui-btn-xs layui-hide" lay-event="edit" data-id="{{ d.id }}">编辑</a>

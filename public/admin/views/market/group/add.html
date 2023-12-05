@@ -16,11 +16,11 @@
     <div class="layui-form-item">
         <label class="layui-form-label label-required-next">成团人数</label>
         <div class="layui-input-inline">
-            <input type="text" name="group_num" lay-verify="number" lay-reqText="成团人数不能为空" autocomplete="off" class="layui-input">
+            <input type="text" name="group_num" lay-verify="required|number" lay-reqText="成团人数不能为空" autocomplete="off" class="layui-input">
         </div>
         <label class="layui-form-label label-required-next">成功时间(小时)</label>
         <div class="layui-input-inline">
-            <input type="text" name="hour" lay-verify="number" lay-reqText="成功时间(小时)不能为空" autocomplete="off" class="layui-input">
+            <input type="text" name="hour" lay-verify="required|number" lay-reqText="成功时间(小时)不能为空" autocomplete="off" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item" id="select_at">

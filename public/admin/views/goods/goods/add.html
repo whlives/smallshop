@@ -98,17 +98,17 @@
                     </div>
                     <label class="layui-form-label label-required-next">排序</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="position" lay-verify="number" lay-reqText="排序只能是数字" autocomplete="off" class="layui-input" value="999">
+                        <input type="text" name="position" lay-verify="required|number" lay-reqText="排序只能是数字" autocomplete="off" class="layui-input" value="999">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label label-required-next">一级分成比例</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="level_one_pct" lay-verify="number" lay-reqText="一级分成比例必须是0-100的数字" autocomplete="off" class="layui-input" value="0">
+                        <input type="text" name="level_one_pct" lay-verify="required|number" lay-reqText="一级分成比例必须是0-100的数字" autocomplete="off" class="layui-input" value="0">
                     </div>
                     <label class="layui-form-label label-required-next">二级级分成比例</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="level_two_pct" lay-verify="number" lay-reqText="二级级分成比例必须是0-100的数字" autocomplete="off" class="layui-input" value="0">
+                        <input type="text" name="level_two_pct" lay-verify="required|number" lay-reqText="二级级分成比例必须是0-100的数字" autocomplete="off" class="layui-input" value="0">
                     </div>
                 </div>
                 <fieldset class="layui-elem-field goods_spec layui-hide"></fieldset>
