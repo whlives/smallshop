@@ -6,6 +6,7 @@ use App\Services\LogService;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Psr\Http\Client\RequestExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -50,7 +51,7 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $e)
     {
-        if (!$e instanceof ApiError) {
+        if (!$e instanceof ApiError && !$e instanceof NotFoundHttpException) {
             /*$debug = config('app.debug');
             if ($e->getMessage() && !$debug) {
                 $return = [
