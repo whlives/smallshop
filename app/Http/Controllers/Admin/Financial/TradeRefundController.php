@@ -98,7 +98,7 @@ class TradeRefundController extends BaseController
      */
     public function getStatus(Request $request)
     {
-        return $this->success(Trade::STATUS_DESC);
+        return $this->success(TradeRefund::STATUS_DESC);
     }
 
     /**
