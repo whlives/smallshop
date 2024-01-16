@@ -82,7 +82,8 @@ layui.define(['table_common'], function (exports) {
     laydate.render({
         elem: '#time_range',
         range: '~',
-        type: 'date'
+        type: 'date',
+        rangeLinked: true,
     });
 
     //定模快捷切换选项
