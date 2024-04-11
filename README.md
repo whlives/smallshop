@@ -26,4 +26,4 @@ smallshop是一套基于php+mysql开发的B2B2C商城。
 
 5.在目录下运行 composer intall 安装
 
-6.运行php artisan storage:link 创建本地文件链接
+6.运行php artisan storage:link 创建本地文件链接，软连接创建后如果没有权限进入，运行chmod -R 755 修改权限。

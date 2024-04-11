@@ -306,13 +306,13 @@ if (!function_exists('curl')) {
     /**
      * curl请求
      * @param string $url 网址
-     * @param array $params 请求参数
+     * @param array|string $params 请求参数,json格式参数需要json_encode
      * @param bool $is_post 请求方式get、post
      * @param bool $https 是否https协议
      * @param array $header header头信息
      * @return bool|string
      */
-    function curl(string $url, array $params = [], bool $is_post = false, bool $https = false, array $header = []): bool|string
+    function curl(string $url, array|string $params = [], bool $is_post = false, bool $https = false, array $header = []): bool|string
     {
         $http_info = [];
         $ch = curl_init();

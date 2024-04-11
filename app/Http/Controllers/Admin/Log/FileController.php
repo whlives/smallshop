@@ -51,36 +51,4 @@ class FileController extends BaseController
         ];
         return $this->success($return);
     }
-
-    /**
-     * 添加
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
-     */
-    public function save(Request $request)
-    {
-        //验证规则
-        $validator = Validator::make($request->all(), [
-            'title' => 'required',
-            'url' => 'required'
-        ], [
-            'title.required' => '名称不能为空',
-            'url.required' => '地址不能为空',
-        ]);
-        $error = $validator->errors()->all();
-        if ($error) {
-            api_error(current($error));
-        }
-        $save_data = [];
-        foreach ($request->only(['title', 'url']) as $key => $value) {
-            $save_data[$key] = $value;
-        }
-        $res = FileLog::query()->create($save_data);
-        if ($res) {
-            return $this->success();
-        } else {
-            api_error(__('admin.save_error'));
-        }
-    }
 }

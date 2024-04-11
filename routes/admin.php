@@ -132,7 +132,6 @@ Route::group(['middleware' => AdminToken::class], function () {
         Route::post('sms', 'SmsController@index');
         //附件记录
         Route::post('file', 'FileController@index');
-        Route::post('file/save', 'FileController@save');
         //商家登录记录
         Route::post('seller_login', 'SellerLoginController@index');
         Route::post('seller_login/login_out', 'SellerLoginController@loginOut');
