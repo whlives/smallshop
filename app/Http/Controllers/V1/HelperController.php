@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Libs\Aliyun\Oss;
 use App\Libs\Aliyun\Sts;
 use App\Libs\Sms;
 use App\Libs\Upload;
@@ -16,6 +17,7 @@ use App\Models\Areas;
 use App\Models\System\ExpressCompany;
 use App\Models\Tool\Adv;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class HelperController extends BaseController
 {
@@ -61,6 +63,22 @@ class HelperController extends BaseController
             } else {
                 api_error(__('api.fail'));
             }
+        } else {
+            return $this->success(['upload_type' => $upload_type]);
+        }
+    }
+
+    public function aliyunToken(Request $request)
+    {
+        $model = $request->post('model');
+        $upload_type = get_custom_config('upload_type');
+        if ($upload_type == 1) {
+            $token = Cache::remember('aliyun_web_token' . $model, 120, function () use ($model) {
+                $oss = new Oss();
+                $token = $oss->getWebToken($model);
+                return $token;
+            });
+            return $this->success($token);
         } else {
             return $this->success(['upload_type' => $upload_type]);
         }

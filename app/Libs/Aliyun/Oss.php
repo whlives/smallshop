@@ -9,6 +9,7 @@
 namespace App\Libs\Aliyun;
 
 use App\Libs\Upload;
+use Illuminate\Support\Str;
 use OSS\Core\OssException;
 use OSS\OssClient;
 
@@ -44,5 +45,49 @@ class Oss
         } catch (OssException $e) {
             return false;
         }
+    }
+
+    /**
+     * 获取web上传token
+     * @param string|null $model
+     * @return array
+     */
+    public function getWebToken(string|null $model = 'images')
+    {
+        $host = 'https://' . $this->config['aliyun_oss_bucket'] . '.' . $this->config['aliyun_oss_endpoint'];
+        //过期时间
+        $end_time = time() + 300;
+        $expiration = date("c", $end_time);
+        $pos = strpos($expiration, '+');
+        $expiration = substr($expiration, 0, $pos);
+        $expiration = $expiration . "Z";
+        //前缀
+        $file_name = md5(time() . Str::random(10));
+        $img_dir = 'upload';
+        if (config('app.debug')) {
+            $img_dir = 'dev_upload';
+        }
+        $dir = $img_dir . '/' . $model . '/' . substr($file_name, 0, 2) . '/' . substr($file_name, 2, 2) . '/' . substr($file_name, 4, 2) . '/';
+        $condition = [0 => 'content-length-range', 1 => 0, 2 => 1048576000];
+        $conditions[] = $condition;
+
+        //表示用户上传的数据,必须是以$dir开始, 不然上传会失败,这一步不是必须项,只是为了安全起见,防止用户通过policy上传到别人的目录
+        $start = [0 => 'starts-with', 1 => '$key', 2 => $dir];
+        $conditions[] = $start;
+        $arr = ['expiration' => $expiration, 'conditions' => $conditions];
+
+        $policy = json_encode($arr);
+        $base64_policy = base64_encode($policy);
+        $string_to_sign = $base64_policy;
+        $signature = base64_encode(hash_hmac('sha1', $string_to_sign, $this->config['aliyun_key_secret'], true));
+
+        $response = [];
+        $response['accessid'] = $this->config['aliyun_key_id'];
+        $response['host'] = $host;
+        $response['policy'] = $base64_policy;
+        $response['signature'] = $signature;
+        $response['dir'] = $dir;
+        $response['domain'] = $this->img_domain . '/';//图片网址
+        return $response;
     }
 }

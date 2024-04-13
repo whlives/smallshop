@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', 'IndexController@index');
-
+Route::get('config/api_config', 'ConfigController@apiConfig');//系统配置
 //基础公共模块
 Route::prefix('helper')->controller('HelperController')->group(function () {
     Route::get('adv/{code}', 'adv')->where('code', '[0-9]+');//广告位
@@ -34,11 +34,12 @@ Route::prefix('seller')->controller('SellerController')->group(function () {
 });
 //商品
 Route::prefix('goods')->controller('GoodsController')->group(function () {
+    Route::get('/{page?}/{limit?}', 'index');
     Route::get('category/{parent_id?}', 'category');
     Route::get('category_all', 'categoryAll');
     Route::get('search', 'search');
     Route::get('detail/{id}', 'detail');
-    Route::get('comment/{id}/{page?}/{limit?}', 'comment');
+    Route::get('evaluation/{id}/{page?}/{limit?}', 'evaluation');
 });
 //拼团
 Route::prefix('promo')->controller('PromoController')->group(function () {
@@ -59,6 +60,7 @@ Route::group(['middleware' => \App\Http\Middleware\SignCheck::class], function (
     Route::prefix('helper')->controller('HelperController')->group(function () {
         Route::post('captcha', 'captcha');//验证码
         Route::post('aliyun_sts', 'aliyunSts');//阿里云上传
+        Route::post('aliyun_token', 'aliyunToken');//阿里云上传
         Route::post('upload', 'upload');//本地上传
     });
 

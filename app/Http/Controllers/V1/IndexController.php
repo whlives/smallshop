@@ -15,7 +15,7 @@ class IndexController extends BaseController
 
     /**
      * 首页
-     * @return \Illuminate\Http\JsonResponse
+     * @return string
      */
     public function index(Request $request)
     {

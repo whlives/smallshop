@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Exceptions\ApiError;
 use App\Models\Goods\Category;
 use App\Models\Goods\Comment;
 use App\Models\Goods\CommentUrl;
@@ -16,18 +17,40 @@ use App\Models\Market\PromoGroup;
 use App\Models\Market\PromoSeckill;
 use App\Models\Member\Favorite;
 use App\Models\Member\Member;
+use App\Models\Tool\Adv;
 use App\Services\GoodsSearchService;
 use App\Services\GoodsService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class GoodsController extends BaseController
 {
     /**
+     * 商城首页
+     * @param Request $request
+     * @return mixed
+     */
+    public function index(Request $request)
+    {
+        [$limit, $offset] = get_page_params();
+        $banner = Adv::getAdv(100);
+        $where = [
+            'is_rem' => Goods::REM_ON
+        ];
+        $goods_data = GoodsSearchService::search($where, $limit, $offset);
+        $return = [
+            'banner' => $banner,
+            'goods' => $goods_data
+        ];
+        return $this->success($return);
+    }
+
+    /**
      * 商品搜素
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function search(Request $request)
     {
@@ -100,8 +123,8 @@ class GoodsController extends BaseController
     /**
      * 商品详情
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function detail(Request $request)
     {
@@ -167,7 +190,7 @@ class GoodsController extends BaseController
     /**
      * 分类列表
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function category(Request $request)
     {
@@ -179,7 +202,7 @@ class GoodsController extends BaseController
     /**
      * 所有分类
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function categoryAll(Request $request)
     {
@@ -195,10 +218,10 @@ class GoodsController extends BaseController
     /**
      * 商品评价
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
-    public function comment(Request $request)
+    public function evaluation(Request $request)
     {
         $id = (int)$request->route('id');
         if (!$id) {
