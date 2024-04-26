@@ -9,6 +9,7 @@
 namespace App\Models\Member;
 
 use App\Models\BaseModel;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -35,7 +36,7 @@ class Member extends BaseModel
 
     /**
      * 获取会员资料
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function profile()
     {

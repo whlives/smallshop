@@ -10,6 +10,7 @@ namespace App\Http\Controllers\V1\Member;
 
 use App\Http\Controllers\V1\BaseController;
 use App\Libs\Sms;
+use App\Libs\Weixin\MiniProgram;
 use App\Models\Member\Member;
 use App\Models\Member\MemberAuth;
 use App\Models\Member\MemberProfile;
@@ -39,6 +40,7 @@ class IndexController extends BaseController
         if (!$member_data) {
             api_error(__('api.invalid_token'));
         }
+        $member_profile = $member_data->profile;
         //待付款订单
         $wait_pay_num = Order::query()->where(['m_id' => $this->m_id, 'status' => Order::STATUS_WAIT_PAY])->count();
         //待发货订单
@@ -50,6 +52,16 @@ class IndexController extends BaseController
         //售后订单
         $refund_num = Refund::query()->where(['m_id' => $this->m_id])->whereNotIn('status', [Refund::STATUS_DONE, Refund::STATUS_CUSTOMER_CANCEL])->count();
         $auth_type = MemberAuth::query()->where(['m_id' => $this->m_id])->pluck('type')->toArray();
+        //获取分享小程序码
+        $mini_qrcode = $member_profile['mini_qrcode'];
+        if (!$mini_qrcode) {
+            $qrcode_param = ['m_id' => $this->m_id];
+            $mini_program = new MiniProgram();
+            $mini_qrcode = $mini_program->createShareQrcode($qrcode_param);
+            if ($mini_qrcode) {
+                MemberProfile::query()->where(['member_id' => $this->m_id])->update(['mini_qrcode' => $mini_qrcode]);
+            }
+        }
         $return = [
             'id' => $member_data['id'],
             'username' => $member_data['username'],
@@ -61,10 +73,13 @@ class IndexController extends BaseController
             'wait_received_num' => $wait_received_num,
             'wait_comment_num' => $wait_comment_num,
             'refund_num' => $refund_num,
+            'qrcode' => $mini_qrcode,
             'is_set_pay_pw' => $member_data['pay_password'] ? 1 : 0,
             'is_bind_wechat' => in_array(MemberAuth::TYPE_WECHAT, $auth_type) ? 1 : 0,
             'is_bind_weibo' => in_array(MemberAuth::TYPE_WEIBO, $auth_type) ? 1 : 0,
             'is_bind_qq' => in_array(MemberAuth::TYPE_QQ, $auth_type) ? 1 : 0,
+            'is_bind_mobile' => check_mobile($member_data['username']) ? 1 : 0,
+            'is_audit' => get_custom_config('is_audit'),
         ];
         return $this->success($return);
     }

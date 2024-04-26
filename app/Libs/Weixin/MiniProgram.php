@@ -175,4 +175,14 @@ class MiniProgram
     {
         return self::createQrcode(['g_id' => $goods_id], 'pages/shop/goodsDetail');
     }
+
+    /**
+     * 生成分享邀请小程序码
+     * @param array $param
+     * @return bool|string
+     */
+    public function createShareQrcode(array $param)
+    {
+        return self::createQrcode($param, 'pages/homepage/goods');
+    }
 }

@@ -22,10 +22,6 @@ Route::prefix('brand')->controller('BrandController')->group(function () {
     Route::get('/{page?}/{limit?}', 'index');
     Route::get('detail/{id}', 'detail');
 });
-//优惠券
-Route::prefix('coupons')->controller('CouponsController')->group(function () {
-    Route::get('seller/{seller_id}/{page?}/{limit?}', 'seller');
-});
 //商家
 Route::prefix('seller')->controller('SellerController')->group(function () {
     Route::get('detail/{seller_id}', 'detail');
@@ -63,7 +59,6 @@ Route::group(['middleware' => \App\Http\Middleware\SignCheck::class], function (
         Route::post('aliyun_token', 'aliyunToken');//阿里云上传
         Route::post('upload', 'upload');//本地上传
     });
-
     //登陆注册
     Route::prefix('login')->controller('LoginController')->group(function () {
         Route::post('/', 'index');//密码登陆
@@ -78,6 +73,10 @@ Route::group(['middleware' => \App\Http\Middleware\SignCheck::class], function (
             Route::post('bind_mobile', 'bindMobile');//第三方登陆绑定手机
             Route::post('find_password', 'findPassword');//找回密码
         });
+    });
+    //优惠券
+    Route::prefix('coupons')->controller('CouponsController')->group(function () {
+        Route::post('seller', 'seller');
     });
     //需要验证token的
     Route::group(['middleware' => \App\Http\Middleware\ApiToken::class], function () {
@@ -108,7 +107,7 @@ Route::group(['middleware' => \App\Http\Middleware\SignCheck::class], function (
         Route::group(['prefix' => 'member', 'namespace' => 'Member'], function () {
             //我的
             Route::controller('IndexController')->group(function () {
-                Route::post('/', 'index');
+                Route::post('index', 'index');
                 Route::post('info', 'info');
                 Route::post('save_info', 'saveInfo');
                 Route::post('up_password', 'upPassword');
