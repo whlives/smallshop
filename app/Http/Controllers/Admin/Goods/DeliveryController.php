@@ -111,9 +111,9 @@ class DeliveryController extends BaseController
             'type' => 'required|numeric',
             'free_type' => 'required|numeric',
             'free_price' => 'required|price',
-            'first_weight' => 'required|numeric',
+            'first_weight' => 'required|numeric|min:1',
             'first_price' => 'required|price',
-            'second_weight' => 'required|numeric',
+            'second_weight' => 'required|numeric|min:1',
             'second_price' => 'required|price',
             'price_type' => 'required|numeric',
         ], [
@@ -126,10 +126,12 @@ class DeliveryController extends BaseController
             'free_price.price' => '包邮金额/件格式错误',
             'first_weight.required' => '首重/件数不能为空',
             'first_weight.numeric' => '首重/件数只能是数字',
+            'first_weight.min' => '首重/件数最小1',
             'first_price.required' => '首重/件费用不能为空',
             'first_price.price' => '首重/件费用格式错误',
             'second_weight.required' => '续重/件数不能为空',
             'second_weight.numeric' => '续重/件数只能是数字',
+            'second_weight.min' => '续重/件数最小1',
             'second_price.required' => '续重/件费用不能为空',
             'second_price.price' => '续重/件费用格式错误',
             'price_type.required' => '费用类型不能为空',
@@ -156,14 +158,17 @@ class DeliveryController extends BaseController
                 if ($value) {
                     $group_area_id[] = array_values($value);
                     $_item = [
-                        'type' => $group_data['group_type'][$key],
-                        'free_type' => $group_data['group_free_type'][$key],
-                        'free_price' => $group_data['group_free_price'][$key],
-                        'first_weight' => $group_data['group_first_weight'][$key],
-                        'first_price' => $group_data['group_first_price'][$key],
-                        'second_weight' => $group_data['group_second_weight'][$key],
-                        'second_price' => $group_data['group_second_price'][$key],
+                        'type' => (int)$group_data['group_type'][$key],
+                        'free_type' => (int)$group_data['group_free_type'][$key],
+                        'free_price' => (float)$group_data['group_free_price'][$key],
+                        'first_weight' => (int)$group_data['group_first_weight'][$key],
+                        'first_price' => (float)$group_data['group_first_price'][$key],
+                        'second_weight' => (int)$group_data['group_second_weight'][$key],
+                        'second_price' => (float)$group_data['group_second_price'][$key],
                     ];
+                    if ($_item['first_weight'] < 1 || $_item['second_weight'] < 1) {
+                        api_error(__('admin.delivery_weight_min_one'));
+                    }
                     $group_json[] = $_item;
                 }
             }

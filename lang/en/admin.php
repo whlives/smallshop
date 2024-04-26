@@ -78,6 +78,7 @@ return [
     'goods_not_exists' => '50003|商品不存在',
     'goods_is_bind_promotion' => '50004|商品已经绑定了其他活动',
     'goods_stock_error' => '50005|商品库存不足',
+    'delivery_weight_min_one' => '50005|首重/续重/件数最小1',
 
     //促销50000
     //优惠券50000
