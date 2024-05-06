@@ -149,6 +149,7 @@ return [
     'recharge_error' => '60102|充值单信息错误',
     'recharge_status_error' => '60103|充值单状态错误',
     'recharge_not_balance_pay' => '60104|余额充值不支持余额支付',
+    'withdraw_balance_amount_max_500' => '60105|微信单次提现金额不能大于500',
 
     //积分60200
     'point_event_error' => '60200|资金类型错误',

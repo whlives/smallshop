@@ -59,6 +59,7 @@ class BalanceController extends BaseController
         $return = [
             'lists' => $data_list,
             'total' => $total,
+            'amount' => Balance::query()->where('m_id', $this->m_id)->value('amount') ?: 0,
         ];
         return $this->success($return);
     }
@@ -124,13 +125,19 @@ class BalanceController extends BaseController
         $name = $request->post('name');
         $bank_name = $request->post('bank_name');
         $pay_number = $request->post('pay_number');
-        if (!$amount || !$name || !$pay_number) {
+        if (!$amount || !$name) {
             api_error(__('api.missing_params'));
         } elseif (!check_price($amount) || !isset(Withdraw::TYPE_DESC[$type])) {
             api_error(__('api.invalid_params'));
         }
+        if (in_array($type, [Withdraw::TYPE_BANK, Withdraw::TYPE_ALIPAY]) && !$pay_number) {
+            api_error(__('api.missing_params'));
+        }
         if ($type == Withdraw::TYPE_BANK && !$bank_name) {
             api_error(__('api.missing_params'));
+        }
+        if ($type == Withdraw::TYPE_WECHAR && $amount > 500) {
+            api_error(__('api.withdraw_balance_amount_max_500'));
         }
         $withdraw_no = Withdraw::getWithdrawNo();
         //获取姓名如果需要开启实名认证这里就需要加上姓名

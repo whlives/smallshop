@@ -23,7 +23,7 @@ class CouponsController extends BaseController
     public function seller(Request $request)
     {
         [$limit, $offset] = get_page_params();
-        $seller_id = (int)$request->route('seller_id');
+        $seller_id = (int)$request->post('seller_id');
         $cache_key = get_cache_key('coupons_seller:', [$seller_id, $limit, $offset]);
         $return = Cache::get($cache_key);
         if (!$return) {
