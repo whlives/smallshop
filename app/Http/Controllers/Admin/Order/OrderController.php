@@ -334,7 +334,7 @@ class OrderController extends BaseController
         $id = (int)$request->input('id');
         $discount_price = $request->input('discount_price');
         $delivery_price_real = $request->input('delivery_price_real');
-        if (!$id || !check_price($discount_price) || !check_price($delivery_price_real)) {
+        if (!$id || !check_price(abs($discount_price)) || !check_price($delivery_price_real)) {
             api_error(__('admin.missing_params'));
         }
         $order = Order::query()->find($id);

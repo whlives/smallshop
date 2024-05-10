@@ -266,7 +266,11 @@ layui.define(function (exports) {
                 if (w) params.push('w_' + w);
                 if (h) params.push('h_' + h);
                 if (m) params.push('m_' + m);
-                new_url = url + '?x-oss-process=image/resize,' + params.join(',');
+                if (url.indexOf('?') == -1) {
+                    new_url = url + '?x-oss-process=image/resize,' + params.join(',');
+                } else {
+                    new_url = url + '&x-oss-process=image/resize,' + params.join(',');
+                }
                 return new_url;
             }
             return url;
