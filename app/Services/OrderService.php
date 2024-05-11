@@ -16,6 +16,7 @@ use App\Models\Financial\Balance;
 use App\Models\Financial\BalanceDetail;
 use App\Models\Financial\SellerBalance;
 use App\Models\Financial\SellerBalanceDetail;
+use App\Models\Financial\Trade;
 use App\Models\Financial\TradeRefund;
 use App\Models\Goods\Comment;
 use App\Models\Goods\CommentUrl;
@@ -590,6 +591,10 @@ class OrderService
                 OrderDelivery::query()->where(['order_id' => $order['id']])->delete();//删除物流信息
                 OrderLog::query()->create($order_log);//添加订单日志
             });
+            //微信订单撤销发货后修改交易单发货状态
+            if ($order['payment_id'] == Payment::PAYMENT_WECHAT) {
+                Trade::query()->where('id', $order['trade_id'])->update(['send_at' => null]);
+            }
             return true;
         } catch (\Exception $e) {
             return false;
@@ -622,6 +627,11 @@ class OrderService
                 Order::query()->where(['id' => $order['id']])->update(['status' => Order::STATUS_DONE, 'done_at' => get_date()]);
                 OrderLog::query()->create($order_log);//添加订单日志
             });
+            //微信订单发送确认收货提醒
+            if ($order['payment_id'] == Payment::PAYMENT_WECHAT) {
+                $miniprogram = new MiniProgram();
+                $miniprogram->confirmShippingInfo($order);
+            }
             return true;
         } catch (\Exception $e) {
             return false;

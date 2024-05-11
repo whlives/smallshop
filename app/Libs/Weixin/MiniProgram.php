@@ -211,7 +211,7 @@ class MiniProgram
     public function uploadShippingInfo(array $order, array $express_company, string|null $delivery_code = '')
     {
         try {
-            $trade_data = Trade::query()->where('id', $order['trade_id'])->whereNull('send_at')->first('payment_user');
+            $trade_data = Trade::query()->where('id', $order['trade_id'])->first();
             //没有发货的微信订单才处理
             if ($trade_data['send_at'] || $trade_data['payment_id'] != Payment::PAYMENT_WECHAT) return true;
             $data = [
@@ -274,6 +274,41 @@ class MiniProgram
             $response = $this->app->getClient()->postJson('wxa/sec/order/get_order', $data);
             $res = $response->toArray(false);
             if (isset($res['errcode']) && $res['errcode'] == 0) {
+                return $res['order'];
+            } else {
+                if ($res['errcode'] == 40001) {
+                    AccessToken::refreshAccessToken($this->config);//刷新access_token
+                }
+                return $res['errmsg'];
+            }
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * 确认发货提醒
+     * @param array $order
+     * @return mixed|true
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function confirmShippingInfo(array $order)
+    {
+        $trade_data = Trade::query()->where('id', $order['trade_id'])->first();
+        if (!$trade_data['send_at']) return true;
+        $res = self::getShippingInfo($order);
+        if ($res['order_state'] != 2) return false;
+        try {
+            $data = [
+                'transaction_id' => $order['payment_no'],
+            ];
+            $response = $this->app->getClient()->postJson('wxa/sec/order/notify_confirm_receive', $data);
+            $res = $response->toArray(false);
+            if (isset($res['errcode']) && $res['errcode'] == 0) {
                 return true;
             } else {
                 if ($res['errcode'] == 40001) {
@@ -288,7 +323,7 @@ class MiniProgram
 
     /**
      * 查询快递公司
-     * @return array|false|mixed|mixed[]
+     * @return array|false|mixed
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
      * @throws RedirectionExceptionInterface
