@@ -79,6 +79,8 @@ Route::group(['middleware' => AdminToken::class], function () {
             Route::post('status', 'status');
             Route::post('field_update', 'fieldUpdate');
             Route::post('select', 'select');
+            Route::post('type', 'type');
+            Route::post('weixin_express', 'weixinExpress');
         });
         //支付方式
         Route::prefix('payment')->controller('PaymentController')->group(function () {

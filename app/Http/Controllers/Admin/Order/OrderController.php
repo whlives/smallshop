@@ -492,9 +492,6 @@ class OrderController extends BaseController
         if (!$id || !$order_goods_id || !$company_id) {
             api_error(__('admin.missing_params'));
         }
-        if ($company_id != ExpressCompany::NOT_DELIVERY && !$code) {
-            api_error(__('admin.delivery_code_error'));
-        }
         $order = Order::query()->find($id);
         if (!$order) {
             api_error(__('admin.order_error'));
@@ -639,7 +636,7 @@ class OrderController extends BaseController
         if (!$company_id || !$address_id) {
             api_error(__('admin.missing_params'));
         }
-        $express_company = ExpressCompany::query()->select('title', 'code', 'param')->where('id', $company_id)->first();
+        $express_company = ExpressCompany::query()->select('title', 'code', 'param', 'type', 'weixin_code')->where('id', $company_id)->first();
         if (!$express_company) {
             api_error(__('admin.express_company_error'));
         }

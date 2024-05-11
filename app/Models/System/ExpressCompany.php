@@ -17,7 +17,7 @@ class ExpressCompany extends BaseModel
 {
     protected $table = 'express_company';
     protected $guarded = ['id'];
-    
+
     //状态
     const STATUS_OFF = 0;
     const STATUS_ON = 1;
@@ -26,6 +26,16 @@ class ExpressCompany extends BaseModel
         self::STATUS_ON => '正常',
     ];
 
-    const NOT_DELIVERY = 1;//无需物流的快递id
-
+    //快递类型
+    const TYPE_EXPRESS = 1;
+    const TYPE_LOCAL = 2;
+    const TYPE_VIRTUAL = 3;
+    const TYPE_SELF_PICKUP = 4;
+    const TYPE_DESC = [
+        self::TYPE_EXPRESS => '物流',
+        self::TYPE_LOCAL => '同城',
+        self::TYPE_VIRTUAL => '虚拟发货',
+        self::TYPE_SELF_PICKUP => '自提',
+    ];
+    
 }

@@ -11,6 +11,7 @@ namespace App\Services;
 use App\Jobs\OrderPayAfter;
 use App\Jobs\OrderReward;
 use App\Libs\Delivery;
+use App\Libs\Weixin\MiniProgram;
 use App\Models\Financial\Balance;
 use App\Models\Financial\BalanceDetail;
 use App\Models\Financial\SellerBalance;
@@ -33,6 +34,9 @@ use App\Models\Order\OrderLog;
 use App\Models\Order\Refund;
 use App\Models\Seller\Seller;
 use App\Models\System\ExpressCompany;
+use App\Models\System\Payment;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Facades\DB;
 
 class OrderService
@@ -374,7 +378,7 @@ class OrderService
      * @param array $member_data
      * @param int $user_type
      * @param string|null $note
-     * @return array|bool|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Translation\Translator|string|null
+     * @return array|bool|Application|Translator|string|null
      */
     public static function groupOrderCancel(array $order, array $member_data, int $user_type = 0, string|null $note = '')
     {
@@ -391,7 +395,7 @@ class OrderService
      * @param array $member_data
      * @param int $user_type
      * @param string|null $note
-     * @return array|bool|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Translation\Translator|string|null
+     * @return array|bool|Application|Translator|string|null
      */
     public static function cancel(array $order, array $member_data, int $user_type = 0, string|null $note = '')
     {
@@ -416,7 +420,7 @@ class OrderService
      * @param array $member_data
      * @param int $user_type
      * @param string|null $note
-     * @return array|bool|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Translation\Translator|string|null
+     * @return array|bool|Application|Translator|string|null
      */
     public static function cancelOrder(array $order, array $member_data, int $user_type = 0, string|null $note = '')
     {
@@ -467,7 +471,7 @@ class OrderService
      * @param array $user_data
      * @param int $user_type
      * @param string|null $note
-     * @return array|bool|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Translation\Translator|string|null
+     * @return array|bool|Application|Translator|string|null
      */
     public static function pay(array $order, array $user_data, int $user_type, string|null $note = '')
     {
@@ -501,14 +505,17 @@ class OrderService
      * @param int $user_type
      * @param string|null $note
      * @param array $param 其他参数，order_goods_id 发货订单商品，company_id快递公司id，code快递单号
-     * @return array|bool|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Translation\Translator|string|null
+     * @return array|bool|Application|Translator|string|null
      */
-    public static function delivery(array $order, array $user_data, int $user_type, string|null $note = '', array $param)
+    public static function delivery(array $order, array $user_data, int $user_type, string|null $note, array $param)
     {
         if (!self::isDelivery($order)) {
             return __('admin.order_status_error');
         }
-        $express_company = ExpressCompany::query()->select('title', 'code')->where('id', $param['company_id'])->first();
+        $express_company = ExpressCompany::query()->select('title', 'code', 'type', 'weixin_code')->where('id', $param['company_id'])->first();
+        if ($express_company['type'] == ExpressCompany::TYPE_EXPRESS && !$express_company['code']) {
+            return __('admin.delivery_code_error');
+        }
         $delivery_data = [
             'order_id' => $order['id'],
             'order_goods_id' => json_encode($param['order_goods_id']),
@@ -543,6 +550,11 @@ class OrderService
                 $delivery = new Delivery();
                 $delivery->subscribe($express_company['code'], $param['code']);
             }
+            //微信类的需要发货后推送
+            if ($order['payment_id'] == Payment::PAYMENT_WECHAT) {
+                $miniprogram = new MiniProgram();
+                $miniprogram->uploadShippingInfo($order, $express_company->toArray(), $param['code']);
+            }
             return true;
         } catch (\Exception $e) {
             return false;
@@ -555,7 +567,7 @@ class OrderService
      * @param array $user_data
      * @param int $user_type
      * @param string|null $note
-     * @return array|bool|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Translation\Translator|string|null
+     * @return array|bool|Application|Translator|string|null
      */
     public static function unDelivery(array $order, array $user_data, int $user_type = 0, string|null $note = '')
     {
@@ -590,7 +602,7 @@ class OrderService
      * @param array $member_data
      * @param int $user_type
      * @param string|null $note
-     * @return array|bool|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Translation\Translator|string|null
+     * @return array|bool|Application|Translator|string|null
      */
     public static function confirm(array $order, array $member_data, int $user_type = 0, string|null $note = '')
     {
@@ -622,7 +634,7 @@ class OrderService
      * @param array $member_data
      * @param int $user_type
      * @param string|null $note
-     * @return array|bool|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Translation\Translator|string|null
+     * @return array|bool|Application|Translator|string|null
      */
     public static function complete(array $order, array $member_data, int $user_type = 0, string|null $note = '')
     {
@@ -711,7 +723,7 @@ class OrderService
      * 订单商品评价
      * @param array $order
      * @param array $comment
-     * @return array|bool|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Translation\Translator|string|null
+     * @return array|bool|Application|Translator|string|null
      */
     public static function commentPut(array $order, array $comment)
     {
@@ -768,7 +780,7 @@ class OrderService
      * @param array $user_data
      * @param int $user_type
      * @param string|null $note
-     * @return array|bool|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Translation\Translator|string|null
+     * @return array|bool|Application|Translator|string|null
      */
     public static function updatePrice(array $order, float $discount_price, float $delivery_price_real, array $user_data, int $user_type, string|null $note = '')
     {
@@ -851,6 +863,11 @@ class OrderService
                 $template['order_delivery_id'] = $delivery_id;
                 OrderDeliveryTemplate::query()->create($template);
             });
+            //微信类的需要发货后推送
+            if ($order['payment_id'] == Payment::PAYMENT_WECHAT) {
+                $miniprogram = new MiniProgram();
+                $miniprogram->uploadShippingInfo($order, $express_company, $api_delivery_data['code']);
+            }
             return true;
         } catch (\Exception $e) {
             return false;

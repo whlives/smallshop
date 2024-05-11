@@ -110,7 +110,7 @@ class LoginController extends BaseController
         $admin_data = self::checkUsername();
         $res = $this->sms->captcha($admin_data['tel'], 'admin_login');
         if ($res === true) {
-            $mobile = substr($admin_data['tel'], 0, 3) . '****' . substr($admin_data['tel'], 7, 4);
+            $mobile = substr($admin_data['tel'], 0, 3) . '****' . substr($admin_data['tel'], -4, 4);
             return $this->success(['mobile' => $mobile]);
         } else {
             api_error($res);

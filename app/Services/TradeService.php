@@ -162,6 +162,7 @@ class TradeService
             'payment_id' => $notify_data['payment_id'],
             'payment_no' => $notify_data['payment_no'],
             'pay_total' => $notify_data['pay_total'],
+            'payment_user' => $notify_data['payment_user'] ?? '',
             'flag' => $flag,
             'pay_at' => get_date()
         ];

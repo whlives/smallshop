@@ -8,18 +8,26 @@
 
 namespace App\Http\Controllers\Admin\System;
 
+use App\Exceptions\ApiError;
 use App\Http\Controllers\Admin\BaseController;
+use App\Libs\Weixin\MiniProgram;
 use App\Models\System\ExpressCompany;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class ExpressCompanyController extends BaseController
 {
     /**
      * 列表获取
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function index(Request $request)
     {
@@ -28,7 +36,7 @@ class ExpressCompanyController extends BaseController
         $where = [];
         $title = $request->input('title');
         if ($title) $where[] = ['title', 'like', '%' . $title . '%'];
-        $query = ExpressCompany::query()->select('id', 'title', 'code', 'position', 'created_at', 'status')
+        $query = ExpressCompany::query()->select('id', 'title', 'code', 'type', 'weixin_code', 'position', 'created_at', 'status')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -37,6 +45,9 @@ class ExpressCompanyController extends BaseController
             ->get();
         if ($res_list->isEmpty()) {
             api_error(__('admin.content_is_empty'));
+        }
+        foreach ($res_list as &$value) {
+            $value['type'] = ExpressCompany::TYPE_DESC[$value['type']];
         }
         $return = [
             'lists' => $res_list,
@@ -48,8 +59,8 @@ class ExpressCompanyController extends BaseController
     /**
      * 根据id获取信息
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function detail(Request $request)
     {
@@ -75,8 +86,8 @@ class ExpressCompanyController extends BaseController
     /**
      * 添加编辑
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      */
     public function save(Request $request)
     {
@@ -85,11 +96,16 @@ class ExpressCompanyController extends BaseController
         $validator = Validator::make($request->all(), [
             'title' => 'required',
             'code' => 'required',
+            'type' => 'required|numeric',
+            'weixin_code' => 'required',
             'param' => 'required',
             'position' => 'required|numeric',
         ], [
             'title.required' => '标题不能为空',
             'code.required' => '快递编码不能为空',
+            'type.required' => '类型不能为空',
+            'type.numeric' => '类型只能是数字',
+            'weixin_code.required' => '微信编码不能为空',
             'param.required' => '快递参数不能为空',
             'position.required' => '排序不能为空',
             'position.numeric' => '排序只能是数字',
@@ -99,7 +115,7 @@ class ExpressCompanyController extends BaseController
             api_error(current($error));
         }
         $save_data = [];
-        foreach ($request->only(['title', 'code', 'position']) as $key => $value) {
+        foreach ($request->only(['title', 'code', 'type', 'weixin_code', 'position']) as $key => $value) {
             $save_data[$key] = $value;
         }
         $param = $request->input('param');
@@ -127,8 +143,8 @@ class ExpressCompanyController extends BaseController
     /**
      * 修改状态
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      */
     public function status(Request $request)
     {
@@ -148,13 +164,13 @@ class ExpressCompanyController extends BaseController
     /**
      * 删除数据
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      */
     public function delete(Request $request)
     {
         $ids = $this->checkBatchId();
-        $res = ExpressCompany::query()->whereIn('id', $ids)->where([['id', '<>', ExpressCompany::NOT_DELIVERY]])->delete();
+        $res = ExpressCompany::query()->whereIn('id', $ids)->delete();
         if ($res) {
             return $this->success();
         } else {
@@ -165,7 +181,7 @@ class ExpressCompanyController extends BaseController
     /**
      * 选择列表
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function select(Request $request)
     {
@@ -177,5 +193,37 @@ class ExpressCompanyController extends BaseController
             ->orderBy('id', 'desc')
             ->get();
         return $this->success($res_list);
+    }
+
+    /**
+     * 类型
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function type(Request $request)
+    {
+        return $this->success(ExpressCompany::TYPE_DESC);
+    }
+
+    /**
+     * 获取快递公司
+     * @param Request $request
+     * @return JsonResponse|void
+     * @throws ApiError
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function weixinExpress(Request $request)
+    {
+        $mini_program = new MiniProgram();
+        $res = $mini_program->getExpress();
+        if (is_array($res)) {
+            return $this->success($res);
+        } else {
+            api_error(__('admin.fail'));
+        }
     }
 }

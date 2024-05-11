@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Seller\Order;
 
+use App\Exceptions\ApiError;
 use App\Http\Controllers\Seller\BaseController;
 use App\Libs\Delivery;
 use App\Models\Areas;
@@ -41,7 +42,7 @@ class OrderController extends BaseController
      * 列表获取
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function index(Request $request)
     {
@@ -146,7 +147,7 @@ class OrderController extends BaseController
      * 订单详情
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function detail(Request $request)
     {
@@ -194,7 +195,7 @@ class OrderController extends BaseController
      * 获取发货信息
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function getDelivery(Request $request)
     {
@@ -228,7 +229,7 @@ class OrderController extends BaseController
      * 获取日志信息
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function getLog(Request $request)
     {
@@ -259,7 +260,7 @@ class OrderController extends BaseController
      * 获取售后信息
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function getRefund(Request $request)
     {
@@ -305,7 +306,7 @@ class OrderController extends BaseController
      * 获取价格
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function getPrice(Request $request)
     {
@@ -324,14 +325,14 @@ class OrderController extends BaseController
      * 修改价格
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function updatePrice(Request $request)
     {
         $id = (int)$request->input('id');
         $discount_price = $request->input('discount_price');
         $delivery_price_real = $request->input('delivery_price_real');
-        if (!$id || !check_price($discount_price) || !check_price($delivery_price_real)) {
+        if (!$id || !check_price(abs($discount_price)) || !check_price($delivery_price_real)) {
             api_error(__('admin.missing_params'));
         }
         $order = self::checkOrder($id);
@@ -349,7 +350,7 @@ class OrderController extends BaseController
      * 获取地址
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function getAddress(Request $request)
     {
@@ -378,7 +379,7 @@ class OrderController extends BaseController
      * 修改地址
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function updateAddress(Request $request)
     {
@@ -417,7 +418,7 @@ class OrderController extends BaseController
      * 后台订单发货
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function delivery(Request $request)
     {
@@ -428,9 +429,6 @@ class OrderController extends BaseController
         $note = $request->input('note');
         if (!$id || !$order_goods_id || !$company_id) {
             api_error(__('admin.missing_params'));
-        }
-        if ($company_id != ExpressCompany::NOT_DELIVERY && !$code) {
-            api_error(__('admin.delivery_code_error'));
         }
         $order = self::checkOrder($id);
         $param = [
@@ -452,7 +450,7 @@ class OrderController extends BaseController
      * 批量电子面单发货
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function batchDeliveryList(Request $request)
     {
@@ -483,7 +481,7 @@ class OrderController extends BaseController
      * 批量电子面单发货提交
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function batchDeliverySubmit(Request $request)
     {
@@ -540,7 +538,7 @@ class OrderController extends BaseController
      * 批量打印发货单
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function printGoods(Request $request)
     {
@@ -570,7 +568,7 @@ class OrderController extends BaseController
      * 批量打印快递单
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function printDelivery(Request $request)
     {
@@ -591,8 +589,8 @@ class OrderController extends BaseController
     /**
      * 验证订单
      * @param int $order_id
-     * @return void
-     * @throws \App\Exceptions\ApiError
+     * @return array
+     * @throws ApiError
      */
     private function checkOrder(int $order_id)
     {

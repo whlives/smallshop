@@ -8,11 +8,21 @@
 
 namespace App\Libs\Weixin;
 
+use App\Exceptions\ApiError;
 use App\Libs\Aliyun\Oss;
 use App\Libs\Upload;
+use App\Models\Financial\Trade;
+use App\Models\System\ExpressCompany;
+use App\Models\System\Payment;
+use EasyWeChat\Kernel\Exceptions\BadResponseException;
 use EasyWeChat\MiniApp\Application;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class MiniProgram
 {
@@ -37,12 +47,12 @@ class MiniProgram
      * 获取session_key
      * @param string $code
      * @return array|false|mixed|void
-     * @throws \App\Exceptions\ApiError
-     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     * @throws ApiError
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function sessionKey(string $code)
     {
@@ -69,12 +79,12 @@ class MiniProgram
      * 获取手机号
      * @param string $code
      * @return mixed
-     * @throws \EasyWeChat\Kernel\Exceptions\BadResponseException
-     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     * @throws BadResponseException
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function getPhoneNumber(string $code)
     {
@@ -95,12 +105,12 @@ class MiniProgram
      * @param string $iv
      * @param string $encrypt_data
      * @return array|void
-     * @throws \App\Exceptions\ApiError
-     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     * @throws ApiError
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public function decryptData(string $code, string $iv, string $encrypt_data)
     {
@@ -141,7 +151,7 @@ class MiniProgram
                 //判断是否是access_token异常并刷新
                 $error = $response->toArray(false);
                 if ($error['errcode'] == 40001) {
-                    $this->app->getAccessToken()->refresh();
+                    AccessToken::refreshAccessToken($this->config);//刷新access_token
                 }
                 return false;
             }
@@ -184,5 +194,125 @@ class MiniProgram
     public function createShareQrcode(array $param)
     {
         return self::createQrcode($param, 'pages/homepage/goods');
+    }
+
+    /**
+     * 发货信息录入
+     * @param array $order
+     * @param array $express_company
+     * @param string|null $delivery_code
+     * @return mixed|true
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function uploadShippingInfo(array $order, array $express_company, string|null $delivery_code = '')
+    {
+        try {
+            $trade_data = Trade::query()->where('id', $order['trade_id'])->whereNull('send_at')->first('payment_user');
+            //没有发货的微信订单才处理
+            if ($trade_data['send_at'] || $trade_data['payment_id'] != Payment::PAYMENT_WECHAT) return true;
+            $data = [
+                'order_key' => [
+                    'order_number_type' => 2,
+                    'transaction_id' => $order['payment_no'],
+                ],
+                'logistics_type' => $express_company['type'],
+                'delivery_mode' => 'UNIFIED_DELIVERY',
+                'upload_time' => date('c', time()),
+            ];
+            if ($express_company['type'] == ExpressCompany::TYPE_EXPRESS) {
+                $shipping_list = [
+                    'tracking_no' => $delivery_code,
+                    'express_company' => $express_company['weixin_code'],
+                    'item_desc' => '您购买的订单' . $order['order_no'],
+                    'contact' => [
+                        'receiver_contact' => $order['tel'] ? substr($order['tel'], 0, 3) . '****' . substr($order['tel'], -4, 4) : '133****1234',
+                    ]
+                ];
+            } else {
+                $shipping_list = [
+                    'item_desc' => '您购买的订单' . $order['order_no'],
+                ];
+            }
+            $data['shipping_list'] = [$shipping_list];
+            $data['payer']['openid'] = $trade_data['payment_user'];
+            $response = $this->app->getClient()->postJson('wxa/sec/order/upload_shipping_info', $data);
+            $res = $response->toArray(false);
+            if (isset($res['errcode']) && $res['errcode'] == 0) {
+                Trade::query()->where('id', $order['trade_id'])->update(['send_at' => get_date()]);
+                return true;
+            } else {
+                if ($res['errcode'] == 40001) {
+                    AccessToken::refreshAccessToken($this->config);//刷新access_token
+                }
+                return $res['errmsg'];
+            }
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * 查询发货信息
+     * @param array $order
+     * @return mixed|true
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function getShippingInfo(array $order)
+    {
+        try {
+            $data = [
+                'transaction_id' => $order['payment_no'],
+            ];
+            $response = $this->app->getClient()->postJson('wxa/sec/order/get_order', $data);
+            $res = $response->toArray(false);
+            if (isset($res['errcode']) && $res['errcode'] == 0) {
+                return true;
+            } else {
+                if ($res['errcode'] == 40001) {
+                    AccessToken::refreshAccessToken($this->config);//刷新access_token
+                }
+                return $res['errmsg'];
+            }
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * 查询快递公司
+     * @return array|false|mixed|mixed[]
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function getExpress()
+    {
+        try {
+            $data = [
+                'errcode' => 0
+            ];
+            $response = $this->app->getClient()->postJson('cgi-bin/express/delivery/open_msg/get_delivery_list', $data);
+            $res = $response->toArray(false);
+            if (isset($res['errcode']) && $res['errcode'] == 0) {
+                return $res;
+            } else {
+                if ($res['errcode'] == 40001) {
+                    AccessToken::refreshAccessToken($this->config);//刷新access_token
+                }
+                return $res['errmsg'];
+            }
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 }

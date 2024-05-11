@@ -167,7 +167,8 @@ class Wechat
                     'trade_no' => $message['out_trade_no'],
                     'pay_total' => format_price(round($message['amount']['total'] / 100, 2)),
                     'payment_no' => $message['transaction_id'],
-                    'payment_id' => Payment::PAYMENT_WECHAT
+                    'payment_id' => Payment::PAYMENT_WECHAT,
+                    'payment_user' => $message['payer']['openid'],
                 ];
                 $res = TradeService::updatePayStatus($return);
                 if ($res) {

@@ -91,7 +91,7 @@ class OrderPayAfter implements ShouldQueue
         if ($res) {
             $param = [
                 'order_goods_id' => $order_goods_id,
-                'company_id' => ExpressCompany::NOT_DELIVERY,
+                'company_id' => ExpressCompany::query()->where(['type' => ExpressCompany::TYPE_VIRTUAL])->orderBy('id')->value('id'),
                 'code' => ''
             ];
             OrderService::delivery($order, $user_data, OrderLog::USER_TYPE_SYSTEM, '系统自动发货', $param);

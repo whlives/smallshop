@@ -1,5 +1,6 @@
 <form class="layui-form" lay-filter="form" id="form">
     <blockquote class="layui-elem-quote"><a href="https://api.kuaidi100.com/document/5f0ffb5ebc8da837cbd8aefc#section_1" target="_blank">快递100快递公司编码 下载</a></blockquote>
+    <blockquote class="layui-elem-quote"><a href="javascript:void(0)" class="weixin_code">查询微信编码</a></blockquote>
     <div class="layui-form-item">
         <label class="layui-form-label label-required-next">名称</label>
         <div class="layui-input-block">
@@ -13,6 +14,17 @@
         </div>
     </div>
     <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">类型</label>
+        <div class="layui-input-block">
+            <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/system/express_company/type" lay-done="layui.form.render();">
+                {{#  layui.each(d.data, function(index, item){ }}
+                <input type="radio" name="type" value="{{index}}" title="{{item}}" {{# if(index==1 ){ }}checked{{# } }}>
+                {{#  }); }}
+            </script>
+
+        </div>
+    </div>
+    <div class="layui-form-item">
         <label class="layui-form-label">快递参数</label>
         <div class="layui-input-block">
             <textarea name="param" class="layui-textarea" style="height: 200px;" lay-verify="required" lay-reqText="快递参数不能为空">partnerId:
@@ -23,6 +35,12 @@ net:
 code:
 checkMan:
 tbNet:</textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label label-required-next">微信编码</label>
+        <div class="layui-input-block">
+            <input type="text" name="weixin_code" lay-verify="required" lay-reqText="微信编码不能为空" autocomplete="off" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
@@ -40,3 +58,42 @@ tbNet:</textarea>
         </div>
     </div>
 </form>
+<script type="text/html" id="weixin_tpl">
+    <div class="layui-card-body">
+        <table class="layui-table">
+            {{# layui.each(d.delivery_list, function(index, item){ }}
+            <tr>
+                <td>
+                    快递名称:{{ item.delivery_name }} 快递编号:{{ item.delivery_id }}
+                </td>
+            </tr>
+            {{# }); }}
+        </table>
+    </div>
+</script>
+<script type="text/html" template lay-done="layui.data.sendParams(d.params);"></script>
+<script>
+    layui.data.sendParams = function (params) {
+        layui.use(['common'], function () {
+            let common = layui.common,
+                laytpl = layui.laytpl,
+                $ = layui.$,
+                model_url = '/system/express_company';
+
+            $(".weixin_code").click(function () {
+                common.ajax(model_url + '/weixin_express', {}, function (data) {
+                    laytpl($('#weixin_tpl').html()).render(data.data, function (html) {
+                        console.log(html);
+                        layer.open({
+                            type: 1,
+                            skin: 'layui-layer-rim', //加上边框
+                            area: ['500px', '600px'], //宽高
+                            content: html
+                        });
+                    });
+
+                });
+            })
+        });
+    }
+</script>
