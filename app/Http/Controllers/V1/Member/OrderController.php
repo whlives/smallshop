@@ -53,7 +53,7 @@ class OrderController extends BaseController
         if ($is_comment) {
             $where_in = [Order::STATUS_DONE, Order::STATUS_COMPLETE];
         }
-        $query = Order::query()->select('id', 'order_no', 'seller_id', 'product_num', 'subtotal', 'status', 'delivery_price_real', 'comment_at')
+        $query = Order::query()->select('id', 'order_no', 'seller_id', 'product_num', 'subtotal', 'status', 'delivery_price_real', 'payment_id', 'payment_no', 'comment_at')
             ->where($where);
         if (isset($where_in)) {
             $query->whereIn('status', $where_in);
@@ -91,6 +91,8 @@ class OrderController extends BaseController
                 'delivery_price_real' => $value['delivery_price_real'],
                 'status' => $value['status'],
                 'status_text' => Order::STATUS_MEMBER_DESC[$value['status']],
+                'payment_id' => $value['payment_id'],
+                'payment_no' => $value['payment_no'],
                 'button' => OrderService::orderButton($value)
             ];
             $data_list[] = $_item;
@@ -140,6 +142,8 @@ class OrderController extends BaseController
             'discount_price' => $order_info['discount_price'],
             'promotion_price' => $order_info['promotion_price'],
             'subtotal' => $order_info['subtotal'],
+            'payment_id' => $order_info['payment_id'],
+            'payment_no' => $order_info['payment_no'],
             'note' => $order_info['note'],
             'created_at' => $order_info['created_at'],
             'pay_at' => $order_info['pay_at'],

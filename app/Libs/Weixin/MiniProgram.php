@@ -301,7 +301,9 @@ class MiniProgram
         $trade_data = Trade::query()->where('id', $order['trade_id'])->first();
         if (!$trade_data['send_at']) return true;
         $res = self::getShippingInfo($order);
-        if ($res['order_state'] != 2) return false;
+        if (!is_array($res)) return false;
+        if (isset($res['order_state']) && $res['order_state'] != 2) return false;
+        if (isset($res['shipping']) && $res['shipping']['delivery_mode'] != ExpressCompany::TYPE_EXPRESS) return false;
         try {
             $data = [
                 'transaction_id' => $order['payment_no'],

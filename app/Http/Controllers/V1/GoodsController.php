@@ -69,9 +69,9 @@ class GoodsController extends BaseController
             api_error(__('api.search_goods_max_page'));
         }
         //关键字、分类、必须有一个
-        if (!$keyword && !$category_id) {
+        /*if (!$keyword && !$category_id) {
             api_error(__('api.search_key_and_category_error'));
-        }
+        }*/
         //属性组装
         $where_attr = [];
         if ($attribute) {

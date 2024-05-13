@@ -40,10 +40,8 @@
                         </div>
                     </script>
                     <script type="text/html" id="action_button">
-                        {{# if(d.id!= 1){ }}
                         <a class="layui-btn layui-btn-xs layui-hide" lay-event="edit">编辑</a>
                         <a class="layui-btn layui-btn-danger layui-btn-xs layui-hide" lay-event="delete">删除</a>
-                        {{# } }}
                     </script>
                     <script type="text/html" id="status_tmp">
                         <input type="checkbox" value="{{d.id}}" lay-skin="switch" title="正常|锁定" lay-filter="status_btn" {{# if(d.status== 1){ }}checked{{# } }}>
