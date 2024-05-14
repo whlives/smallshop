@@ -35,7 +35,7 @@ Route::prefix('goods')->controller('GoodsController')->group(function () {
     Route::get('category_all', 'categoryAll');
     Route::get('search', 'search');
     Route::get('detail/{id}', 'detail');
-    Route::get('evaluation/{id}/{page?}/{limit?}', 'evaluation');
+    Route::get('comment/{id}/{page?}/{limit?}', 'comment');
 });
 //拼团
 Route::prefix('promo')->controller('PromoController')->group(function () {

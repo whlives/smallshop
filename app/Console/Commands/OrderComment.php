@@ -44,6 +44,8 @@ class OrderComment extends Command
         //高访问的时候关闭
         $high_qps = get_custom_config('high_qps');
         if ($high_qps) return false;
+        $order_comment_time = get_custom_config('order_comment_time');
+        if (!$order_comment_time) return false;
         LogService::putLog('crontab', '订单自动评价');
         $page = 1;
         $limit = 10;
@@ -52,6 +54,7 @@ class OrderComment extends Command
             $res_list = Order::query()->select('id', 'm_id', 'status', 'comment_at')
                 ->whereNull('comment_at')
                 ->wherein('status', [Order::STATUS_DONE, Order::STATUS_COMPLETE])
+                ->where([['done_at', '<', get_date(time() - $order_comment_time)]])
                 ->offset($offset)
                 ->limit($limit)
                 ->orderBy('id', 'asc')->get();

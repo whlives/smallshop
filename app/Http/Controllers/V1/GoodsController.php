@@ -221,7 +221,7 @@ class GoodsController extends BaseController
      * @return JsonResponse
      * @throws ApiError
      */
-    public function evaluation(Request $request)
+    public function comment(Request $request)
     {
         $id = (int)$request->route('id');
         if (!$id) {
@@ -264,7 +264,6 @@ class GoodsController extends BaseController
                 }
                 foreach ($res_list as $value) {
                     $_item = $value;
-                    $_item['spec_value'] = GoodsService::formatSpecValue($value['spec_value']);
                     $_item['nickname'] = $member[$value['m_id']]['nickname'] ?? '';
                     $_item['headimg'] = $member[$value['m_id']]['headimg'] ?? '';
                     $_item['image'] = $image_url[$value['id']] ?? [];

@@ -75,19 +75,23 @@ class FavoriteController extends BaseController
         $res_list = $query->orderBy('id', 'desc')
             ->offset($offset)
             ->limit($limit)
-            ->pluck('object_id');
+            ->pluck('object_id')->toArray();
         if (!$res_list) {
             api_error(__('api.content_is_empty'));
         }
         switch ($type) {
             case Favorite::TYPE_GOODS:
-                $object_res = Goods::query()->select('id', 'title', 'image')->whereIn('id', $res_list->toArray())->get();
+                $object_res = Goods::query()
+                    ->select('id', 'title', 'image', 'sell_price as show_price', 'market_price as line_price', 'sale')
+                    ->whereIn('id', $res_list)
+                    ->leftJoin('goods_num', 'goods.id', '=', 'goods_num.goods_id')
+                    ->get();
                 break;
             case Favorite::TYPE_SELLER:
-                $object_res = Seller::query()->select('id', 'title', 'image')->whereIn('id', $res_list->toArray())->get();
+                $object_res = Seller::query()->select('id', 'title', 'image')->whereIn('id', $res_list)->get();
                 break;
             case Favorite::TYPE_ARTICLE:
-                $object_res = Article::query()->select('id', 'title', 'image')->whereIn('id', $res_list->toArray())->get();
+                $object_res = Article::query()->select('id', 'title', 'image')->whereIn('id', $res_list)->get();
                 break;
         }
         if ($object_res->isEmpty()) {
