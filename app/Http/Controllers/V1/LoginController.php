@@ -94,7 +94,7 @@ class LoginController extends BaseController
                 'union_id' => $union_id,
                 'openid' => $auth_info['openid'],
                 'type' => MemberAuth::TYPE_WECHAT,
-                'nickname' => $auth_info['nickname'],
+                'nickname' => mb_substr($auth_info['nickname'], 0, 50),
                 'headimg' => $auth_info['headimgurl']
             ];
             $res = LoginService::authCheck($user_data);
@@ -218,7 +218,7 @@ class LoginController extends BaseController
         }
         $member_data = [
             'headimg' => $headimg,
-            'nickname' => $nickname
+            'nickname' => mb_substr($nickname, 0, 50)
         ];
         $res = LoginService::bindMobile($mobile, $member_data);
         return $this->success($res);

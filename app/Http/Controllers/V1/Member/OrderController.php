@@ -318,7 +318,7 @@ class OrderController extends BaseController
                     'content' => $value['content'] ?? '好评',
                     'image' => isset($value['image']) ? explode(',', $value['image']) : [],
                     'is_image' => Comment::IS_IMAGE_FALSE,
-                    'video' => [],
+                    'video' => isset($value['image']) ? explode(',', $value['image']) : [],
                     'is_video' => Comment::IS_VIDEO_FALSE
                 ];
                 if ($_item['image']) $_item['is_image'] = Comment::IS_IMAGE_TRUE;

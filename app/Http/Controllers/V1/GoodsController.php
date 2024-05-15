@@ -268,6 +268,7 @@ class GoodsController extends BaseController
                     $_item['headimg'] = $member[$value['m_id']]['headimg'] ?? '';
                     $_item['image'] = $image_url[$value['id']] ?? [];
                     $_item['video'] = $video_url[$value['id']] ?? [];
+                    $_item['created_at'] = substr($_item['created_at'], 0, 10);
                     $data_list[] = $_item;
                 }
             }
