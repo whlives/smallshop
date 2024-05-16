@@ -32,20 +32,24 @@ class Balance
      */
     public function getPayData(array $pay_info)
     {
-        Member::checkPayPassword($pay_info['m_id']);//判断支付密码
-        //开始扣除余额
-        $res_balance = \App\Models\Financial\Balance::updateAmount($pay_info['m_id'], -$pay_info['subtotal'], BalanceDetail::EVENT_ORDER_PAY, $pay_info['trade_no']);
-        if ($res_balance['status']) {
-            //支付成功修改交易单状态
-            return [
-                'trade_no' => $pay_info['trade_no'],
-                'pay_total' => $pay_info['subtotal'],
-                'payment_no' => $pay_info['trade_no'],
-                'payment_id' => Payment::PAYMENT_BALANCE,
-                'is_pay' => 0
-            ];
-        } else {
-            return $res_balance['message'];
+        try {
+            Member::checkPayPassword($pay_info['m_id']);//判断支付密码
+            //开始扣除余额
+            $res_balance = \App\Models\Financial\Balance::updateAmount($pay_info['m_id'], -$pay_info['subtotal'], BalanceDetail::EVENT_ORDER_PAY, $pay_info['trade_no']);
+            if ($res_balance['status']) {
+                //支付成功修改交易单状态
+                return [
+                    'trade_no' => $pay_info['trade_no'],
+                    'pay_total' => $pay_info['subtotal'],
+                    'payment_no' => $pay_info['trade_no'],
+                    'payment_id' => Payment::PAYMENT_BALANCE,
+                    'is_pay' => 0
+                ];
+            } else {
+                return $res_balance['message'];
+            }
+        } catch (\Exception $e) {
+            return '支付请求失败';
         }
     }
 
@@ -56,12 +60,16 @@ class Balance
      */
     public function refund(array $refund_info)
     {
-        //退款单号、退款金额
-        $res_balance = \App\Models\Financial\Balance::updateAmount($refund_info['m_id'], $refund_info['amount'], BalanceDetail::EVENT_ORDER_REFUND, $refund_info['refund_no']);
-        if ($res_balance['status']) {
-            return true;
-        } else {
-            return $res_balance['message'];
+        try {
+            //退款单号、退款金额
+            $res_balance = \App\Models\Financial\Balance::updateAmount($refund_info['m_id'], $refund_info['amount'], BalanceDetail::EVENT_ORDER_REFUND, $refund_info['refund_no']);
+            if ($res_balance['status']) {
+                return true;
+            } else {
+                return $res_balance['message'];
+            }
+        } catch (\Exception $e) {
+            return '退款失败';
         }
     }
 

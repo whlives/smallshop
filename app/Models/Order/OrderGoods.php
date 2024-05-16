@@ -31,6 +31,13 @@ class OrderGoods extends BaseModel
         self::REFUND_DONE => '售后完成',
         self::REFUND_CLOSE => '售后关闭'
     ];
+    const REFUND_MEMBER_DESC = [
+        self::REFUND_NO => '申请售后',
+        self::REFUND_APPLY => '待审核',
+        self::REFUND_ONGOING => '售后中',
+        self::REFUND_DONE => '售后完成',
+        self::REFUND_CLOSE => '申请售后'
+    ];
 
     //发货状态
     const DELIVERY_OFF = 0;
@@ -102,6 +109,23 @@ class OrderGoods extends BaseModel
             }
         }
         return $goods;
+    }
+
+    /**
+     * 验证订单是否全部发货
+     * @param int $order_id
+     * @return bool
+     */
+    public static function checkOrderDelivery(int $order_id)
+    {
+        //查询正在售后的订单
+        $refund_count = OrderGoods::where('order_id', $order_id)->whereIn('refund', [OrderGoods::REFUND_APPLY, OrderGoods::REFUND_ONGOING])->count();
+        //查询是否还有未发货的商品(没有售后或者售后取消的)
+        $not_delivery_count = OrderGoods::where('order_id', $order_id)->whereIn('refund', [OrderGoods::REFUND_NO, OrderGoods::REFUND_CLOSE])->where('delivery', OrderGoods::DELIVERY_OFF)->count();
+        if (!$refund_count && !$not_delivery_count) {
+            return true;
+        }
+        return false;
     }
 
 }

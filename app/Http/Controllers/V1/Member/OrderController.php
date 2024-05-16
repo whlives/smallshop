@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\V1\Member;
 
+use App\Exceptions\ApiError;
 use App\Http\Controllers\V1\BaseController;
 use App\Models\Goods\Comment;
 use App\Models\Member\Member;
@@ -17,6 +18,7 @@ use App\Models\Order\OrderDelivery;
 use App\Models\Order\OrderGoods;
 use App\Models\Seller\Seller;
 use App\Services\OrderService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class OrderController extends BaseController
@@ -31,8 +33,8 @@ class OrderController extends BaseController
     /**
      * 列表
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function index(Request $request)
     {
@@ -107,8 +109,8 @@ class OrderController extends BaseController
     /**
      * 详情
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function detail(Request $request)
     {
@@ -125,8 +127,8 @@ class OrderController extends BaseController
         $order_goods = [];
         foreach ($order_goods_res->toArray() as $value) {
             $_item = $value;
-            $_item['refund_text'] = OrderGoods::REFUND_DESC[$value['refund']];
-            $_item['refund_button'] = OrderService::isRefund($order_info, $value) ? 1 : 0;
+            $_item['refund_text'] = OrderGoods::REFUND_MEMBER_DESC[$value['refund']];
+            $_item['refund_button'] = OrderService::showRefundButton($order_info) ? 1 : 0;
             $order_goods[] = $_item;
         }
         $seller = Seller::query()->select('id', 'title', 'image')->where('id', $order_info['seller_id'])->first();
@@ -149,12 +151,14 @@ class OrderController extends BaseController
             'pay_at' => $order_info['pay_at'],
             'send_at' => $order_info['send_at'],
             'done_at' => $order_info['done_at'],
+            'qrcode' => '',
         ];
         $return = [
             'order' => $order,
             'goods' => $order_goods,
             'seller' => $seller,
-            'button' => OrderService::orderButton($order_info)
+            'button' => OrderService::orderButton($order_info),
+            'delivery' => OrderDelivery::deliveryInfo($order_info),
         ];
         return $this->success($return);
     }
@@ -162,8 +166,8 @@ class OrderController extends BaseController
     /**
      * 取消订单
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      */
     public function cancel(Request $request)
     {
@@ -185,8 +189,8 @@ class OrderController extends BaseController
     /**
      * 确认订单
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      */
     public function confirm(Request $request)
     {
@@ -209,8 +213,8 @@ class OrderController extends BaseController
     /**
      * 物流轨迹
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function delivery(Request $request)
     {
@@ -257,8 +261,8 @@ class OrderController extends BaseController
     /**
      * 获取评论商品信息
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function comment(Request $request)
     {
@@ -281,8 +285,8 @@ class OrderController extends BaseController
     /**
      * 提交商品评论信息
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function commentPut(Request $request)
     {
@@ -342,8 +346,8 @@ class OrderController extends BaseController
     /**
      * 删除订单
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      */
     public function delete(Request $request)
     {

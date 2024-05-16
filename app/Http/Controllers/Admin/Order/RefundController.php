@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Admin\Order;
 
+use App\Exceptions\ApiError;
 use App\Http\Controllers\Admin\BaseController;
 use App\Models\Member\Member;
 use App\Models\Order\Order;
@@ -33,7 +34,7 @@ class RefundController extends BaseController
      * 列表获取
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function index(Request $request)
     {
@@ -123,7 +124,7 @@ class RefundController extends BaseController
      * 售后详情
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function detail(Request $request)
     {
@@ -168,7 +169,7 @@ class RefundController extends BaseController
      * 审核同意
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function audit(Request $request)
     {
@@ -206,7 +207,7 @@ class RefundController extends BaseController
      * 审核拒绝
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function refused(Request $request)
     {
@@ -230,7 +231,7 @@ class RefundController extends BaseController
      * 确认收货
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function confirmGoods(Request $request)
     {
@@ -254,7 +255,7 @@ class RefundController extends BaseController
      * 拒绝收货
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function refusedGoods(Request $request)
     {
@@ -278,7 +279,7 @@ class RefundController extends BaseController
      * 发货
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function send(Request $request)
     {
@@ -312,7 +313,7 @@ class RefundController extends BaseController
      * 确认打款
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function pay(Request $request)
     {
@@ -325,7 +326,7 @@ class RefundController extends BaseController
         $refund = self::checkRefund($id);
         if ($type == 'original_road_pay') {
             $original_road = true;
-        } elseif ($type == 'offline_pay') {
+        } else {
             $original_road = false;
         }
         $res = RefundService::sellerPay($refund, $this->user_data, RefundLog::USER_TYPE_ADMIN, $note, $original_road);
@@ -341,8 +342,8 @@ class RefundController extends BaseController
     /**
      * 验证订单
      * @param int $id
-     * @return void
-     * @throws \App\Exceptions\ApiError
+     * @return array
+     * @throws ApiError
      */
     private function checkRefund(int $id)
     {

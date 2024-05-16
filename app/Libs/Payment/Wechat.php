@@ -8,11 +8,16 @@
 
 namespace App\Libs\Payment;
 
+use App\Exceptions\ApiError;
 use App\Models\System\Payment;
 use App\Services\LogService;
 use App\Services\TokenService;
 use App\Services\TradeService;
+use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
+use EasyWeChat\Kernel\Exceptions\InvalidConfigException;
+use EasyWeChat\Kernel\Exceptions\RuntimeException;
 use EasyWeChat\Pay\Application;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * 微信支付
@@ -51,65 +56,69 @@ class Wechat
     /**
      * 获取支付信息
      * @param array $pay_info
-     * @return array|mixed|mixed[]
-     * @throws \App\Exceptions\ApiError
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @return array|mixed
+     * @throws ApiError
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
      */
     public function getPayData(array $pay_info)
     {
-        $post_data = [
-            'mchid' => $this->config['mch_id'],
-            'out_trade_no' => $pay_info['trade_no'],
-            'appid' => $this->appid,
-            'description' => $pay_info['title'],
-            'notify_url' => $this->notify_url,
-            'amount' => [
-                'total' => intval($pay_info['subtotal'] * 100),
-                'currency' => "CNY"
-            ],
-        ];
-        if (in_array($this->platform, ['mp', 'wechat'])) {
-            //获取openid，在登陆的时候已经存到token
-            $token_service = new TokenService();
-            $token_data = $token_service->getToken();
-            if (!$token_data || !$token_data['openid']) {
-                api_error(__('api.payment_openid_error'));
+        try {
+            $post_data = [
+                'mchid' => $this->config['mch_id'],
+                'out_trade_no' => $pay_info['trade_no'],
+                'appid' => $this->appid,
+                'description' => $pay_info['title'],
+                'notify_url' => $this->notify_url,
+                'amount' => [
+                    'total' => intval($pay_info['subtotal'] * 100),
+                    'currency' => "CNY"
+                ],
+            ];
+            if (in_array($this->platform, ['mp', 'wechat'])) {
+                //获取openid，在登陆的时候已经存到token
+                $token_service = new TokenService();
+                $token_data = $token_service->getToken();
+                if (!$token_data || !$token_data['openid']) {
+                    api_error(__('api.payment_openid_error'));
+                }
+                $trade_type = 'jsapi';
+                $post_data['payer']['openid'] = $token_data['openid'];
+            } elseif ($this->platform == 'web') {
+                $trade_type = 'native';
+            } elseif ($this->platform == 'h5') {
+                $trade_type = 'h5';
+            } else {
+                $trade_type = 'app';
             }
-            $trade_type = 'jsapi';
-            $post_data['payer']['openid'] = $token_data['openid'];
-        } elseif ($this->platform == 'web') {
-            $trade_type = 'native';
-        } elseif ($this->platform == 'h5') {
-            $trade_type = 'h5';
-        } else {
-            $trade_type = 'app';
-        }
-        $response = $this->app->getClient()->postJson('v3/pay/transactions/' . $trade_type, $post_data);
-        $res = $response->toArray(false);
-        if (is_array($res) && isset($res['prepay_id'])) {
-            $return_data = [];
-            $utils = $this->app->getUtils();
-            switch ($this->platform) {
-                case 'mp':
-                    $return_data = $utils->buildBridgeConfig($res['prepay_id'], $this->appid, 'RSA');
-                    break;
-                case 'wechat':
-                    $return_data = $utils->buildMiniAppConfig($res['prepay_id'], $this->appid, 'RSA');
-                    break;
-                case 'web':
-                    $return_data['code_url'] = $res['code_url'];
-                    break;
-                case 'h5':
-                    $return_data['h5_url'] = $res['h5_url'];
-                    break;
-                default:
-                    $return_data = $utils->buildAppConfig($res['prepay_id'], $this->appid);
-                    break;
+            $response = $this->app->getClient()->postJson('v3/pay/transactions/' . $trade_type, $post_data);
+            $res = $response->toArray(false);
+            if (is_array($res) && isset($res['prepay_id'])) {
+                $return_data = [];
+                $utils = $this->app->getUtils();
+                switch ($this->platform) {
+                    case 'mp':
+                        $return_data = $utils->buildBridgeConfig($res['prepay_id'], $this->appid, 'RSA');
+                        break;
+                    case 'wechat':
+                        $return_data = $utils->buildMiniAppConfig($res['prepay_id'], $this->appid, 'RSA');
+                        break;
+                    case 'web':
+                        $return_data['code_url'] = $res['code_url'];
+                        break;
+                    case 'h5':
+                        $return_data['h5_url'] = $res['h5_url'];
+                        break;
+                    default:
+                        $return_data = $utils->buildAppConfig($res['prepay_id'], $this->appid);
+                        break;
+                }
+                return $return_data;
+            } else {
+                return $res['message'];
             }
-            return $return_data;
-        } else {
-            return $res['message'];
+        } catch (\Exception $e) {
+            return '支付请求失败' . $e->getMessage();
         }
     }
 
@@ -117,70 +126,75 @@ class Wechat
      * 退款申请
      * @param array $refund_info
      * @return bool|mixed
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
      */
     public function refund(array $refund_info)
     {
-        $post_data = [
-            'out_trade_no' => $refund_info['trade_no'],
-            'out_refund_no' => $refund_info['refund_no'],
-            'amount' => [
-                'refund' => intval($refund_info['amount'] * 100),
-                'total' => intval($refund_info['trade_amount'] * 100),
-                'currency' => 'CNY'
-            ]
-        ];
-        $response = $this->app->getClient()->postJson('v3/refund/domestic/refunds', $post_data);
-        $res = $response->toArray(false);
-        if (isset($res['refund_id']) && $res['refund_id']) {
-            return true;
-        } else {
-            return $res['message'];
+        try {
+            $post_data = [
+                'out_trade_no' => $refund_info['trade_no'],
+                'out_refund_no' => $refund_info['refund_no'],
+                'amount' => [
+                    'refund' => intval($refund_info['amount'] * 100),
+                    'total' => intval($refund_info['trade_amount'] * 100),
+                    'currency' => 'CNY'
+                ]
+            ];
+            $response = $this->app->getClient()->postJson('v3/refund/domestic/refunds', $post_data);
+            $res = $response->toArray(false);
+            if (isset($res['refund_id']) && $res['refund_id']) {
+                return true;
+            } else {
+                return $res['message'];
+            }
+        } catch (\Exception $e) {
+            return '退款失败' . $e->getMessage();
         }
     }
 
     /**
      * 支付回调
-     * @return \Psr\Http\Message\ResponseInterface
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
-     * @throws \ReflectionException
+     * @return ResponseInterface|string
      * @throws \Throwable
      */
     public function notify()
     {
-        $server = $this->app->getServer();
-        $server->handlePaid(function ($message) {
-            $message = $message->toArray();
-            LogService::putLog('pay_wechat', $message);//记录回调日志
-            $transaction_id = $message['transaction_id'];
-            $post_data = [
-                'query' => [
-                    'mchid' => $message['mchid'],
-                ]
-            ];
-            $response = $this->app->getClient()->get('v3/pay/transactions/id/' . $transaction_id, $post_data);
-            $res = $response->toArray(false);
-            if (isset($res['trade_state']) && $res['trade_state'] == 'SUCCESS') {
-                $return = [
-                    'trade_no' => $message['out_trade_no'],
-                    'pay_total' => format_price(round($message['amount']['total'] / 100, 2)),
-                    'payment_no' => $message['transaction_id'],
-                    'payment_id' => Payment::PAYMENT_WECHAT,
-                    'payment_user' => $message['payer']['openid'],
+        try {
+            $server = $this->app->getServer();
+            $server->handlePaid(function ($message) {
+                $message = $message->toArray();
+                LogService::putLog('pay_wechat', $message);//记录回调日志
+                $transaction_id = $message['transaction_id'];
+                $post_data = [
+                    'query' => [
+                        'mchid' => $message['mchid'],
+                    ]
                 ];
-                $res = TradeService::updatePayStatus($return);
-                if ($res) {
-                    return true;
+                $response = $this->app->getClient()->get('v3/pay/transactions/id/' . $transaction_id, $post_data);
+                $res = $response->toArray(false);
+                if (isset($res['trade_state']) && $res['trade_state'] == 'SUCCESS') {
+                    $return = [
+                        'trade_no' => $message['out_trade_no'],
+                        'pay_total' => format_price(round($message['amount']['total'] / 100, 2)),
+                        'payment_no' => $message['transaction_id'],
+                        'payment_id' => Payment::PAYMENT_WECHAT,
+                        'payment_user' => $message['payer']['openid'],
+                    ];
+                    $res = TradeService::updatePayStatus($return);
+                    if ($res) {
+                        return true;
+                    } else {
+                        return '支付失败';
+                    }
                 } else {
-                    return '支付失败';
+                    return $res['message'];
                 }
-            } else {
-                return $res['message'];
-            }
-        });
-        return $server->serve();
+            });
+            return $server->serve();
+        } catch (\Exception $e) {
+            return '支付失败';
+        }
     }
 
     /**

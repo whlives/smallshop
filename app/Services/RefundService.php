@@ -764,6 +764,8 @@ class RefundService
                 $refund_order_count = OrderGoods::where([['order_id', $order['id']], ['refund', '!=', OrderGoods::REFUND_DONE]])->count();
                 if ($refund_order_count == 0) {
                     Order::query()->where('id', $order['id'])->update(['status' => Order::STATUS_REFUND_COMPLETE, 'done_at' => get_date()]);
+                } else {
+                    OrderService::updatePartShipment($refund['order_id']);//修改部分发货的订单状态
                 }
             });
         } catch (\Exception $e) {

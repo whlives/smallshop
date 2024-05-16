@@ -147,7 +147,8 @@ class HelperController extends BaseController
     public function expressCompany(Request $request)
     {
         $where = [
-            'status' => ExpressCompany::STATUS_ON
+            'status' => ExpressCompany::STATUS_ON,
+            'type' => ExpressCompany::TYPE_EXPRESS
         ];
         $res_list = ExpressCompany::query()->select('id', 'title')
             ->where($where)

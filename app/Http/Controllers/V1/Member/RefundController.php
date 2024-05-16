@@ -93,11 +93,11 @@ class RefundController extends BaseController
      */
     public function detail(Request $request)
     {
-        $refund_no = $request->post('refund_no');
-        if (!$refund_no) {
+        $order_goods_id = (int)$request->post('order_goods_id');
+        if (!$order_goods_id) {
             api_error(__('api.missing_params'));
         }
-        $refund = Refund::getInfo($refund_no, $this->member_data['id']);
+        $refund = Refund::getInfoForOrderGoodsId($order_goods_id, $this->member_data['id']);
         $goods = OrderGoods::query()->select('goods_id', 'goods_title', 'image', 'spec_value')->where('id', $refund['order_goods_id'])->first();
         $return = [
             'refund_no' => $refund['refund_no'],

@@ -39,6 +39,11 @@ use App\Models\System\Payment;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Support\Facades\DB;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class OrderService
 {
@@ -169,14 +174,13 @@ class OrderService
     }
 
     /**
-     * 用户是否可以申请售后订单
+     * 是否显示售后按钮
      * @param array $order
      * @return bool
      */
-    public static function isRefund(array $order, array $goods)
+    public static function showRefundButton(array $order)
     {
-        //只有订单是待收货、已经确认和已经完成的并且订单商品是没有售后或者售后关闭的才可以申请
-        if (isset($order['status']) && in_array($order['status'], [Order::STATUS_SHIPMENT, Order::STATUS_PART_SHIPMENT, Order::STATUS_DONE, Order::STATUS_COMPLETE]) && in_array($goods['refund'], [OrderGoods::REFUND_NO, OrderGoods::REFUND_CLOSE])) {
+        if (in_array($order['status'], [Order::STATUS_PAID, Order::STATUS_SHIPMENT, Order::STATUS_PART_SHIPMENT, Order::STATUS_DONE, Order::STATUS_REFUND_COMPLETE])) {
             return true;
         }
         return false;
@@ -538,9 +542,8 @@ class OrderService
                 //修改商品发货状态
                 OrderGoods::query()->where('order_id', $order['id'])->whereIn('id', $param['order_goods_id'])->update(['delivery' => OrderGoods::DELIVERY_ON]);
                 $order_status = Order::STATUS_PART_SHIPMENT;
-                //全部发货后修改订单状态
-                if (!OrderGoods::query()->where(['order_id' => $order['id'], 'delivery' => OrderGoods::DELIVERY_OFF])->count()) {
-                    $order_status = Order::STATUS_SHIPMENT;
+                if (OrderGoods::checkOrderDelivery($order['id'])) {
+                    $order_status = Order::STATUS_SHIPMENT;//全部发货后修改订单状态
                 }
                 Order::query()->where(['id' => $order['id']])->update(['status' => $order_status, 'send_at' => get_date()]);
                 OrderLog::query()->create($order_log);//添加订单日志
@@ -836,6 +839,11 @@ class OrderService
      * @param array $express_company
      * @param array $api_delivery_data
      * @return bool
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
     public static function apiDelivery(array $order, array $user_data, int $user_type, array $express_company, array $api_delivery_data)
     {
@@ -882,5 +890,24 @@ class OrderService
         } catch (\Exception $e) {
             return false;
         }
+    }
+
+    /**
+     * 修改验证部分发货的订单状态
+     * @param int $order_id
+     * @return array|Application|Translator|string|true|null
+     */
+    public static function updatePartShipment(int $order_id)
+    {
+        //验证部分发货的是否全部发货
+        $order = Order::where('id', $order_id)->first();
+        if (!$order || $order['status'] != Order::STATUS_PART_SHIPMENT) {
+            return __('api.order_status_error');
+        }
+        $res = OrderGoods::checkOrderDelivery($order_id);
+        if ($res) {
+            Order::where('id', $order_id)->update(['status' => Order::STATUS_SHIPMENT]);
+        }
+        return $res;
     }
 }

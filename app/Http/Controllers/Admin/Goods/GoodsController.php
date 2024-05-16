@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Admin\Goods;
 
+use App\Exceptions\ApiError;
 use App\Http\Controllers\Admin\BaseController;
 use App\Models\Goods\Category;
 use App\Models\Goods\Delivery;
@@ -15,6 +16,8 @@ use App\Models\Goods\Goods;
 use App\Models\Goods\GoodsObject;
 use App\Models\Goods\GoodsPackage;
 use App\Models\Market\Coupons;
+use App\Models\Seller\Seller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class GoodsController extends BaseController
@@ -22,8 +25,8 @@ class GoodsController extends BaseController
     /**
      * 列表获取
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function index(Request $request)
     {
@@ -48,7 +51,7 @@ class GoodsController extends BaseController
         if (is_numeric($shelves_status)) $where[] = ['shelves_status', $shelves_status];
         if (is_numeric($is_rem)) $where[] = ['is_rem', $is_rem];
         if ($type) $where[] = ['type', $type];
-        $query = Goods::query()->select('id', 'title', 'image', 'sell_price', 'market_price', 'is_rem', 'category_id', 'type', 'shelves_status', 'status', 'position', 'created_at')
+        $query = Goods::query()->select('id', 'title', 'image', 'sell_price', 'market_price', 'is_rem', 'category_id', 'seller_id', 'type', 'shelves_status', 'status', 'position', 'created_at')
             ->where($where);
         $total = $query->count();//总条数
         $res_list = $query->orderBy('id', 'desc')
@@ -58,15 +61,21 @@ class GoodsController extends BaseController
         if ($res_list->isEmpty()) {
             api_error(__('admin.content_is_empty'));
         }
-        $category_ids = array_column($res_list->toArray(), 'category_id');
+        $res_list = $res_list->toArray();
+        $category_ids = array_column($res_list, 'category_id');
         if ($category_ids) {
             $category = Category::query()->whereIn('id', array_unique($category_ids))->pluck('title', 'id');
+        }
+        $seller_ids = array_column($res_list, 'seller_id');
+        if ($seller_ids) {
+            $seller = Seller::query()->whereIn('id', array_unique($seller_ids))->pluck('title', 'id');
         }
         $data_list = [];
         foreach ($res_list as $value) {
             $_item = $value;
             $_item['type'] = Goods::TYPE_DESC[$value['type']];
             $_item['category_name'] = $category[$value['category_id']] ?? '';
+            $_item['seller_name'] = $seller[$value['seller_id']] ?? '';
             $data_list[] = $_item;
         }
         $return = [
@@ -79,8 +88,8 @@ class GoodsController extends BaseController
     /**
      * 根据id获取信息
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function detail(Request $request)
     {
@@ -103,8 +112,8 @@ class GoodsController extends BaseController
     /**
      * 添加编辑
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      */
     public function save(Request $request)
     {
@@ -122,8 +131,8 @@ class GoodsController extends BaseController
     /**
      * 修改状态
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      */
     public function status(Request $request)
     {
@@ -144,8 +153,8 @@ class GoodsController extends BaseController
     /**
      * 修改上下架状态
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      */
     public function shelvesStatus(Request $request)
     {
@@ -172,8 +181,8 @@ class GoodsController extends BaseController
     /**
      * 修改推荐状态
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      */
     public function rem(Request $request)
     {
@@ -193,8 +202,8 @@ class GoodsController extends BaseController
     /**
      * 删除数据
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      */
     public function delete(Request $request)
     {
@@ -211,8 +220,8 @@ class GoodsController extends BaseController
     /**
      * 修改单个字段值
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      */
     public function fieldUpdate(Request $request)
     {
@@ -235,7 +244,7 @@ class GoodsController extends BaseController
     /**
      * 获取分类下的属性并判断是否已经选择
      * @param Request $request
-     * @return array|\Illuminate\Http\JsonResponse
+     * @return array|JsonResponse
      */
     public function getAttribute(Request $request)
     {
@@ -248,7 +257,7 @@ class GoodsController extends BaseController
     /**
      * 获取分类下的规格并判断是否已经选择
      * @param Request $request
-     * @return array|\Illuminate\Http\JsonResponse
+     * @return array|JsonResponse
      */
     public function getSpec(Request $request)
     {
@@ -261,7 +270,7 @@ class GoodsController extends BaseController
     /**
      * 类型
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function type(Request $request)
     {
@@ -271,8 +280,8 @@ class GoodsController extends BaseController
     /**
      * 获取对象列表（优惠券、套餐包）
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function object(Request $request)
     {
@@ -307,8 +316,8 @@ class GoodsController extends BaseController
     /**
      * 配送方式选择列表
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function delivery(Request $request)
     {
@@ -329,8 +338,8 @@ class GoodsController extends BaseController
     /**
      * 小程序码
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function qrcode(Request $request)
     {

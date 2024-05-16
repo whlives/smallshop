@@ -8,6 +8,7 @@
 
 namespace App\Models\Order;
 
+use App\Exceptions\ApiError;
 use App\Models\BaseModel;
 
 /**
@@ -122,12 +123,28 @@ class Refund extends BaseModel
      * 获取订单信息
      * @param string $refund_no
      * @param int $m_id
-     * @return mixed
-     * @throws \App\Exceptions\ApiError
+     * @return array
+     * @throws ApiError
      */
     public static function getInfo(string $refund_no, int $m_id)
     {
         $order = self::query()->where(['m_id' => $m_id, 'refund_no' => $refund_no])->first();
+        if (!$order) {
+            api_error(__('api.refund_error'));
+        }
+        return $order->toArray();
+    }
+
+    /**
+     * 根据订单商品id获取订单信息
+     * @param string $order_goods_id
+     * @param int $m_id
+     * @return mixed
+     * @throws ApiError
+     */
+    public static function getInfoForOrderGoodsId(string $order_goods_id, int $m_id)
+    {
+        $order = self::where(['m_id' => $m_id, 'order_goods_id' => $order_goods_id])->orderBy('id', 'desc')->first();
         if (!$order) {
             api_error(__('api.refund_error'));
         }
