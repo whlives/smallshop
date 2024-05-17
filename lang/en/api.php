@@ -130,6 +130,7 @@ return [
     'coupons_obtain_max' => '50004|已经领取过该优惠券',//超过数量
     'coupons_no_use' => '50004|优惠券不可使用',
     'coupons_buy_max' => '50005|该优惠券购买数量超过限制',//超过数量
+    'coupons_limit_max' => '50006|优惠券限制领取张数',//超过数量
     //促销活动50100
     'promotion_end' => '50100|优惠活动已经过期',
     'promotion_pct_error' => '50101|活动折扣值只能是1-100的整数',

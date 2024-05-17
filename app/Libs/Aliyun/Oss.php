@@ -59,7 +59,7 @@ class Oss
         $end_time = time() + 300;
         $expiration = date("c", $end_time);
         $pos = strpos($expiration, '+');
-        $expiration = substr($expiration, 0, $pos);
+        $expiration = mb_substr($expiration, 0, $pos);
         $expiration = $expiration . "Z";
         //前缀
         $file_name = md5(time() . Str::random(10));
@@ -67,7 +67,7 @@ class Oss
         if (config('app.debug')) {
             $img_dir = 'dev_upload';
         }
-        $dir = $img_dir . '/' . $model . '/' . substr($file_name, 0, 2) . '/' . substr($file_name, 2, 2) . '/' . substr($file_name, 4, 2) . '/';
+        $dir = $img_dir . '/' . $model . '/' . mb_substr($file_name, 0, 2) . '/' . mb_substr($file_name, 2, 2) . '/' . mb_substr($file_name, 4, 2) . '/';
         $condition = [0 => 'content-length-range', 1 => 0, 2 => 1048576000];
         $conditions[] = $condition;
 

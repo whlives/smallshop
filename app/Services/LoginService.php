@@ -33,7 +33,7 @@ class LoginService
         $member_data = [
             'username' => $username,
             'password' => $data['password'] ?? Str::random(10),
-            'nickname' => $data['nickname'] ?? substr($username, 0, 3) . '****' . substr($username, -4, 4),
+            'nickname' => $data['nickname'] ?? mb_substr($username, 0, 3) . '****' . mb_substr($username, -4, 4),
             'headimg' => $data['headimg'] ?? get_custom_config('member_default_headimg'),
         ];
         $profile_data = [];

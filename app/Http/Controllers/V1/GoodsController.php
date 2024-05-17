@@ -181,7 +181,7 @@ class GoodsController extends BaseController
             }
             $goods['sku'] = $promo_goods_sku;
         }
-        $goods['error'] = substr($error, 6);
+        $goods['error'] = mb_substr($error, 6);
         //按钮显示
         $goods['button'] = Goods::button($goods->toArray());
         return $this->success($goods);
@@ -268,7 +268,7 @@ class GoodsController extends BaseController
                     $_item['headimg'] = $member[$value['m_id']]['headimg'] ?? '';
                     $_item['image'] = $image_url[$value['id']] ?? [];
                     $_item['video'] = $video_url[$value['id']] ?? [];
-                    $_item['created_at'] = substr($_item['created_at'], 0, 10);
+                    $_item['created_at'] = mb_substr($_item['created_at'], 0, 10);
                     $data_list[] = $_item;
                 }
             }

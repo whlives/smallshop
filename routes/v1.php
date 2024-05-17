@@ -180,6 +180,13 @@ Route::group(['middleware' => \App\Http\Middleware\SignCheck::class], function (
             Route::prefix('comment')->controller('CommentController')->group(function () {
                 Route::post('/', 'index');
             });
+            //推荐订单
+            Route::prefix('rem')->controller('RemController')->group(function () {
+                Route::post('/', 'index');
+                Route::post('balance_detail', 'balanceDetail');
+                Route::post('order', 'order');
+                Route::post('order_detail', 'orderDetail');
+            });
         });
     });
 

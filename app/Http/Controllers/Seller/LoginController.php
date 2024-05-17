@@ -109,7 +109,7 @@ class LoginController extends BaseController
         $seller_data = self::checkUsername();
         $res = $this->sms->captcha($seller_data['tel'], 'seller_login');
         if ($res === true) {
-            $mobile = substr($seller_data['tel'], 0, 3) . '****' . substr($seller_data['tel'], -4, 4);
+            $mobile = mb_substr($seller_data['tel'], 0, 3) . '****' . mb_substr($seller_data['tel'], -4, 4);
             return $this->success(['mobile' => $mobile]);
         } else {
             api_error($res);

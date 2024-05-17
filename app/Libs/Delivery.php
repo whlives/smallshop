@@ -206,7 +206,7 @@ class Delivery
         foreach ($post_data as $k => $v) {
             $params .= $k . '=' . urlencode($v) . '&';     //默认UTF-8编码格式
         }
-        $post_data = substr($params, 0, -1);*/
+        $post_data = mb_substr($params, 0, -1);*/
         //发送post请求
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_POST, 1);

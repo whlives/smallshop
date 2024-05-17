@@ -77,7 +77,7 @@ class Upload
         }
         $dev_dir = config('app.debug') ? 'dev_upload' : 'upload';
         $file_dir = md5(time() . Str::random(10));
-        return $dev_dir . '/' . $model . '/' . substr($file_dir, 0, 2) . '/' . substr($file_dir, 2, 2) . '/' . substr($file_dir, 4, 2) . '/';
+        return $dev_dir . '/' . $model . '/' . mb_substr($file_dir, 0, 2) . '/' . mb_substr($file_dir, 2, 2) . '/' . substr($file_dir, 4, 2) . '/';
     }
 
     /**
@@ -90,6 +90,6 @@ class Upload
         $model = 'qrcode';
         $dev_dir = config('app.debug') ? 'dev_upload' : 'upload';
         $file_dir = md5($filename);
-        return $dev_dir . '/' . $model . '/' . substr($file_dir, 0, 2) . '/' . substr($file_dir, 2, 2) . '/' . substr($file_dir, 4, 2) . '/';
+        return $dev_dir . '/' . $model . '/' . mb_substr($file_dir, 0, 2) . '/' . mb_substr($file_dir, 2, 2) . '/' . substr($file_dir, 4, 2) . '/';
     }
 }

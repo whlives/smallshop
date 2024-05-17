@@ -229,7 +229,7 @@ class MiniProgram
                     'express_company' => $express_company['weixin_code'],
                     'item_desc' => '您购买的订单' . $order['order_no'],
                     'contact' => [
-                        'receiver_contact' => $order['tel'] ? substr($order['tel'], 0, 3) . '****' . substr($order['tel'], -4, 4) : '133****1234',
+                        'receiver_contact' => $order['tel'] ? mb_substr($order['tel'], 0, 3) . '****' . substr($order['tel'], -4, 4) : '133****1234',
                     ]
                 ];
             } else {
