@@ -100,6 +100,7 @@ return [
     'refund_wait_audit' => '70021|售后处理中',
     'refund_amount_error' => '70022|售后金额不能大于最大金额',
     'express_company_error' => '70023|物流公司信息错误',
+    'refund_no_delivery_select_money' => '70024|未发货的商品只能申请仅退款',
 
     //商品40000
     'search_key_and_category_error' => '40000|关键字和分类不能都为空',

@@ -115,6 +115,7 @@ Route::group(['middleware' => \App\Http\Middleware\SignCheck::class], function (
                 Route::post('up_pay_password', 'upPayPassword');
                 Route::post('reset_pay_password', 'resetPayPassword');
                 Route::post('remove_auth_bind', 'removeAuthBind'); //第三方登录解除绑定
+                Route::post('mini_program_bind_mobile', 'miniProgramBindMobile');//小程序绑定手机
             });
             //订单
             Route::prefix('order')->controller('OrderController')->group(function () {

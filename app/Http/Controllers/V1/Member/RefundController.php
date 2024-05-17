@@ -198,9 +198,9 @@ class RefundController extends BaseController
         if (!$order_goods_id || !$refund_type || !$reason || !check_price($amount) || !isset(Refund::REASON_DESC[$refund_type][$reason])) {
             api_error(__('api.missing_params'));
         }
-        [$order_goods, $order, $refund, $max_amount, $delivery_price] = RefundService::checkRefund($order_goods_id, $this->member_data['id']);
-        if ($refund_type != Refund::REFUND_TYPE_MONEY) {
-            $amount = 0;//只有仅退款的时候才有退款金额
+        [$order_goods, $order, $refund, $max_amount, $delivery_price] = RefundService::checkRefund($order_goods_id, $this->member_data['id'], $refund_type);
+        if ($refund_type == Refund::REFUND_TYPE_REPLACE) {
+            $amount = 0;//换货的时候金额为0
         }
         if ($amount > $max_amount) {
             api_error(__('api.refund_amount_error'));

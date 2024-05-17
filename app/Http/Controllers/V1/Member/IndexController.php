@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\V1\Member;
 
+use App\Exceptions\ApiError;
 use App\Http\Controllers\V1\BaseController;
 use App\Libs\Sms;
 use App\Libs\Weixin\MiniProgram;
@@ -16,8 +17,15 @@ use App\Models\Member\MemberAuth;
 use App\Models\Member\MemberProfile;
 use App\Models\Order\Order;
 use App\Models\Order\Refund;
+use EasyWeChat\Kernel\Exceptions\BadResponseException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class IndexController extends BaseController
 {
@@ -31,8 +39,8 @@ class IndexController extends BaseController
     /**
      * 首页
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function index(Request $request)
     {
@@ -87,8 +95,8 @@ class IndexController extends BaseController
     /**
      * 个人信息
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function info(Request $request)
     {
@@ -112,7 +120,7 @@ class IndexController extends BaseController
     /**
      * 修改个人资料
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function saveInfo(Request $request)
     {
@@ -135,8 +143,8 @@ class IndexController extends BaseController
     /**
      * 修改用户密码
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      */
     public function upPassword(Request $request)
     {
@@ -161,8 +169,8 @@ class IndexController extends BaseController
     /**
      * 设置用户支付密码
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      */
     public function setPayPassword(Request $request)
     {
@@ -186,8 +194,8 @@ class IndexController extends BaseController
     /**
      * 修改用户支付密码
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      */
     public function upPayPassword(Request $request)
     {
@@ -212,8 +220,8 @@ class IndexController extends BaseController
     /**
      * 重置用户支付密码
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      */
     public function resetPayPassword(Request $request)
     {
@@ -240,8 +248,8 @@ class IndexController extends BaseController
     /**
      * 第三方解绑
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      */
     public function removeAuthBind(Request $request)
     {
@@ -257,5 +265,40 @@ class IndexController extends BaseController
         }
     }
 
+    /**
+     * 绑定微信手机号码
+     * @param Request $request
+     * @return JsonResponse|void
+     * @throws ApiError
+     * @throws BadResponseException
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function miniProgramBindMobile(Request $request)
+    {
+        $code = $request->post('code');
+        if (!$code) {
+            api_error(__('api.missing_params'));
+        }
+        $mini_program = new MiniProgram();
+        $auth_info = $mini_program->getPhoneNumber($code);
+        $mobile = $auth_info['purePhoneNumber'] ?? '';
+        if (!$mobile) {
+            api_error(__('api.user_mobile_get_fail'));
+        }
+        //查询手机号码是否已经绑定其他账号
+        if (Member::where('username', $mobile)->exists()) {
+            api_error(__('api.user_mobile_is_bind'));
+        }
+        $res = Member::where('id', $this->m_id)->update(['username' => $mobile]);
+        if ($res) {
+            return $this->success(true);
+        } else {
+            api_error(__('api.fail'));
+        }
+    }
 
 }

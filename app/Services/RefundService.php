@@ -8,6 +8,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\ApiError;
 use App\Libs\Delivery;
 use App\Models\Financial\TradeRefund;
 use App\Models\Order\Order;
@@ -178,10 +179,11 @@ class RefundService
      * 验证售后信息
      * @param int $order_goods_id
      * @param int $m_id
+     * @param int $refund_type
      * @return array
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
-    public static function checkRefund(int $order_goods_id, int $m_id)
+    public static function checkRefund(int $order_goods_id, int $m_id, int $refund_type = 0)
     {
         //获取订单商品信息
         $order_goods = OrderGoods::query()->where(['id' => $order_goods_id, 'm_id' => $m_id])->first();
@@ -193,6 +195,10 @@ class RefundService
         //只有订单是已付款、待收货、已经确认的并且订单商品是没有售后或者售后关闭的才可以申请
         if (!in_array($order['status'], [Order::STATUS_PAID, Order::STATUS_SHIPMENT, Order::STATUS_PART_SHIPMENT, Order::STATUS_DONE])) {
             api_error(__('api.refund_time_out'));
+        }
+        //提交的时候需要判断类型，没有发货的只能选择仅退款
+        if ($refund_type && $refund_type != Refund::REFUND_TYPE_MONEY && $order['status'] == Order::STATUS_PAID) {
+            api_error(__('api.refund_no_delivery_select_money'));
         }
         //查询是否已经申请
         $refund = Refund::query()->where('order_goods_id', $order_goods_id)->first();
@@ -276,7 +282,7 @@ class RefundService
      * @param string|null $note
      * @param array $param
      * @return bool
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public static function delivery(array $refund, array $member_data, int $user_type, string|null $note, array $param)
     {
@@ -404,11 +410,6 @@ class RefundService
                 //修改订单商品售后状态
                 OrderGoods::query()->where('id', $refund['order_goods_id'])->update(['refund' => OrderGoods::REFUND_DONE]);
                 Refund::query()->where('id', $refund['id'])->update(['status' => Refund::STATUS_DONE, 'done_at' => get_date()]);
-                //判断订单下的商品是否全部退款,全部退款修改订单状态
-                $refund_order_count = OrderGoods::query()->where([['order_id', $refund['order_id']], ['refund', '!=', OrderGoods::REFUND_DONE]])->count();
-                if ($refund_order_count == 0) {
-                    Order::query()->where('id', $refund['order_id'])->update(['status' => Order::STATUS_REFUND_COMPLETE, 'done_at' => get_date()]);
-                }
             });
             return true;
         } catch (\Exception $e) {
@@ -495,6 +496,7 @@ class RefundService
      * @param string|null $note
      * @param array $address
      * @return bool
+     * @throws ApiError
      */
     public static function sellerAgreeDelivery(array $refund, array $user_data, int $user_type, string|null $note = '', array $address)
     {
@@ -556,6 +558,8 @@ class RefundService
             DB::transaction(function () use ($refund, $refund_log) {
                 RefundLog::query()->create($refund_log);
                 Refund::query()->where('id', $refund['id'])->update(['status' => Refund::STATUS_REFUSED_APPROVE, 'refused_at' => get_date()]);
+                //修改订单商品售后状态
+                OrderGoods::query()->where('id', $refund['order_goods_id'])->update(['refund' => OrderGoods::REFUND_ONGOING]);
             });
             return true;
         } catch (\Exception $e) {
@@ -649,7 +653,7 @@ class RefundService
      * @param string|null $note
      * @param array $param
      * @return bool
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public static function sellerSend(array $refund, array $user_data, int $user_type, string|null $note, array $param)
     {
