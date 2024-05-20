@@ -8,21 +8,21 @@ use App\Services\LogService;
 use App\Services\RefundService;
 use Illuminate\Console\Command;
 
-class RefundCancel extends Command
+class RefundConfirm extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'command:refund_cancel';
+    protected $signature = 'command:refund_confirm';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = '拒绝了用户没有修改的，同意退货了一直没有寄出的，商家拒绝收货的';
+    protected $description = '换货的发货后用户一直没有确认的';
 
     /**
      * Create a new command instance.
@@ -45,15 +45,16 @@ class RefundCancel extends Command
         //高访问的时候关闭
         $high_qps = $custom_config['high_qps'];
         if ($high_qps) return false;
-        $refund_cancel_time = $custom_config['refund_cancel_time'];
-        if (!$refund_cancel_time) return false;
-        LogService::putLog('crontab', '取消超时处理的售后');
+        $refund_confirm_time = $custom_config['refund_confirm_time'];
+        if (!$refund_confirm_time) return false;
+        LogService::putLog('crontab', '用户换货超时未确认的售后');
         $user_data = [
             'id' => 0,
             'username' => 'system'
         ];
         $where = [
-            ['updated_at', '<', get_date(time() - $refund_cancel_time)]
+            ['status', Refund::STATUS_WAIT_CONFIRM_DELIVERY],
+            ['delivery_at', '<', get_date(time() - $refund_confirm_time)]
         ];
         $page = 1;
         $limit = 10;
@@ -61,7 +62,6 @@ class RefundCancel extends Command
             $offset = ($page - 1) * $limit;
             $res_list = Refund::query()->select('id', 'order_goods_id', 'status')
                 ->where($where)
-                ->whereIn('status', [Refund::STATUS_REFUSED_APPROVE, Refund::STATUS_WAIT_DELIVERY, Refund::STATUS_REFUSED_RECEIVED])
                 ->offset($offset)
                 ->limit($limit)
                 ->orderBy('id', 'asc')
@@ -71,7 +71,7 @@ class RefundCancel extends Command
             } else {
                 $page++;
                 foreach ($res_list->toArray() as $value) {
-                    RefundService::cancel($value, $user_data, RefundLog::USER_TYPE_SYSTEM, '用户超时未处理自动取消');
+                    RefundService::confirm($value, $user_data, RefundLog::USER_TYPE_SYSTEM, '用户换货超时未确认自动确认');
                 }
                 sleep(1);
             }

@@ -9,13 +9,13 @@ class Kernel extends ConsoleKernel
 {
 
     protected $commands = [
-        
+
     ];
 
     /**
      * Define the application's command schedule.
      *
-     * @param \Illuminate\Console\Scheduling\Schedule $schedule
+     * @param Schedule $schedule
      * @return void
      */
     protected function schedule(Schedule $schedule)
@@ -26,6 +26,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('command:order_complete')->everyTenMinutes()->onOneServer();//订单交易完成
         $schedule->command('command:order_comment')->everyTenMinutes()->onOneServer();//订单自动评价
         $schedule->command('command:refund_cancel')->everyTenMinutes()->onOneServer();//售后订单超时取消
+        $schedule->command('command:refund_confirm')->everyTenMinutes()->onOneServer();//售后订单超时取消
         $schedule->command('command:del_out_time_info')->dailyAt('4:00')->onOneServer();//删除指定信息
         $schedule->command('command:group_order_time_out')->everyTenMinutes()->onOneServer();//拼团订单超时取消
     }

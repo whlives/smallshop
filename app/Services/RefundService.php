@@ -601,7 +601,7 @@ class RefundService
         try {
             DB::transaction(function () use ($refund, $refund_log, $status) {
                 RefundLog::query()->create($refund_log);
-                Refund::query()->where('id', $refund['id'])->update(['status' => $status]);
+                Refund::query()->where('id', $refund['id'])->update(['status' => $status, 'received_at' => get_date()]);
             });
             return true;
         } catch (\Exception $e) {
@@ -694,7 +694,7 @@ class RefundService
             DB::transaction(function () use ($refund, $delivery_data, $refund_log) {
                 RefundDelivery::query()->create($delivery_data);
                 RefundLog::query()->create($refund_log);
-                Refund::query()->where('id', $refund['id'])->update(['status' => Refund::STATUS_WAIT_CONFIRM_DELIVERY]);
+                Refund::query()->where('id', $refund['id'])->update(['status' => Refund::STATUS_WAIT_CONFIRM_DELIVERY, 'delivery_at' => get_date()]);
             });
             //订阅物流消息
             $delivery = new Delivery();
