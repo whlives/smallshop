@@ -124,4 +124,52 @@ class Member extends BaseModel
             api_error(__('api.pay_password_error'));
         }
     }
+
+    /**
+     * 验证可否绑定关系
+     * @param int $m_id
+     * @param int $parent_id
+     * @return array
+     */
+    public static function checkBindParent(int $m_id, int $parent_id)
+    {
+        $return = [
+            'parent_data' => [],
+            'is_bind' => 0,//默认不能绑定
+        ];
+        if ($m_id == $parent_id) {
+            //自己不能邀请自己
+            return $return;
+        }
+        $parent_data = Member::select('id', 'nickname', 'headimg')->where('id', $parent_id)->first();
+        if ($parent_data) {
+            if ($m_id) {
+                //已经登录的用户需要判断用户能否绑定
+                if (!Member::where('id', $m_id)->value('parent_id')) {
+                    $return['is_bind'] = 1;//可以绑定
+                }
+            } else {
+                //没有登录的默认是可以绑定的
+                $return['is_bind'] = 1;//可以绑定
+            }
+        }
+        $return['parent_data'] = $return['is_bind'] ? $parent_data : [];
+        return $return;
+    }
+
+    /**
+     * 绑定上级
+     * @param int $m_id
+     * @param int $parent_id
+     * @return bool
+     */
+    public static function bindParent(int $m_id, int $parent_id)
+    {
+        $return = self::checkBindParent($m_id, $parent_id);
+        if ($return['is_bind']) {
+            $res = Member::where(['id' => $m_id, 'parent_id' => 0])->update(['parent_id' => $parent_id]);
+            if ($res) return true;
+        }
+        return false;
+    }
 }

@@ -101,6 +101,7 @@ class LoginService
      */
     public static function authCheck(array $user_data)
     {
+        $parent_id = (int)request()->post('parent_id');
         //查询账号是否已经存在
         $m_id = MemberAuth::query()->where(['type' => $user_data['type'], 'union_id' => $user_data['union_id']])->value('m_id');
         if ($m_id) {
@@ -109,11 +110,16 @@ class LoginService
             if (!$member_data) {
                 api_error(__('api.fail'));
             }
+            //判断是否已经绑定了上级推荐人
+            if (!$member_data['parent_id'] && $parent_id) {
+                Member::bindParent($m_id, $parent_id);
+            }
             $member_data['openid'] = $user_data['openid'] ?? '';//为了方便支付的时候获取openid，这里直接在登陆的时间存到token
             return self::loginSuccess($member_data->toArray());
         } else {
             //没有绑定的缓存临时授权信息
             $cache_key = 'app_auth_info:' . get_device();
+            $user_data['parent_id'] = $parent_id;
             Cache::put($cache_key, $user_data, get_custom_config('cache_time'));
             return ['id' => 0];
         }
@@ -169,6 +175,10 @@ class LoginService
         $res = MemberAuth::query()->create($member_auth_data);
         if (!$res) {
             api_error(__('api.user_mobile_bind_fail'));
+        }
+        //判断是否已经绑定了上级
+        if (!$member_data['parent_id'] && isset($auth_data['parent_id']) && $auth_data['parent_id']) {
+            Member::bindParent($member_data['id'], $auth_data['parent_id']);
         }
         $member_data['openid'] = $auth_data['openid'] ?? '';//为了方便支付的时候获取openid，这里直接在登陆的
         Cache::forget($cache_key);//删除保存的授权信息

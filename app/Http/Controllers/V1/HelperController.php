@@ -8,14 +8,17 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Exceptions\ApiError;
 use App\Libs\Aliyun\Oss;
 use App\Libs\Aliyun\Sts;
 use App\Libs\Sms;
 use App\Libs\Upload;
 use App\Libs\Weixin\Mp;
 use App\Models\Areas;
+use App\Models\Member\Member;
 use App\Models\System\ExpressCompany;
 use App\Models\Tool\Adv;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -24,8 +27,8 @@ class HelperController extends BaseController
     /**
      * 获取验证码
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      */
     public function captcha(Request $request)
     {
@@ -46,9 +49,9 @@ class HelperController extends BaseController
     /**
      * 获取aliyun oss sts
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      * @throws \AlibabaCloud\Client\Exception\ClientException
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function aliyunSts(Request $request)
     {
@@ -87,8 +90,8 @@ class HelperController extends BaseController
     /**
      * 上传本地文件
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function upload(Request $request)
     {
@@ -113,8 +116,8 @@ class HelperController extends BaseController
     /**
      * 获取广告信息
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function adv(Request $request)
     {
@@ -129,7 +132,7 @@ class HelperController extends BaseController
     /**
      * 获取地区
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function area(Request $request)
     {
@@ -141,8 +144,8 @@ class HelperController extends BaseController
     /**
      * 快递公司
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function expressCompany(Request $request)
     {
@@ -164,8 +167,8 @@ class HelperController extends BaseController
     /**
      * 微信jssdk
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
@@ -182,6 +185,23 @@ class HelperController extends BaseController
         $mp = new Mp();
         $jssdk = $mp->jsSdk($url);
         return $this->success($jssdk);
+    }
+
+    /**
+     * 获取推荐用户信息，并判断能否绑定
+     * @param Request $request
+     * @return JsonResponse
+     * @throws ApiError
+     */
+    public function checkParentBind(Request $request)
+    {
+        $m_id = $this->getOnlyUserId();
+        $parent_id = (int)$request->get('parent_id');
+        if (!$parent_id) {
+            api_error(__('api.missing_params'));
+        }
+        $return = Member::checkBindParent($m_id, $parent_id);
+        return $this->success($return);
     }
 
 }

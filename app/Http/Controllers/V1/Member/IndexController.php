@@ -266,6 +266,26 @@ class IndexController extends BaseController
     }
 
     /**
+     * 绑定上级
+     * @param Request $request
+     * @return JsonResponse|void
+     * @throws ApiError
+     */
+    public function bindParent(Request $request)
+    {
+        $parent_id = (int)$request->post('parent_id');
+        if (!$this->m_id || !$parent_id) {
+            api_error(__('api.missing_params'));
+        }
+        $res = Member::bindParent($this->m_id, $parent_id);
+        if ($res) {
+            return $this->success();
+        } else {
+            api_error(__('api.fail'));
+        }
+    }
+
+    /**
      * 绑定微信手机号码
      * @param Request $request
      * @return JsonResponse|void

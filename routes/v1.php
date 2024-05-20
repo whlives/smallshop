@@ -10,6 +10,7 @@ Route::prefix('helper')->controller('HelperController')->group(function () {
     Route::get('express_company', 'expressCompany');//快递公司
     Route::get('area/{parent_id?}', 'area');//地区
     Route::get('wx_jssdk', 'wxJssdk');//获取微信jssdk信息
+    Route::get('check_parent_bind', 'checkParentBind');//获取推荐人信息和绑定状态
 });
 //文章
 Route::prefix('article')->controller('ArticleController')->group(function () {
@@ -115,6 +116,7 @@ Route::group(['middleware' => \App\Http\Middleware\SignCheck::class], function (
                 Route::post('up_pay_password', 'upPayPassword');
                 Route::post('reset_pay_password', 'resetPayPassword');
                 Route::post('remove_auth_bind', 'removeAuthBind'); //第三方登录解除绑定
+                Route::post('bind_parent', 'bindParent');
                 Route::post('mini_program_bind_mobile', 'miniProgramBindMobile');//小程序绑定手机
             });
             //订单
