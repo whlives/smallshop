@@ -43,7 +43,7 @@ class Point extends BaseModel
             return $return;
         }
         if (!isset(PointDetail::EVENT_DESC[$event])) {
-            $return['message'] = __('api.balance_event_error');
+            $return['message'] = __('api.point_event_error');
             return $return;
         }
         //变动详情
@@ -60,25 +60,24 @@ class Point extends BaseModel
             $res = DB::transaction(function () use ($m_id, $amount, $detail) {
                 $res_data = self::query()->where('m_id', $m_id)->lockForUpdate()->first();//查询用户余额并锁定
                 if ($amount < 0 && (!isset($res_data['amount']) || ($res_data['amount'] + $amount) < 0)) {
-                    return __('api.balance_insufficient');
-                } else {
-                    //数据存在的时候直接修改
-                    if ($res_data) {
-                        $where[] = ['m_id', $m_id];
-                        //减少的时候加上条件
-                        if ($amount < 0) {
-                            $where[] = ['amount', '>=', abs($amount)];
-                        }
-                        $res = self::query()->where($where)->increment('amount', $amount);
-                    } else {
-                        $res_data['amount'] = 0;
-                        $res = self::query()->create(['m_id' => $m_id, 'amount' => $amount]);
+                    return __('api.point_insufficient');
+                }
+                //数据存在的时候直接修改
+                if ($res_data) {
+                    $where[] = ['m_id', $m_id];
+                    //减少的时候加上条件
+                    if ($amount < 0) {
+                        $where[] = ['amount', '>=', abs($amount)];
                     }
+                    $res = self::query()->where($where)->increment('amount', $amount);
+                } else {
+                    $res_data['amount'] = 0;
+                    $res = self::query()->create(['m_id' => $m_id, 'amount' => $amount]);
+                }
+                if ($res) {
                     $detail['balance'] = $res_data['amount'] + $amount;
                     PointDetail::query()->create($detail);
-                    if ($res) {
-                        return true;
-                    }
+                    return true;
                 }
             });
         } catch (\Exception $e) {

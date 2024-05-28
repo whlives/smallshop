@@ -154,8 +154,8 @@ return [
     'withdraw_balance_amount_max_500' => '60105|微信单次提现金额不能大于500',
 
     //积分60200
-    'point_event_error' => '60200|资金类型错误',
-    'point_insufficient' => '60201|余额不足',
+    'point_event_error' => '60200|积分类型错误',
+    'point_insufficient' => '60201|积分余额不足',
 
     //商家70000
     'seller_error' => '70000|商家信息错误',
