@@ -22,7 +22,9 @@
         <div class="layui-input-block">
             <script type="text/html" template lay-url="{{ layui.setter.apiHost }}/admin/role/select" lay-done="layui.form.render();">
                 {{# layui.each(d.data, function(index, item){ }}
-                <input type="checkbox" name="role_id[]" title="{{ item.title }}" value="{{ item.id }}" {{# if(layui.jquery.inArray(item.id, d.params.role_id)>=0){ }}checked{{# } }}>
+                <div class="layui-input-inline td_col_min_width_250">
+                    <input type="checkbox" name="role_id[]" title="{{ item.title }}" value="{{ item.id }}" {{# if(layui.jquery.inArray(item.id, d.params.role_id)>=0){ }}checked{{# } }}>
+                </div>
                 {{# }); }}
             </script>
         </div>

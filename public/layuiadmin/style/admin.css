@@ -1452,6 +1452,34 @@ html {
     min-width: 200px;
 }
 
+.td_col_width_210 {
+    width: 210px;
+}
+
+.td_col_width_250 {
+    width: 250px !important;
+}
+
+.td_col_width_500 {
+    width: 500px !important;
+}
+
+.td_col_min_width_60 {
+    min-width: 60px;
+}
+
+.td_col_min_width_80 {
+    min-width: 80px;
+}
+
+.td_col_min_width_150 {
+    min-width: 150px;
+}
+
+.td_col_min_width_200 {
+    min-width: 200px;
+}
+
 .td_center {
     text-align: center !important;
 }
