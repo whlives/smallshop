@@ -59,7 +59,7 @@ class AdminToken
      * 记录操作日志
      * @param $request
      * @param array $token
-     * @return void
+     * @return true|void
      */
     public function log($request, array $token)
     {
@@ -69,10 +69,11 @@ class AdminToken
         $username = $token['username'];
         $url = $request->url();
         $post_data = $request->all();
-        unset($post_data['token']);
-        unset($post_data['limit']);
-        unset($post_data['page']);
-        if (count($post_data) < 2) return false;//普通查询的默认不记录
+        unset($post_data['token'], $post_data['limit'], $post_data['page']);
+        $url_data = explode('/', $url);
+        if ((in_array($url_data[count($url_data) - 1], ['detail', 'select', 'select_all']) && count($post_data) < 2) || !count($post_data) || $url_data[count($url_data) - 2] == 'helper') {
+            return true;//普通查询的默认不记录
+        }
         $content = json_encode($post_data, JSON_UNESCAPED_UNICODE);
         $ip = $request->getClientIp();
         if ($admin_log_type == AdminLog::LOG_TYPE_MYSQL) {

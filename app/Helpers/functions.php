@@ -353,6 +353,22 @@ if (!function_exists('curl')) {
         return $response;
     }
 }
+if (!function_exists('get_aes_string')) {
+    /**
+     * 字符aes加密
+     * @param string|array $data 加密字符或数组
+     * @return array
+     */
+    function get_aes_string(string|array $data): array
+    {
+        $api_key = get_api_key();
+        $data = is_array($data) ? json_encode($data, true) : $data;
+        $method = 'aes-' . (8 * strlen($api_key)) . '-cbc';
+        $iv = rand(1000000000000000, 9999999999999999);
+        $encrypt_data = openssl_encrypt($data, $method, $api_key, OPENSSL_RAW_DATA, $iv);
+        return ['encrypt_data' => base64_encode($encrypt_data), 'iv' => $iv];
+    }
+}
 if (!function_exists('get_sql_debug')) {
     /**
      * sql debug输出
