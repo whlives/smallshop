@@ -180,7 +180,7 @@ class OrderService
      */
     public static function showRefundButton(array $order)
     {
-        if (in_array($order['status'], [Order::STATUS_PAID, Order::STATUS_SHIPMENT, Order::STATUS_PART_SHIPMENT, Order::STATUS_DONE, Order::STATUS_REFUND_COMPLETE])) {
+        if (isset($order['status']) && in_array($order['status'], [Order::STATUS_PAID, Order::STATUS_SHIPMENT, Order::STATUS_PART_SHIPMENT, Order::STATUS_DONE, Order::STATUS_COMPLETE])) {
             return true;
         }
         return false;
