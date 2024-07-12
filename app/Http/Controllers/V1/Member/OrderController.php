@@ -48,6 +48,8 @@ class OrderController extends BaseController
         if (isset(Order::STATUS_DESC[$status])) {
             if ($status == Order::STATUS_CANCEL) {
                 $where_in = [Order::STATUS_CANCEL, Order::STATUS_SYSTEM_CANCEL];
+            } elseif ($status == Order::STATUS_SHIPMENT) {
+                $where_in = [Order::STATUS_SHIPMENT, Order::STATUS_PART_SHIPMENT];
             } else {
                 $where['status'] = $status;
             }

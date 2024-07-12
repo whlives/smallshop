@@ -112,7 +112,7 @@ class IndexController extends BaseController
             'headimg' => $member_data['headimg'],
             'group_title' => Member::group($member_data['group_id']),
             'email' => $profile['email'],
-            'sex' => MemberProfile::SEX_DESC[$profile['sex']]
+            'sex' => $profile['sex']
         ];
         return $this->success($user_info);
     }
