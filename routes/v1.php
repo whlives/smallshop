@@ -57,7 +57,6 @@ Route::group(['middleware' => \App\Http\Middleware\SignCheck::class], function (
     Route::prefix('helper')->controller('HelperController')->group(function () {
         Route::post('captcha', 'captcha');//验证码
         Route::post('aliyun_sts', 'aliyunSts');//阿里云上传
-        Route::post('aliyun_token', 'aliyunToken');//阿里云上传
         Route::post('upload', 'upload');//本地上传
     });
     //登陆注册

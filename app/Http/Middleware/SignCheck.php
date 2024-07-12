@@ -8,6 +8,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Exceptions\ApiError;
 use App\Services\SignService;
 use Closure;
 
@@ -18,7 +19,7 @@ class SignCheck
      * @param $request
      * @param Closure $next
      * @return mixed
-     * @throws \App\Exceptions\ApiException
+     * @throws ApiError
      */
     public function handle($request, Closure $next)
     {

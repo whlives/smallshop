@@ -8,6 +8,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Exceptions\ApiError;
 use App\Services\TokenService;
 use Closure;
 
@@ -18,7 +19,7 @@ class ApiToken
      * @param $request
      * @param Closure $next
      * @return mixed
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function handle($request, Closure $next)
     {
@@ -37,7 +38,7 @@ class ApiToken
      * 验证设备是否异常
      * @param array $token_data
      * @return void
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function checkDevice(array $token_data)
     {

@@ -8,6 +8,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Exceptions\ApiError;
 use App\Libs\Sms;
 use Closure;
 
@@ -21,7 +22,7 @@ class CaptchaCheck
      * @param $request
      * @param Closure $next
      * @return mixed|void
-     * @throws \App\Exceptions\ApiError
+     * @throws ApiError
      */
     public function handle($request, Closure $next)
     {

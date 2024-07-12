@@ -8,10 +8,11 @@
 
 namespace App\Libs\Aliyun;
 
-use AlibabaCloud\Client\AlibabaCloud;
-use AlibabaCloud\Client\Exception\ClientException;
-use AlibabaCloud\Client\Exception\ServerException;
+use AlibabaCloud\SDK\Sts\V20150401\Models\AssumeRoleRequest;
+use AlibabaCloud\Tea\Utils\Utils\RuntimeOptions;
 use App\Libs\Upload;
+use Darabonba\OpenApi\Models\Config;
+use Symfony\Component\HttpClient\Exception\ClientException;
 
 class Sts
 {
@@ -34,6 +35,16 @@ class Sts
         $this->img_domain = $custom_config['img_domain'];
     }
 
+    public function createClient()
+    {
+        $config = new Config([
+            "accessKeyId" => $this->config['aliyun_key_id'],
+            "accessKeySecret" => $this->config['aliyun_key_secret']
+        ]);
+        $config->endpoint = 'sts.aliyuncs.com';
+        return new \AlibabaCloud\SDK\Sts\V20150401\Sts($config);
+    }
+
     /**
      * 获取oss sts
      * @param string|null $model
@@ -43,56 +54,37 @@ class Sts
     public function getOssSts(string|null $model = ''): bool|array
     {
         $upload = new Upload();
-        AlibabaCloud::accessKeyClient($this->config['aliyun_key_id'], $this->config['aliyun_key_secret'])
-            ->regionId('cn-hangzhou')
-            ->asDefaultClient();
+        $client = self::createClient();
+        $assumeRoleRequest = new AssumeRoleRequest([
+            "durationSeconds" => 1800,
+            "policy" => '{"Statement": [{"Action": ["*"],"Effect": "Allow","Resource": ["*"]}],"Version":"1"}',
+            "roleArn" => $this->config['aliyun_sts_rolearn'],
+            "roleSessionName" => $this->role_name
+        ]);
+        $runtime = new RuntimeOptions([]);
         try {
-            $result = AlibabaCloud::rpc()
-                ->product('Sts')
-                ->scheme('https') // https | http
-                ->version('2015-04-01')
-                ->action('AssumeRole')
-                ->method('POST')
-                ->host('sts.aliyuncs.com')
-                ->options([
-                    'query' => [
-                        'RegionId' => "cn-hangzhou",
-                        'RoleArn' => $this->config['aliyun_sts_rolearn'],
-                        'RoleSessionName' => $this->role_name,
-                        'DurationSeconds' => 1800
-                    ],
-                ])
-                ->request();
-            $res = $result->toArray();
-            if (is_array($res)) {
-                $credentials = $res['Credentials'];
-                $dir = $upload->getDir($model);
-                $policy = self::getPolicy($dir, $credentials['Expiration']);
-                $signature = self::getSignature($policy, $credentials['AccessKeySecret']);
-                $sts_data = [
-                    'access_key_id' => $credentials['AccessKeyId'],
-                    'access_key_secret' => $credentials['AccessKeySecret'],
-                    'expiration' => $credentials['Expiration'],
-                    'sts_token' => $credentials['SecurityToken'],
-                    'bucket' => $this->config['aliyun_oss_bucket'],
-                    'endpoint' => $this->config['aliyun_oss_endpoint'],
-                    'region' => $this->config['aliyun_oss_region'],
-                    'host' => 'https://' . $this->config['aliyun_oss_bucket'] . '.' . $this->config['aliyun_oss_endpoint'],
-                    'policy' => $policy,
-                    'signature' => $signature,
-                    'dirname' => $dir,
-                    'domain' => $this->img_domain
-                ];
-                return $sts_data;
-            } else {
-                return false;
-            }
-        } catch (ClientException $e) {
+            // 复制代码运行请自行打印 API 的返回值
+            $res = $client->assumeRoleWithOptions($assumeRoleRequest, $runtime);
+            $credentials = $res->body->credentials;
+            $dir = $upload->getDir($model);
+            $policy = self::getPolicy($dir, $credentials->expiration);
+            $signature = self::getSignature($policy, $credentials->accessKeySecret);
+            return [
+                'access_key_id' => $credentials->accessKeyId,
+                'access_key_secret' => $credentials->accessKeySecret,
+                'expiration' => $credentials->expiration,
+                'sts_token' => $credentials->securityToken,
+                'bucket' => $this->config['aliyun_oss_bucket'],
+                'endpoint' => $this->config['aliyun_oss_endpoint'],
+                'region' => $this->config['aliyun_oss_region'],
+                'host' => 'https://' . $this->config['aliyun_oss_bucket'] . '.' . $this->config['aliyun_oss_endpoint'],
+                'policy' => $policy,
+                'signature' => $signature,
+                'dirname' => $dir,
+                'domain' => $this->img_domain
+            ];
+        } catch (\Exception $error) {
             return false;
-            //echo $e->getErrorMessage() . PHP_EOL;
-        } catch (ServerException $e) {
-            return false;
-            //echo $e->getErrorMessage() . PHP_EOL;
         }
     }
 
@@ -104,13 +96,14 @@ class Sts
      */
     public function getPolicy(string $dir, string $expiration): string
     {
-        //最大文件大小.用户可以自己设置
-        $condition = [0 => 'content-length-range', 1 => 0, 2 => 1048576000];
-        $conditions[] = $condition;
-        //表示用户上传的数据，必须是以$dir开始，不然上传会失败，这一步不是必须项，只是为了安全起见，防止用户通过policy上传到别人的目录。
-        $start = [0 => 'starts-with', 1 => '$key', 2 => $dir];
-        $conditions[] = $start;
-        $arr = ['expiration' => $expiration, 'conditions' => $conditions];
+        $arr = [
+            'expiration' => $expiration,
+            'conditions' => [
+                ['bucket' => $this->config['aliyun_oss_bucket']],
+                ['content-length-range', 0, 1048576000],//最大文件大小.用户可以自己设置
+                ['starts-with', '$key', $dir],//用户上传必须是以$dir开始，不然上传会失败，这一步不是必须项，只是为了安全起见，防止用户通过policy上传到别人的目录。
+            ]
+        ];
         $policy = json_encode($arr);
         return base64_encode($policy);
     }
@@ -125,4 +118,5 @@ class Sts
     {
         return base64_encode(hash_hmac('sha1', $policy, $access_key_secret, true));
     }
+
 }

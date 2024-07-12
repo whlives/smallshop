@@ -29,6 +29,7 @@ class LogService
             return false;
         }
         if (is_array($data)) {
+            $data['addtime'] = get_date();
             $data = json_encode($data, JSON_UNESCAPED_UNICODE);
         }
         //如果是其他记录日志的方法在这里改写
