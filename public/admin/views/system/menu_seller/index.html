@@ -54,7 +54,7 @@
                                 <td>{{ d.url }}{{# if(d.parameter){ }}?{{ d.parameter }}{{# } }}</td>
                                 <td class="td_center">{{ d.position }}</td>
                                 <td class="td_center">
-                                    <input type="checkbox" name="status" value="{{ d.id }}" lay-skin="switch" title="锁定|正常" lay-filter="status_btn" {{# if(d.status== 1){ }}checked{{# } }}>
+                                    <input type="checkbox" name="status" value="{{ d.id }}" lay-skin="switch" title="正常|锁定" lay-filter="status_btn" {{# if(d.status== 1){ }}checked{{# } }}>
                                 </td>
                                 <td>
                                     <a class="layui-btn layui-btn-xs layui-hide" lay-event="edit" data-id="{{ d.id }}">编辑</a>
