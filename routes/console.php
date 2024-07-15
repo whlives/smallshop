@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Schedule;
 
+Schedule::command('cache:prune-stale-tags')->hourly()->onOneServer();//laravel系统级清理缓存;
 Schedule::command('command:admin_login_status')->everyThirtyMinutes()->onOneServer();//检测过期的登录状态
 Schedule::command('command:order_cancel')->everyMinute()->onOneServer();//取消订单
 Schedule::command('command:order_confirm')->everyTenMinutes()->onOneServer();//确认订单收货
