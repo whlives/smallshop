@@ -66,6 +66,7 @@ Route::group(['middleware' => \App\Http\Middleware\SignCheck::class], function (
         Route::post('wechat', 'wechat');//微信公众号、开放平台登陆
         Route::post('mini_program', 'miniProgram');//小程序登陆
         Route::post('mini_program_bind_mobile', 'miniProgramBindMobile');//小程序绑定手机
+        Route::post('mini_program_reg', 'miniProgramReg');//小程序跳过手机号注册
         Route::post('out', 'out');//退出登录
         //需要验证码的
         Route::group(['middleware' => \App\Http\Middleware\CaptchaCheck::class], function () {

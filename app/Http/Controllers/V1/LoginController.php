@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Exceptions\ApiError;
 use App\Libs\Weixin\MiniProgram;
 use App\Libs\Weixin\Mp;
 use App\Models\Member\Member;
@@ -15,6 +16,7 @@ use App\Models\Member\MemberAuth;
 use App\Models\Member\MemberLoginLog;
 use App\Services\LoginService;
 use App\Services\TokenService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -24,8 +26,8 @@ class LoginController extends BaseController
     /**
      * 账号密码登录
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      */
     public function index(Request $request)
     {
@@ -49,8 +51,8 @@ class LoginController extends BaseController
     /**
      * 手机验证码登录，没有注册的默认注册
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function speed(Request $request)
     {
@@ -77,8 +79,8 @@ class LoginController extends BaseController
     /**
      * 微信公众号、开放平台登陆
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      */
     public function wechat(Request $request)
     {
@@ -107,8 +109,8 @@ class LoginController extends BaseController
     /**
      * 小程序登录
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
@@ -147,8 +149,8 @@ class LoginController extends BaseController
     /**
      * 第三方登陆
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function auth(Request $request)
     {
@@ -177,8 +179,8 @@ class LoginController extends BaseController
     /**
      * 绑定手机号
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      */
     public function bindMobile(Request $request)
     {
@@ -193,8 +195,8 @@ class LoginController extends BaseController
     /**
      * 小程序手机号绑定
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse
+     * @throws ApiError
      * @throws \EasyWeChat\Kernel\Exceptions\BadResponseException
      * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
@@ -225,10 +227,31 @@ class LoginController extends BaseController
     }
 
     /**
+     * 小程序直接注册
+     * @param Request $request
+     * @return JsonResponse
+     * @throws ApiError
+     */
+    public function miniProgramReg(Request $request)
+    {
+        $headimg = $request->post('headimg');
+        $nickname = $request->post('nickname');
+        if (!$headimg || !$nickname) {
+            api_error(__('api.missing_params'));
+        }
+        $member_data = [
+            'headimg' => $headimg,
+            'nickname' => mb_substr($nickname, 0, 50)
+        ];
+        $res = LoginService::bindMobile('', $member_data);
+        return $this->success($res);
+    }
+
+    /**
      * 找回密码
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|void
-     * @throws \App\Exceptions\ApiError
+     * @return JsonResponse|void
+     * @throws ApiError
      */
     public function findPassword(Request $request)
     {
@@ -249,7 +272,7 @@ class LoginController extends BaseController
     /**
      * 刷新token
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function refreshToken(Request $request)
     {
@@ -266,7 +289,7 @@ class LoginController extends BaseController
     /**
      * 退出登陆
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function out(Request $request)
     {
