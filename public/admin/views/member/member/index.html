@@ -85,57 +85,57 @@
             </div>
         </div>
     </div>
+</div>
+<script src="../../../../layuiadmin/layui/layui.js"></script>
+<script>
+    layui.config({
+        base: '../../../../layuiadmin/',//静态资源所在路径
+        version: true
+    }).extend({
+        index: 'modules/admin/index',//主入口模块
+    }).use(['index', 'table_common'], function () {
+        let table_common = layui.table_common,
+            table = layui.table,
+            common = layui.common,
+            model_url = '/member/member';
 
-    <script src="../../../../layuiadmin/layui/layui.js"></script>
-    <script>
-        layui.config({
-            base: '../../../../layuiadmin/',//静态资源所在路径
-            version: true
-        }).extend({
-            index: 'modules/admin/index',//主入口模块
-        }).use(['index', 'table_common'], function () {
-            let table_common = layui.table_common,
-                table = layui.table,
-                common = layui.common,
-                model_url = '/member/member';
+        table_common.set_model_url(model_url);//设置默认模块地址
 
-            table_common.set_model_url(model_url);//设置默认模块地址
-
-            table.render({
-                elem: '#table_list',
-                url: layui.setter.apiHost + model_url,
-                toolbar: '#toolbar',
-                cols: [[
-                    {type: 'checkbox'},
-                    {field: 'id', title: 'ID', width: 70, align: 'center'},
-                    {field: 'username', title: '用户名', minWidth: 200, toolbar: '#username_tmp'},
-                    {field: 'nickname', title: '昵称', minWidth: 120},
-                    {field: 'full_name', title: '姓名', minWidth: 100},
-                    {field: 'group_name', title: '分组', minWidth: 100},
-                    {field: 'status', title: '状态', width: 100, align: 'center', templet: '#status_tmp'},
-                    {field: 'created_at', title: '创建时间', width: 170, align: 'center'},
-                    {title: '操作', width: 230, align: 'center', toolbar: '#action_button'}
-                ]],
-                page: true,
-                done: function () {
-                    table_common.set_button(model_url);
-                }
-            });
-
-            //表格回调
-            let table_callback = {
-                un_bind: function (data) {
-                    layer.prompt({
-                        formType: 0,
-                        title: '请输入类型1微信2微博3qq',
-                    }, function (value, index, elem) {
-                        common.action_ajax('un_bind', {id: data.id, type: value});
-                        layer.close(index);
-                    });
-                }
+        table.render({
+            elem: '#table_list',
+            url: layui.setter.apiHost + model_url,
+            toolbar: '#toolbar',
+            cols: [[
+                {type: 'checkbox'},
+                {field: 'id', title: 'ID', width: 70, align: 'center'},
+                {field: 'username', title: '用户名', minWidth: 200, toolbar: '#username_tmp'},
+                {field: 'nickname', title: '昵称', minWidth: 120},
+                {field: 'full_name', title: '姓名', minWidth: 100},
+                {field: 'group_name', title: '分组', minWidth: 100},
+                {field: 'status', title: '状态', width: 100, align: 'center', templet: '#status_tmp'},
+                {field: 'created_at', title: '创建时间', width: 170, align: 'center'},
+                {title: '操作', width: 230, align: 'center', toolbar: '#action_button'}
+            ]],
+            page: true,
+            done: function () {
+                table_common.set_button(model_url);
             }
-            table_common.set_callback_obj(table_callback);
         });
-    </script>
+
+        //表格回调
+        let table_callback = {
+            un_bind: function (data) {
+                layer.prompt({
+                    formType: 0,
+                    title: '请输入类型1微信2微博3qq',
+                }, function (value, index, elem) {
+                    common.action_ajax('un_bind', {id: data.id, type: value});
+                    layer.close(index);
+                });
+            }
+        }
+        table_common.set_callback_obj(table_callback);
+    });
+</script>
 </body>
 </html>
